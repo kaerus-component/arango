@@ -4,6 +4,8 @@ A client for the ArangoDB nosql database.
 
 Updates
 -------
+2013-02-14
+* Renamed action.invoke to action submit + added support for user defined serverside functions.
 2013-01-20
 * Starting to finalize the framework.
 * All modules now "use strict".
@@ -306,14 +308,32 @@ db.action.define(
     }
 );
 
-/* invoke the action */
+/* submit the action */
 var data = {test:"data"}
-db.action.invoke("someAction",data);
+db.action.submit("someAction",data);
 
-/* you can also pass a callback */
-db.action.invoke("someAction",data,function(err,ret){
+/* submit using a callback */
+db.action.submit("someAction",data,function(err,ret){
   console.log("err(%s):", err, ret); 
 }); 
+
+/* Define an action that injects code serverside.*/
+/* the last argument reloads the routes, or use  */
+/* db.admin.routesReload() to reload the routes. */  
+db.action.define({name:"hello",url:"/hello"},function(req,res){
+  /* Note: this code runs in the ArangoDB */
+  res.statusCode = 200;
+  res.contentType = "text/html";
+  res.body = "Hello World!";
+},true); 
+
+db.action.submit("hello").then(function(res){
+  console.log("Server says:", res);
+},function(error){
+  console.log("Error:", error);
+});
+
+
 
 ```
 
