@@ -193,16 +193,6 @@ db.document.create("newcollection",{b:"test"})
 });
 
 
-/* combine two requests, use spread instead of */
-/* then to get multiple arguments in callback */
-db.document.get(a).include(db.document.get(b))
-  .spread(function(A,B){
-    console.log("docA(%j) docB(%s)", A, B);
-  }, function(err){
-    console.log(err); 
-});
-
-
 /* chain requests */
 db.collection.list()
   .then(function(cols){
@@ -286,9 +276,15 @@ query = db.query.for('likes').in(function() {
   .limit('0, 5')
   .return('{"what": what, "count": LENGTH(group)}');
 
-query.exec({gender:"female",likes:"running"},function(err,ret){
-  console.log("err(%s):",err,ret);
+query.exec({gender:"female",likes:"running"}).then(function(res){
+  console.log("result:",res);
+},function(err){
+  console.llg("error:", err);
 });
+
+/* limit the result set to 1 item each iteration */
+query.count(1).exec({gender:"female",likes:"running"}).then(do_something);
+
 ```
 
 Actions
