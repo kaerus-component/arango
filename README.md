@@ -5,7 +5,8 @@ A client for the ArangoDB nosql database.
 Updates
 -------
 2013-02-14
-* Renamed action.invoke to action submit + added support for user defined serverside functions.
+* Renamed action.invoke to action submit + added support for user defined serverside snippets.
+
 2013-01-20
 * Starting to finalize the framework.
 * All modules now "use strict".
