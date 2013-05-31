@@ -94,7 +94,7 @@ And then create an app.js that looks like this.
 define(['arango'],function(arango){
       var e = document.getElementsByTagName("div")[0];
 
-      var db = new arango.Connection;
+	  var db = new arango.Connection("http://localhost:8529");
       
       /* list all collections */
       db.collection.list().then(function(res){
