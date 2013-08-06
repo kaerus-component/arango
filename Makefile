@@ -7,5 +7,10 @@ build: $(dependencies)
 $(dependencies):
 	@component install kaerus-component/$@	
 
-.PHONY: build
+test: 
+	@./node_modules/.bin/mocha \
+		--require should \
+		--reporter spec
+
+.PHONY: build test
 	
