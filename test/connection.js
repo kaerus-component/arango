@@ -1,6 +1,8 @@
-var should = require('should'),
-	arango = require('..'),
-	base64 = require('base64');
+try{
+	arango = require('arango');
+} catch (e){
+	arango = require('..');
+}
 
 describe("Connection",function(){
 	it('should have a Connection method',function(){
@@ -16,7 +18,7 @@ describe("Connection",function(){
 	it('should be able to parse a Connection string',function(){
 		var db = new arango.Connection("https://user:pass@hostname:8529/collection");
 
-		var headers = {authorization:'Basic ' + base64.encode(db.server.username + ':' + db.server.password) };
+		var headers = {authorization:'Basic ' + arango.base64.encode(db.server.username + ':' + db.server.password) };
 
 		db.server.should.eql({
 			protocol:'https',

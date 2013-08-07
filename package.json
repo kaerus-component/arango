@@ -23,7 +23,9 @@
   },
   "devDependencies": {
     "mocha": "*",
-    "should": "*"
+    "chai": "*",
+    "should": "*",
+    "mocha-phantomjs":"*"
   },
   "bugs": {
     "url": "https://github.com/kaerus-component/arango/issues"
