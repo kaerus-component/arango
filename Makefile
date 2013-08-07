@@ -1,5 +1,5 @@
 NAME = arango
-dependencies = promise ajax url base64
+dependencies = promise ajax urlparser base64
 
 build: $(dependencies)
 	@component build -v -n $(NAME)

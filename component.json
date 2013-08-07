@@ -6,7 +6,7 @@
   "dependencies": {
     "kaerus-component/promise": "*",
     "kaerus-component/ajax": "*",
-    "kaerus-component/url": "*",
+    "kaerus-component/urlparser": "*",
     "kaerus-component/base64": "*"
   },
   "keywords": [
