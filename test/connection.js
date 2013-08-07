@@ -1,8 +1,4 @@
-try{
-	arango = require('arango');
-} catch (e){
-	arango = require('..');
-}
+try{ arango = require('arango') } catch (e){ arango = require('..') }
 
 describe("Connection",function(){
 	it('should have a Connection method',function(){
