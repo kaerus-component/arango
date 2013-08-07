@@ -1,112 +1,67 @@
 ArangoDB client
 ===============
-A client for the ArangoDB nosql database.
-
-Updates
--------
-2013-02-14
-* Renamed action.invoke to action submit + added support for user defined serverside snippets.
-
-2013-01-20
-* Starting to finalize the framework.
-* All modules now "use strict".
-* Recovered from AMD detour and reverted back to commonJS.
-* Using new build facillity called <a href="https://github.com/medikoo/modules-webmake">webmaker</a> by medikoo! 
-* Removed excessive collection parameters from API functions in favour of db.use('collection').
-* Simplified polymorphic API function declarations by utils.Params();
-* Moved query and action modules to the api section where they belong. 
-
-2013-01-11
-* Extended promises with include and spread functions, then gets a single fulfillment value.
-* Embedding http headers & statusCode into response object as _headers_ & _status_.
-
-2012-12-16
-* Using home rolled Promises/A+ (https://github.com/promises-aplus/promises-spec) instead of Q.
-* onFullfill can now receive multiple arguments from resolved promises, promise.resolve(result,headers,code). 
-
-2012-12-12 
-* Included the Promise framework by KrisKowal at https://github.com/kriskowal/q.
-* As of ArangoDB v1.1 the session API has been scrapped so it has been removed from the client.
-* Also removed support for events in favour of promises.
-* Added db.use() to switch connection settings such as collection name, db.use('collection').
-* Query results now yields a next() method if there is more data to be fetched. 
-* Added support for ArangoDB actions through db.action.define(), db.action.invoke() 
-* Changed to Apache 2.0 license
-
-Install
--------
-```
-As nodejs module: npm install arango.client
-From source: git clone git://github.com/kaerus/arango-client
-```
-
-Test
-----
-```
-Open/run index.html from the test directory.
-```
-
-Building
---------
-To be able to build a minified version you need to have the require.js optimizer r.js installed.
-```
-make dist
-```
-This creates a single minified javascript file in the ```dist``` directory.
-
+A client for the ArangoDB nosql database for nodejs and browsers.
 
 Introduction
 ============
 You can use arango-client either as node.js server module or from a web client.
-Since arango-client is written in AMD compatible fashion you should be able 
-to require it in your project using any standard AMD loader.
-However, require.js is included by default when installing through npm.
+Since arango-client is written as a commonJS module you can just require it in your nodejs project or using the generated build file which you can include into your client side app.
+
+
+Install
+-------
+```
+From source: git clone git://github.com/kaerus-component/arango
+As web component: component install kaerus-component/arango
+```
+
+Test
+----
+(The previous tests have been revoked and currently being ported into mocha)
+```
+make test
+```
+
+Building
+--------
+```
+make build
+```
+This creates a single build.js file in the ```build``` directory.
 
 
 Require
 -------
 To use the client in nodejs you require it.
 ```javascript
-var arango = require('arango.client')
+var arango = require('arango')
 ``` 
 
-For usage in a web browser you probably want to use the compressed file dist/arango.js.gz (9KB).
-Then load the client using an AMD compatible loader, such as require.js.
-A minimal html page accessing ArangoDB from the web client can look like this.
+For usage in a web browser you grab the arango.js file and load it as usual in your html file.
+A minimal html page accessing ArangoDB from a web app can look like this.
 ```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta http-equiv="Cache-control" content="no-cache">
-  <title>ArangoDB</title>
-</head>
+<html>
+  <head>
+    <title>ArangoDB Client</title>
+  </head>
+  <body>
+    <div id="output"></div>
+  </body>
+  <script src="../build/arango.js"></script>
+  <script>
+    var arango = require('arango');
+    var db = new arango.Connection("http://127.0.0.1:8529");
+    var output = document.getElementById('output');
 
-<body>
-  <h1>Arango-Client</h1>
-  <div></div>
-    <script data-main="app" src="require.js"></script>
+    db.collection.list().then(function(res){
+      output.innerHTML = res.collections;
+    },function(error){
+      output.innerHTML = error;
+    });
+  </script>
 </body>
+</html>
 ```
-
-And then create an app.js that looks like this.
-```javascript
-define(['arango'],function(arango){
-      var e = document.getElementsByTagName("div")[0];
-
-	  var db = new arango.Connection("http://localhost:8529");
-      
-      /* list all collections */
-      db.collection.list().then(function(res){
-
-        e.innerHTML = "Result: " + JSON.stringify(res);
-      }, function(err){
-        e.innerHTML = "Error: " + JSON.stringify(err);
-      });
-    
-}); 
-```
-Note: The above example assumes you are requiring the non compressed file found in dist/arango.js.
  
 
 Usage

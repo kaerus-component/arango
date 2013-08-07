@@ -1,0 +1,31 @@
+Updates
+-------
+
+2013-02-14
+* Renamed action.invoke to action submit + added support for user defined serverside snippets.
+
+2013-01-20
+* Starting to finalize the framework.
+* All modules now "use strict".
+* Recovered from AMD detour and reverted back to commonJS.
+* Using new build facillity called <a href="https://github.com/medikoo/modules-webmake">webmaker</a> by medikoo! 
+* Removed excessive collection parameters from API functions in favour of db.use('collection').
+* Simplified polymorphic API function declarations by utils.Params();
+* Moved query and action modules to the api section where they belong. 
+
+2013-01-11
+* Extended promises with include and spread functions, then gets a single fulfillment value.
+* Embedding http headers & statusCode into response object as _headers_ & _status_.
+
+2012-12-16
+* Using home rolled Promises/A+ (https://github.com/promises-aplus/promises-spec) instead of Q.
+* onFullfill can now receive multiple arguments from resolved promises, promise.resolve(result,headers,code). 
+
+2012-12-12 
+* Included the Promise framework by KrisKowal at https://github.com/kriskowal/q.
+* As of ArangoDB v1.1 the session API has been scrapped so it has been removed from the client.
+* Also removed support for events in favour of promises.
+* Added db.use() to switch connection settings such as collection name, db.use('collection').
+* Query results now yields a next() method if there is more data to be fetched. 
+* Added support for ArangoDB actions through db.action.define(), db.action.invoke() 
+* Changed to Apache 2.0 license
