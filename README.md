@@ -301,7 +301,10 @@ The `options` argument can be used for altering http request headers if required
       db.document.create("accounts",{ _key: "john", amount: 423 }),
       db.document.create("accounts",{ _key: "fred", amount: 197 })
     ]);
-  }).then(function(){
+  }).spread(function(john,fred){
+    console.log("john:", JSON.stringify(john));
+    console.log("fred:", JSON.stringify(fred));
+    
       return [{
         /* collections affected by this transaction */
         write: "accounts"
