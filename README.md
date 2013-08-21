@@ -299,7 +299,7 @@ The `options` argument can be used for altering http request headers if required
   db.collection.create("accounts").then(function(){
     return this.join([
       db.document.create("accounts",{ _key: "john", amount: 423 }),
-      db.document.create("accounts",{ _key: "fred", amount: 197 })
+      db.document.create("accounts",{ _key: "fred", amount: 9 })
     ]);
   }).spread(function(john,fred){
     console.log("john:", JSON.stringify(john));
@@ -323,7 +323,7 @@ The `options` argument can be used for altering http request headers if required
         var amount = params['amount'];
 
         if (account1.amount < amount) {
-          throw "account of user '" + user1 + "' does not have enough money!";
+          throw "account of user '" + account1 + "' does not have enough money!";
         }
 
         db.accounts.update(account1, { amount : account1.amount - amount });
