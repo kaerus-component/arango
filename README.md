@@ -323,7 +323,7 @@ The `options` argument can be used for altering http request headers if required
         var amount = params['amount'];
 
         if (account1.amount < amount) {
-          throw "account of user '" + account1 + "' does not have enough money!";
+          throw "account of user '" + params['user1'] + "' does not have enough money!";
         }
 
         db.accounts.update(account1, { amount : account1.amount - amount });
