@@ -291,48 +291,50 @@ db.action.submit("hello").then(function(res){
 Transactions
 ------------
 Transactions are sent to arangodb using ```transaction.submit(collections,params,actions,options,callback)```.
-`params` and `options` are optional arguments and can be omitted from the function call.
+The `params` and `options` arguments are optional and can be omitted from the function call.
 The `options` argument can be used for altering http request headers if required.
 
 ```javascript
-  db.collection.create("accounts");
-  var accounts = db.use("accounts");
-  accounts.document.create({ _key: "john", amount: 423 });
-  accounts.document.create({ _key: "fred", amount: 197 });
+  
+  db.collection.create("accounts").then(function(){
+    return this.join([
+      db.document.create("accounts",{ _key: "john", amount: 423 }),
+      db.document.create("accounts",{ _key: "fred", amount: 197 })
+    ]);
+  }).then(function(){
+      return [{
+        /* collections affected by this transaction */
+        write: "accounts"
+      },
+      {
+        /* transaction parameters passed to action */
+        user1: "fred",
+        user2: "john", 
+        amount: 10
+      },
+      function (params) {
+        /* note: this code runs in arangodb */
+        var db = require("internal").db;
+        var account1 = db.accounts.document(params['user1']);
+        var account2 = db.accounts.document(params['user2']);
+        var amount = params['amount'];
 
-  accounts.transaction.submit(
-    {
-      /* collections affected by this transaction */
-      write: "accounts"
-    },
-    {
-      /* transaction parameters passed to action */
-      user1: "fred",
-      user2: "john", 
-      amount: 10
-    },
-    function (params) {
-      /* note: this code runs in arangodb */
-      var db = require("internal").db;
-      var account1 = db.accounts.document(params['user1']);
-      var account2 = db.accounts.document(params['user2']);
-      var amount = params['amount'];
+        if (account1.amount < amount) {
+          throw "account of user '" + user1 + "' does not have enough money!";
+        }
 
-      if (account1.amount < amount) {
-        throw "account of user '" + user1 + "' does not have enough money!";
-      }
+        db.accounts.update(account1, { amount : account1.amount - amount });
+        db.accounts.update(account2, { amount : account2.amount + amount });
 
-      db.accounts.update(account1, { amount : account1.amount - amount });
-      db.accounts.update(account2, { amount : account2.amount + amount });
-
-      /* will commit the transaction and return the value true */
-      return true; 
+        /* will commit the transaction and return the value true */
+        return true; 
+      }]
+  }).spread(accounts.transaction.submit).then(function(ret){
+      console.log("Transaction success:", JSON.stringify(ret));
+    },function(error){
+      console.log("Transaction failed:", JSON.stringify(error));
     }
-  ).then(function(res){
-    console.log("Transaction successful:", JSON.stringify(res));
-  }, function(error){
-    console.log("Transaction failed:", JSON.stringify(error));
-  });
+  );
 
 ```
 
