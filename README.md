@@ -329,7 +329,7 @@ The `options` argument can be used for altering http request headers if required
         /* will commit the transaction and return the value true */
         return true; 
       }]
-  }).spread(accounts.transaction.submit).then(function(ret){
+  }).spread(db.transaction.submit).then(function(ret){
       console.log("Transaction success:", JSON.stringify(ret));
     },function(error){
       console.log("Transaction failed:", JSON.stringify(error));
