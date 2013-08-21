@@ -11,8 +11,10 @@ Since arango-client is written as a commonJS module you can just require it in y
 Install
 -------
 ```
-From source: git clone git://github.com/kaerus-component/arango
-As web component: component install kaerus-component/arango
+From source: `git clone git://github.com/kaerus-component/arango`
+web component: `component install kaerus-component/arango`
+nodejs module: `npm install arango` 
+
 ```
 
 Test
@@ -27,12 +29,12 @@ Building
 ```
 make build
 ```
-This creates a single build.js file in the ```build``` directory.
+This creates a single build.js component in the ```build``` directory.
 
 
 Require
 -------
-To use the client in nodejs you require it.
+To use the client in your source you require it.
 ```javascript
 var arango = require('arango')
 ``` 
@@ -68,19 +70,19 @@ Usage
 -----
 The api methods always return a promise but they also take a callback function.
 
+Example using a promise:
+```javascript
+db.document.get(docid)
+  .then(function(res){ console.log("Result:", res) },
+    function(err){ console.log("error:", err) } );
+```
+
 Example using a callback:
 ```javascript
 db.document.get(docid,function(err,res){
   if(err) console.log("err(%s):", err, res);
   else console.log("result: ", JSON.stringify(res));
 });
-```
-
-Example using a promise:
-```javascript
-db.document.get(docid)
-  .then(function(res){ console.log("Result:", res) },
-    function(err){ console.log("error:", err) } );
 ```
 
  
@@ -284,8 +286,53 @@ db.action.submit("hello").then(function(res){
 },function(error){
   console.log("Error:", error);
 });
+```
 
+Transactions
+------------
+Transactions are sent to arangodb using ```transaction.submit(collections,params,actions,options,callback)```.
+`params` and `options` are optional arguments and can be omitted from the function call.
+The `options` argument can be used for altering http request headers if required.
 
+```javascript
+  db.collection.create("accounts");
+  var accounts = db.use("accounts");
+  accounts.document.create({ _key: "john", amount: 423 });
+  accounts.document.create({ _key: "fred", amount: 197 });
+
+  accounts.transaction.submit(
+    {
+      /* collections affected by this transaction */
+      write: "accounts"
+    },
+    {
+      /* transaction parameters passed to action */
+      user1: "fred",
+      user2: "john", 
+      amount: 10
+    },
+    function (params) {
+      /* note: this code runs in arangodb */
+      var db = require("internal").db;
+      var account1 = db.accounts.document(params['user1']);
+      var account2 = db.accounts.document(params['user2']);
+      var amount = params['amount'];
+
+      if (account1.amount < amount) {
+        throw "account of user '" + user1 + "' does not have enough money!";
+      }
+
+      db.accounts.update(account1, { amount : account1.amount - amount });
+      db.accounts.update(account2, { amount : account2.amount + amount });
+
+      /* will commit the transaction and return the value true */
+      return true; 
+    }
+  ).then(function(res){
+    console.log("Transaction successful:", JSON.stringify(res));
+  }, function(error){
+    console.log("Transaction failed:", JSON.stringify(error));
+  });
 
 ```
 
