@@ -1,13 +1,20 @@
 NAME = arango
-dependencies = promise ajax urlparser base64
+TARGET = ./build
 
-build: $(dependencies)
-	@component build -v -n $(NAME)
+all: build
 
-$(dependencies):
-	@component install kaerus-component/$@	
+build: dependencies standalone
+	@echo "Building component "
+	@component build -v -o $(TARGET)
 
-test: 
+standalone: 
+	@echo "Building standalone version"
+	@component build -v -o $(TARGET) -n $(NAME)
+
+dependencies:
+	@component install -v	
+
+test: node_modules
 	@echo "Running tests for nodejs"
 	@./node_modules/.bin/mocha \
 		--require should \
@@ -15,5 +22,15 @@ test:
 	@echo "Running tests for browser"
 	@./node_modules/mocha-phantomjs/bin/mocha-phantomjs test/runner.html
 
-.PHONY: build test
+node_modules:
+	@npm i -d
+
+distclean:
+	@echo "Cleaning upp files"
+	@rm -rf ./node_modules
+	@rm -rf ./components
+	@rm -rf ./build
+
+
+.PHONY: all test
 	
