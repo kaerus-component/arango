@@ -1,6 +1,11 @@
 Updates
 -------
 
+2013-11-06
+* v0.2.0 
+* Added support for ArangoDB 1.4 database name. 
+* New Connection string format: http://user:pass@host:port/database:collection
+
 2013-02-14
 * Renamed action.invoke to action submit + added support for user defined serverside snippets.
 

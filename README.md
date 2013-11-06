@@ -52,7 +52,7 @@ A minimal html page accessing ArangoDB from a web app can look like this.
   <script src="../build/arango.js"></script>
   <script>
     var arango = require('arango');
-    var db = new arango.Connection("http://127.0.0.1:8529");
+    var db = new arango.Connection; // Defaults to http://127.0.0.1:8529
     var output = document.getElementById('output');
 
     db.collection.list().then(function(res){
@@ -68,7 +68,7 @@ A minimal html page accessing ArangoDB from a web app can look like this.
 
 Usage
 -----
-The api methods always return a promise but they also take a callback function.
+The api methods return a promise but you can also use a callback function.
 
 Example using a promise:
 ```javascript
@@ -95,49 +95,64 @@ To initialize a connection you have to use the ```Connection([string],[object])`
 db = new arango.Connection
 
 /* connection string */
-db = new arango.Connection("http://127.0.0.1/test");
+db = new arango.Connection("http://127.0.0.1/mydb:collection");
 
 /* connection with http auth */
 db = new arango.Connection("http://user:pass@your.host.com/database");
 
 /* connection object */
-db = new arango.Connection({name:"database", user:"master"});
+db = new arango.Connection({_name:"database",_collection:"collection",_server:{hostname:"test.host"}});
 
 /* mixed mode */
-db = new arango.Connection("http://test.host.com:80/default",{user:uname,pass:pwd});
+db = new arango.Connection("http://test.host.com:80/default",{_server:{username:"user",password:"pass"}});
 
 /* with use() you can switch connection settings */
-db.use("http://new.server/collection")
+var test = db.use("http://test.host:8520")
 
-/* use another collection */
-db.use("another");
+/* use another database */
+var test_mydb = test.use("mydb");
 
-/* db.server dumps server configuration */
-db.server
+/* change to another database & collection */
+var test_mydb2_mail = test_mydb.use("mydb2:mail");
+
+/* change collection */
+var test_mydb2__users = test_mydb2_mail.use(":_users");
 
 ```
 
 Creating collections & documents
 -------------------------------
 ```javascript
+/* create Connection and use 'mydb' database */
+var db = new arango.Connection('http://127.0.0.1:8529/mydb');
+
 /* Create a 'test' collection */
-db.use("test").collection.create(function(err,ret){
+db.collection.create('test').then(function(res){
+  console.log("result: %j",res);
+},function(err){
+  console.log("error: %j",err);
+});
+
+
+/* Create a 'test2' collection using callback instead of promise */
+db.collection.create('test2',function(err,ret){
   console.log("error(%s): ", err, ret);
 });
 
 /* create a new document in 'test' collection */
-db.document.create({a:'test',b:123,c:Date()})
-  .then(function(res){ console.log(res); },
-    function(err){ console.log("error(%s): ", err) }
-);  
+db.document.create('test',{a:'test',b:123,c:Date()})
+  .then(function(res){ 
+    console.log(res); 
+  },function(err){ 
+    console.log("error(%s): ", err); 
+  });  
 
-/* get a list of all documents */
-db.use("collection123")
-  .document.list()
+/* get a list of all documents in 'test' collection */
+db.document.list('test')
   .then(function(res){ console.log(res) },
     function(err){ console.log("error", err) } );
  
-/* create a new document and create a new */
+/* create a new document and create a new collection */
 /* collection by passing true as first argument */
 db.document.create(true,"newcollection",{a:"test"})
   .then(function(res){ console.log("res", JSON.stringify(res) },
