@@ -1,13 +1,14 @@
 {
   "name": "arango",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "ArangoDB client",
   "repo": "kaerus-component/arango",
   "dependencies": {
     "kaerus-component/promise": "*",
     "kaerus-component/ajax": "*",
-    "kaerus-component/urlparser": "*",
-    "kaerus-component/base64": "*"
+    "kaerus-component/urlparser": "0.3.7",
+    "kaerus-component/base64": "*",
+    "cors": "*"
   },
   "keywords": [
     "nosql",
