@@ -5,24 +5,66 @@ describe("Connection",function(){
 		arango.should.have.ownProperty('Connection');
 	})
 
-	it('should have default server settings',function(){
+	it('should have default connection to http://127.0.0.1:8529',function(){
 		var db = new arango.Connection;
-		db.should.have.property('server');
-		db.server.should.eql({protocol:"http",hostname:"127.0.0.1",port:8529});
+		
+		db.should.have.property('_server');
+		
+		db._server.should.eql({protocol:"http",hostname:"127.0.0.1",port:8529});
 	})
 
 	it('should be able to parse a Connection string',function(){
-		var db = new arango.Connection("https://user:pass@hostname:8529/collection");
+		var db = new arango.Connection("https://user:pass@hostname:8529/database");
 
-		var headers = {authorization:'Basic ' + arango.base64.encode(db.server.username + ':' + db.server.password) };
+		var headers = {authorization:'Basic ' + arango.base64.encode(db._server.username + ':' + db._server.password) };
 
-		db.server.should.eql({
+		db._server.should.eql({
 			protocol:'https',
 			username:'user',
 			password:'pass',
 			hostname:'hostname',
 			port:8529,
 			headers: headers
-		})	
+		})
+
+		db._name.should.eql('database');
+		
+		db._collection.should.eql('');
+	})
+
+	it('should be able to parse a Connection string with database and collection name',function(){
+		var db = new arango.Connection("https://user:pass@hostname:8529/database:collection");
+
+		var headers = {authorization:'Basic ' + arango.base64.encode(db._server.username + ':' + db._server.password) };
+
+		db._server.should.eql({
+			protocol:'https',
+			username:'user',
+			password:'pass',
+			hostname:'hostname',
+			port:8529,
+			headers: headers
+		})
+
+		db._name.should.eql('database');
+		
+		db._collection.should.eql('collection');
+	})
+
+	it('should be able to parse a Connection string with only a collection name',function(){
+		var db = new arango.Connection("https://user:pass@hostname:8529/:collection");
+
+		var headers = {authorization:'Basic ' + arango.base64.encode(db._server.username + ':' + db._server.password) };
+
+		db._server.should.eql({
+			protocol:'https',
+			username:'user',
+			password:'pass',
+			hostname:'hostname',
+			port:8529,
+			headers: headers
+		})
+		
+		db._collection.should.eql('collection');
 	})
 })
