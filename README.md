@@ -173,7 +173,7 @@ mydb.collection.create('test').then(function(res){
   console.log("error: %j",err);
 });
 
-/* list all collections in mydb (note: done() throws error) */
+/* list all collections in mydb, note the use of [done()](https://github.com/kaerus-component/uP#done) */
 mydb.collection.list().done(function(res){
   console.log("collections: %j", res);
 });
