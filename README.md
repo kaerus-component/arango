@@ -264,15 +264,19 @@ db.document.create("newcollection",{b:"test"})
 
 Chaining API calls
 ```js
-db.collection.list().then(function(collections){
+try {
+  db.collection.list().then(function(collections){
     for(var collection in collections){
       if(collection.name === 'files') 
         return db.document.list(collection.name);
     }
     throw new Error("files not found");
-}).done(function(files){
+  }).done(function(files){
     console.log("list of files: %j", files);
-});
+  });
+} catch(err){
+  console.log("Error: ", err);
+}
 
 ```
 
