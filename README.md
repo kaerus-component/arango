@@ -32,9 +32,9 @@ make build
 This creates a single build.js component in the ```build``` directory.
 
 
-Usage
------
-To use the client in your source you require it at a commonJS module.
+Quick start
+===========
+To use the client you require it at a commonJS module.
 ```javascript
 var arango = require('arango');
 ``` 
@@ -49,7 +49,7 @@ db.documents.list().done(function(docs){
 ```
 
 In a browser
--------
+------------
 For usage in a web browser you grab the arango.js file and load it as usual in your html file.
 A minimal html page using the arangodb client from a web app can look like this.
 ```html
@@ -78,45 +78,47 @@ A minimal html page using the arangodb client from a web app can look like this.
  
 
 API
----
-The api methods always return a promise but you can also use a callback function.
+===
+The following API:s are (more or less) supported, check out the ArangoDB [documentation](http://www.arangodb.org/manuals/current/).
+  
+  1.[transaction](http://www.arangodb.org/manuals/current/HttpTransactions.html)
+  2.[collection](http://www.arangodb.org/manuals/current/HttpCollection.html)
+  3.[database](http://www.arangodb.org/manuals/current/HttpDatabase.html)
+  4.[document](http://www.arangodb.org/manuals/current/RestDocument.html)
+  5.[action](http://www.arangodb.org/manuals/current/UserManualActions.html)
+  6.[cursor](http://www.arangodb.org/manuals/current/HttpCursor.html)
+  7.[simple](http://www.arangodb.org/manuals/current/HttpSimple.html)
+  8.[index](http://www.arangodb.org/manuals/current/HttpIndex.html)
+  9.[admin](http://www.arangodb.org/manuals/current/HttpSystem.html)
+  10.[query](http://www.arangodb.org/manuals/current/HttpQuery.html)
+  11.[graph](http://www.arangodb.org/manuals/current/HttpGraph.html)
+  12.[edge](http://www.arangodb.org/manuals/current/RestEdge.html)
+  13.[user](http://www.arangodb.org/manuals/current/HttpUser.html)
+  14.[key](http://www.arangodb.org/manuals/current/) 
+
+
+The API methods return a [promise](https://github.com/kaerus-component/promise) but you may also pass a callback function as last argument which then gets called with the result.
 
 Example using a promise:
 ```javascript
-db.document.get(docid)
-  .then(function(res){ console.log("Result:", res) },
-    function(err){ console.log("error:", err) } );
+db.document.get(docid).then(function(res){ 
+  console.log("res: %j", res) 
+},function(err){ 
+  console.log("err: %j", err) 
+});
 ```
 
 Example using a callback:
 ```javascript
 db.document.get(docid,function(err,res){
-  if(err) console.log("err(%s):", err, res);
-  else console.log("result: ", JSON.stringify(res));
+  if(err) console.log("err: %j", res);
+  else console.log("res: %j", res);
 });
 ```
 
-The following API:s are (more or less) supported, check out the ArangoDB [documentation](http://www.arangodb.org/manuals/current/).
-  
-  [transaction](http://www.arangodb.org/manuals/current/HttpTransactions.html)
-  [collection](http://www.arangodb.org/manuals/current/HttpCollection.html)
-  [database](http://www.arangodb.org/manuals/current/HttpDatabase.html)
-  [document](http://www.arangodb.org/manuals/current/RestDocument.html)
-  [action](http://www.arangodb.org/manuals/current/UserManualActions.html)
-  [cursor](http://www.arangodb.org/manuals/current/HttpCursor.html)
-  [simple](http://www.arangodb.org/manuals/current/HttpSimple.html)
-  [index](http://www.arangodb.org/manuals/current/HttpIndex.html)
-  [admin](http://www.arangodb.org/manuals/current/HttpSystem.html)
-  [query](http://www.arangodb.org/manuals/current/HttpQuery.html)
-  [graph](http://www.arangodb.org/manuals/current/HttpGraph.html)
-  [edge](http://www.arangodb.org/manuals/current/RestEdge.html)
-  [user](http://www.arangodb.org/manuals/current/HttpUser.html)
-  [key](http://www.arangodb.org/manuals/current/) 
-
  
-Initialization
---------------
-To initialize a connection you have to use the ```Connection([string],[object])``` constructor.
+Usage
+=====
 ```javascript
 /* use default settings, connects to http://127.0.0.1:8529 in nodejs */
 /* or window.location when using from your browser */
