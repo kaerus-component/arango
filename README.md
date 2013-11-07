@@ -32,15 +32,26 @@ make build
 This creates a single build.js component in the ```build``` directory.
 
 
-Require
--------
-To use the client in your source you require it.
+Usage
+-----
+To use the client in your source you require it at a commonJS module.
 ```javascript
-var arango = require('arango')
+var arango = require('arango');
 ``` 
 
+Then you initialize a connection which returns a db handle.
+```javascript
+var db = new arango.Connection("http://myarangodb.server.com:8529");
+
+db.documents.list().done(function(docs){
+  console.log("documents: %j", docs);
+});
+```
+
+In a browser
+-------
 For usage in a web browser you grab the arango.js file and load it as usual in your html file.
-A minimal html page accessing ArangoDB from a web app can look like this.
+A minimal html page using the arangodb client from a web app can look like this.
 ```html
 <html>
   <head>
@@ -66,9 +77,9 @@ A minimal html page accessing ArangoDB from a web app can look like this.
 ```
  
 
-Usage
------
-The api methods return a promise but you can also use a callback function.
+API
+---
+The api methods always return a promise but you can also use a callback function.
 
 Example using a promise:
 ```javascript
@@ -84,6 +95,23 @@ db.document.get(docid,function(err,res){
   else console.log("result: ", JSON.stringify(res));
 });
 ```
+
+The following API:s are (more or less) supported, check out the ArangoDB [documentation](http://www.arangodb.org/manuals/current/).
+  
+  [transaction](http://www.arangodb.org/manuals/current/HttpTransactions.html)
+  [collection](http://www.arangodb.org/manuals/current/HttpCollection.html)
+  [database](http://www.arangodb.org/manuals/current/HttpDatabase.html)
+  [document](http://www.arangodb.org/manuals/current/RestDocument.html)
+  [action](http://www.arangodb.org/manuals/current/UserManualActions.html)
+  [cursor](http://www.arangodb.org/manuals/current/HttpCursor.html)
+  [simple](http://www.arangodb.org/manuals/current/HttpSimple.html)
+  [index](http://www.arangodb.org/manuals/current/HttpIndex.html)
+  [admin](http://www.arangodb.org/manuals/current/HttpSystem.html)
+  [query](http://www.arangodb.org/manuals/current/HttpQuery.html)
+  [graph](http://www.arangodb.org/manuals/current/HttpGraph.html)
+  [edge](http://www.arangodb.org/manuals/current/RestEdge.html)
+  [user](http://www.arangodb.org/manuals/current/HttpUser.html)
+  [key](http://www.arangodb.org/manuals/current/) 
 
  
 Initialization
@@ -123,38 +151,80 @@ var test_mydb2__users = test_mydb2_mail.use(":_users");
 Creating collections & documents
 -------------------------------
 ```javascript
-/* create Connection and use 'mydb' database */
-var db = new arango.Connection('http://127.0.0.1:8529/mydb');
+/* initialize a Connection */
+var db = new arango.Connection('http://127.0.0.1:8529');
+
+/* create a new database */
+db.database.create('mydb').then(function(res){
+  console.log("Database created: %j", res);
+},function(err){
+  console.log("Failed to create database: %j", err);
+})
+
+/* use mydb database */
+var mydb = db.use('mydb');
 
 /* Create a 'test' collection */
-db.collection.create('test').then(function(res){
+mydb.collection.create('test').then(function(res){
   console.log("result: %j",res);
 },function(err){
   console.log("error: %j",err);
 });
 
+/* list all collections in mydb (note: done() throws error) */
+mydb.collection.list().done(function(res){
+  console.log("collections: %j", res);
+});
+
+/* Create a collection with options */
+mydb.collection.create('mycoll',{
+  journalSize: 10000000,
+  waitForSync:true,
+  keyOptions: { 
+    type: "autoincrement", 
+    increment: 5, 
+    allowUserKeys: true 
+  }
+}).then(function(res){
+  console.log("result: %j",res);
+},function(err){
+  console.log("error: %j",err);
+});
+
+/* delete collection (using callback) */
+mydb.collection.delete('mycoll',function(err,ret){
+  console.log("error(%s): %j", err, ret);
+});
 
 /* Create a 'test2' collection using callback instead of promise */
-db.collection.create('test2',function(err,ret){
-  console.log("error(%s): ", err, ret);
+mydb.collection.create('test2',function(err,ret){
+  console.log("error(%s): %j", err, ret);
 });
 
 /* create a new document in 'test' collection */
-db.document.create('test',{a:'test',b:123,c:Date()})
+mydb.document.create('test',{a:'test',b:123,c:Date()})
   .then(function(res){ 
-    console.log(res); 
+    console.log("res: %j", res); 
   },function(err){ 
-    console.log("error(%s): ", err); 
+    console.log("err: %j", err); 
   });  
 
 /* get a list of all documents in 'test' collection */
-db.document.list('test')
-  .then(function(res){ console.log(res) },
-    function(err){ console.log("error", err) } );
+mydb.document.list('test')
+  .then(function(res){ 
+    console.log("res: %j", res); 
+  },function(err){ 
+    console.log("err: %j", err); 
+  });
  
-/* create a new document and create a new collection */
-/* collection by passing true as first argument */
-db.document.create(true,"newcollection",{a:"test"})
+/* create a new document and create a new collection by passing in options */
+mydb.document.create("newcollection",{a:"test"},{createCollection:true})
+  .then(function(res){ console.log("res", JSON.stringify(res) },
+    function(err){ console.log("err", err) } );
+});
+
+/* create document and wait for disk sync */
+mydb.document.create("newcollection",{a:"test"},{waitForSync:true})
   .then(function(res){ console.log("res", JSON.stringify(res) },
     function(err){ console.log("err", err) } );
 });
@@ -164,7 +234,6 @@ db.document.create("newcollection",{b:"test"})
   .then(function(res){ console.log("res", JSON.stringify(res) },
     function(err){ console.log("err", err) } );
 });
-
 
 /* chain requests */
 db.collection.list()
