@@ -152,33 +152,43 @@ var test_mydb2__users = test_mydb2_mail.use(":_users");
 
 Creating collections & documents
 -------------------------------
-```javascript
-/* initialize a Connection */
+Initialize a Connection
+```js
 var db = new arango.Connection('http://127.0.0.1:8529');
+```
 
-/* create a new database */
+Create a new database
+```js
 db.database.create('mydb').then(function(res){
   console.log("Database created: %j", res);
 },function(err){
   console.log("Failed to create database: %j", err);
 })
+```
 
-/* use mydb database */
+Use mydb database
+```js
 var mydb = db.use('mydb');
+```
 
-/* Create a 'test' collection */
+Create a 'test' collection
+```js
 mydb.collection.create('test').then(function(res){
   console.log("result: %j",res);
 },function(err){
   console.log("error: %j",err);
 });
+```
 
-/* list all collections in mydb, note the use of [done()](https://github.com/kaerus-component/uP#done) */
+List all collections in mydb, note the use of [done()](https://github.com/kaerus-component/uP#done)
+```js
 mydb.collection.list().done(function(res){
   console.log("collections: %j", res);
 });
+```
 
-/* Create a collection with options */
+Create a collection with options
+```js
 mydb.collection.create('mycoll',{
   journalSize: 10000000,
   waitForSync:true,
@@ -192,59 +202,76 @@ mydb.collection.create('mycoll',{
 },function(err){
   console.log("error: %j",err);
 });
+```
 
-/* delete collection (using callback) */
+Delete collection (using callback)
+```js
 mydb.collection.delete('mycoll',function(err,ret){
   console.log("error(%s): %j", err, ret);
 });
+```
 
-/* Create a 'test2' collection using callback instead of promise */
+Create a 'test2' collection using callback instead of promise
+```js
 mydb.collection.create('test2',function(err,ret){
   console.log("error(%s): %j", err, ret);
 });
+```
 
-/* create a new document in 'test' collection */
+Create a new document in 'test' collection 
+```js
 mydb.document.create('test',{a:'test',b:123,c:Date()})
   .then(function(res){ 
     console.log("res: %j", res); 
   },function(err){ 
     console.log("err: %j", err); 
   });  
+```
 
-/* get a list of all documents in 'test' collection */
+Get a list of all documents in 'test' collection
+```js
 mydb.document.list('test')
   .then(function(res){ 
     console.log("res: %j", res); 
   },function(err){ 
     console.log("err: %j", err); 
   });
- 
-/* create a new document and create a new collection by passing in options */
+```
+
+Create a new document and create a new collection by passing in options
+```js
 mydb.document.create("newcollection",{a:"test"},{createCollection:true})
   .then(function(res){ console.log("res", JSON.stringify(res) },
     function(err){ console.log("err", err) } );
 });
+```
 
-/* create document and wait for disk sync */
+Create document and wait for disk sync
+```js
 mydb.document.create("newcollection",{a:"test"},{waitForSync:true})
   .then(function(res){ console.log("res", JSON.stringify(res) },
     function(err){ console.log("err", err) } );
 });
+```
 
-/* create another document in the collection */
+Create another document in the collection
+```js
 db.document.create("newcollection",{b:"test"})
   .then(function(res){ console.log("res", JSON.stringify(res) },
     function(err){ console.log("err", err) } );
 });
+```
 
-/* chain requests */
-db.collection.list()
-  .then(function(cols){
-    /* get a list of all documents */
-    /* from the first collection.  */ 
-    return db.document.list(cols[0].name);
-}).then(function(docs){
-    console.log("documents:", docs);
+Chaining API calls
+```js
+db.collection.list().then(function(collections){
+    for(var collection in collections){
+      if(collection.name === 'files') 
+        return db.document.list(collection.name);
+    }
+    throw new Error("files not found");
+}).done(function(files){
+    console.log("list of files: %j", files);
 });
 
 ```
