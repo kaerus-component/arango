@@ -5,10 +5,9 @@
   "repo": "kaerus-component/arango",
   "dependencies": {
     "kaerus-component/promise": "*",
-    "kaerus-component/ajax": "*",
+    "kaerus-component/ajax": "0.2.4",
     "kaerus-component/urlparser": "0.3.7",
-    "kaerus-component/base64": "*",
-    "cors": "*"
+    "kaerus-component/base64": "*"
   },
   "keywords": [
     "nosql",
