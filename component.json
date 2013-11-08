@@ -4,10 +4,10 @@
   "description": "ArangoDB client",
   "repo": "kaerus-component/arango",
   "dependencies": {
-    "kaerus-component/promise": "*",
+    "kaerus-component/promise": "0.3.4",
     "kaerus-component/ajax": "0.2.4",
     "kaerus-component/urlparser": "0.3.7",
-    "kaerus-component/base64": "*"
+    "kaerus-component/base64": "0.1.0"
   },
   "keywords": [
     "nosql",
