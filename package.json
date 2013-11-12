@@ -1,6 +1,6 @@
 {
   "name": "arango",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "ArangoDB javascript client",
   "keywords": [
     "arangodb",
@@ -16,7 +16,7 @@
     "anders elo <anders@kaerus.com>"
   ],
   "dependencies":{
-    "promise": "git://github.com/kaerus-component/promise.git#0.3.4",
+    "uP": "git://github.com/kaerus-component/uP.git#0.2.6",
     "base64": "git://github.com/kaerus-component/base64.git#0.1.0",
     "urlparser": "git://github.com/kaerus-component/urlparser.git#0.3.7"
   },
