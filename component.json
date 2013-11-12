@@ -4,7 +4,7 @@
   "description": "ArangoDB client",
   "repo": "kaerus-component/arango",
   "dependencies": {
-    "kaerus-component/uP": "0.2.6",
+    "kaerus-component/uP": "0.3.0",
     "kaerus-component/ajax": "0.2.4",
     "kaerus-component/urlparser": "0.3.7",
     "kaerus-component/base64": "0.1.0"
