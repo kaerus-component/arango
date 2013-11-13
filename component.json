@@ -5,7 +5,7 @@
   "repo": "kaerus-component/arango",
   "dependencies": {
     "kaerus-component/uP": "0.3.0",
-    "kaerus-component/ajax": "0.2.4",
+    "kaerus-component/ajax": "0.2.7",
     "kaerus-component/urlparser": "0.3.7",
     "kaerus-component/base64": "0.1.0"
   },
@@ -20,16 +20,21 @@
     "lib/arango.js",
     "lib/request.js",
     "lib/utils.js",
-    "lib/api/action.js",
-    "lib/api/admin.js",
+    "lib/api/transaction.js",
     "lib/api/collection.js",
-    "lib/api/cursor.js",
+    "lib/api/database.js",
     "lib/api/document.js",
-    "lib/api/edge.js",
+    "lib/api/action.js",
+    "lib/api/cursor.js",
+    "lib/api/simple.js",
     "lib/api/index.js",
-    "lib/api/key.js",
+    "lib/api/admin.js",
     "lib/api/query.js",
-    "lib/api/simple.js"
+    "lib/api/graph.js",
+    "lib/api/batch.js",
+    "lib/api/edge.js",
+    "lib/api/user.js",
+    "lib/api/key.js"
   ],
   "license": "Apache2_0"
 }

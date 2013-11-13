@@ -1,0 +1,23 @@
+<html>
+<head>
+    <title> Tests </title>
+    <meta charset="utf-8"/>
+</head>
+<body>
+<div id="test"></div>
+<script src="../build/build.js"></script>
+<script>
+	var arango = require('arango');
+	var e = document.getElementById('test');
+	var db = new arango.Connection;
+	var promise = db.promise();
+	promise.then(function(val){
+		e.innerHTML = "got a value: " + val;
+	},function(err){
+		e.innerHTML = "got a rejection: " + err;
+	});
+
+	promise.fulfill(42);
+</script>
+</body>
+</html>
