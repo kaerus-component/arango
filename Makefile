@@ -9,7 +9,7 @@ build: dependencies standalone
 
 standalone: 
 	@echo "Building standalone version"
-	@component build -v -o $(TARGET) -n $(NAME)
+	@component build -v -o $(TARGET) -n $(NAME) -s $(NAME)
 
 dependencies:
 	@component install -v	
