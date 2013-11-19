@@ -280,6 +280,18 @@ try {
 
 ```
 
+Calling API methods directly
+----------------------------
+You may also request any arangodb API method by using ```db[METHOD]()```.
+This is particulary usefull when you create your own REST API in ArangoDB.
+
+```js
+  db.post("/myapi/object/create",{a:1,b:2}).done(function(res){
+    console.log("result from API call: %j", res);
+  });
+```
+Methods supported are: get(), put(), post(), delete(), options(), head(), patch().
+
 
 
 Queries
@@ -360,8 +372,8 @@ query.exec({gender:"female",likes:"running"}).then(function(res){
 /* limit the result set to 1 item each iteration */
 query.count(1).exec({gender:"female",likes:"running"}).then(do_something);
 
-```
 
+```
 Actions
 -------
 ArangoDB supports user defined actions that can be used for implementing business logic or creating complex queries serverside.
@@ -404,6 +416,7 @@ db.action.submit("hello").then(function(res){
   console.log("Error:", error);
 });
 ```
+
 
 Transactions
 ------------
