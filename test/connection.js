@@ -97,4 +97,21 @@ describe("Connection",function(){
 		db._name.should.eql("database");
 		db._collection.should.eql("collection");
 	})
+
+	it('should be able to parse a Connection string with object containing username password',function(){
+		db = new arango.Connection("https://test.com",
+			{_server:{username:"username", password:"password"}}
+		);
+
+		var headers = {authorization:'Basic ' + arango.base64.encode('username' + ':' + 'password') };
+
+		db._server.should.eql({
+			protocol:'https',
+			hostname:'test.com',
+			username:'username',
+			password:'password',
+			headers: headers,
+			port:8529,
+		})
+	})
 })
