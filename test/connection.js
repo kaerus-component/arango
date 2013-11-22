@@ -67,4 +67,34 @@ describe("Connection",function(){
 		
 		db._collection.should.eql('collection');
 	})
+
+	it('should be able to parse a Connection object',function(){
+		db = new arango.Connection({_name:"database",_collection:"collection",_server:{hostname:"test.host"}});
+		db._server.should.eql({
+			protocol:'http',
+			hostname:'test.host',
+			port:8529,
+		})
+		db._name.should.eql("database");
+		db._collection.should.eql("collection");
+	})
+
+	it('should be able to parse a Connection string with object',function(){
+		db = new arango.Connection("https://username:password@test.com",
+			{_name:"database",_collection:"collection"}
+		);
+
+		var headers = {authorization:'Basic ' + arango.base64.encode('username' + ':' + 'password') };
+
+		db._server.should.eql({
+			protocol:'https',
+			hostname:'test.com',
+			username:'username',
+			password:'password',
+			headers: headers,
+			port:8529,
+		})
+		db._name.should.eql("database");
+		db._collection.should.eql("collection");
+	})
 })
