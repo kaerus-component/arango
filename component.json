@@ -1,6 +1,6 @@
 {
   "name": "arango",
-  "version": "0.3.0",
+  "version": "0.3.2",
   "description": "ArangoDB client",
   "repo": "kaerus-component/arango",
   "dependencies": {
@@ -21,6 +21,7 @@
     "lib/arango.js",
     "lib/request.js",
     "lib/utils.js",
+    "lib/xhr.js",
     "lib/api/transaction.js",
     "lib/api/collection.js",
     "lib/api/database.js",
