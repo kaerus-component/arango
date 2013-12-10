@@ -17,19 +17,22 @@ nodejs module: `npm install arango`
 
 ```
 
-Test
-----
-(The previous tests have been revoked and currently being ported into mocha)
-```
-make test
-```
-
 Building
 --------
 ```
 make build
 ```
-This creates a single build.js component in the ```build``` directory.
+Creates a single build.js component in the ```./build``` directory.
+A standalone is built separately and named arango.js.
+
+Test
+----
+```
+make test
+```
+Runs the test suite sequentially under nodejs and phantomjs.
+Feel free to chip in by writing more tests (or porting from qunit).
+The old test suite can be found [here](https://github.com/kaerus/arango-client/tree/master/test).
 
 
 Quick start
@@ -119,35 +122,72 @@ db.document.get(docid,function(err,res){
  
 Usage
 =====
-```javascript
-/* use default settings, connects to http://127.0.0.1:8529 in nodejs */
-/* or window.location when using from your browser */
-db = new arango.Connection
 
-/* connection string */
-db = new arango.Connection("http://127.0.0.1/mydb:collection");
+Connect()
+---------
+Factory for arango connection.
+Sets up a connection to ```http://127.0.0.1:8529``` by default when in nodejs or ```window.location``` in browser environments.
+```js
+  db = new arango.Connection()
+```
 
-/* connection with http auth */
-db = new arango.Connection("http://user:pass@your.host.com/database");
+Connection string
+```js
+  db = new arango.Connection("http://127.0.0.1/mydb:collection");
+```
 
-/* connection object */
-db = new arango.Connection({_name:"database",_collection:"collection",_server:{hostname:"test.host"}});
+Connection with http auth
+```js
+  db = new arango.Connection("http://user:pass@your.host.com/database");
+```
 
-/* mixed mode */
-db = new arango.Connection("http://test.host.com:80/default",{_server:{username:"user",password:"pass"}});
+Connection object
+```
+  db = new arango.Connection({_name:"database",_collection:"collection",_server:{hostname:"test.host"}});
+```
 
-/* with use() you can switch connection settings */
-var test = db.use("http://test.host:8520")
+String and object
+```js
+  db = new arango.Connection("http://test.host.com:80/default",{_server:{username:"user",password:"pass"}});
+```
 
-/* use another database */
-var test_mydb = test.use("mydb");
+api()
+-----
+Allows you to select API:s to use for the connection.
+Dependencies are resolved automatically so that if you require the ```QueryAPI``` the ```CursorAPI```will be brought in as well. Includes all API:s by default. Pass an empty string to ```arango.api("")``` to clear all.
+```js
+  arango.api('database collection document query');
 
-/* change to another database & collection */
-var test_mydb2_mail = test_mydb.use("mydb2:mail");
+  var db = new arango.Connection(); // => DatabaseAPI, DocumentAPI, CollectionAPI, CursorAPI, QueryAPI  
+``` 
 
-/* change collection */
-var test_mydb2__users = test_mydb2_mail.use(":_users");
+You may also include more API:s later using the ```db.api()``` method.
+```js
+  db = db.api('transaction'); // => Spawns a new db instance and with the TransactionAPI included.
+  db.transaction(...); 
+```
 
+
+use()
+-----
+With use() you can switch connection settings
+```js
+  var test = db.use("http://test.host:8520")
+```
+
+Use another database
+```js
+  var test_mydb = test.use("mydb");
+```
+
+Change to another database & collection
+```js
+  var test_mydb2_mail = test_mydb.use("mydb2:mail");
+```
+
+Change collection
+```js
+  var test_mydb2__users = test_mydb2_mail.use(":_users");
 ```
 
 Creating collections & documents
