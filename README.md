@@ -31,7 +31,7 @@ Test
 make test
 ```
 Runs the test suite sequentially under nodejs and phantomjs.
-Feel free to chip in by writing more tests (or porting from qunit).
+Feel free to chip in by writing tests if you want a more stable package.
 The old test suite can be found [here](https://github.com/kaerus/arango-client/tree/master/test).
 
 
@@ -53,7 +53,7 @@ db.documents.list().done(function(docs){
 
 In a browser
 ------------
-For usage in a web browser you grab the arango.js file and load it as usual in your html file.
+For usage in a web browser you can either use the standalone version arango.js or the build.js component.
 A minimal html page using the arangodb client from a web app can look like this.
 ```html
 <html>
@@ -100,7 +100,7 @@ The following API:s are (more or less) supported, check out the ArangoDB [docume
   * [key](http://www.arangodb.org/manuals/current/) 
 
 
-The API methods return a [promise](https://github.com/kaerus-component/promise) but you may also pass a callback function as last argument which then gets called with the result.
+The API methods return a [promise](https://github.com/kaerus-component/uP) but you may also pass a callback function as last argument which then gets called with the result.
 
 Example using a promise:
 ```javascript
@@ -126,7 +126,7 @@ Usage
 Connect()
 ---------
 Factory for arango connection.
-Sets up a connection to ```http://127.0.0.1:8529``` by default when in nodejs or ```window.location``` in browser environments.
+Sets up a connection to localhost ```http://127.0.0.1:8529``` by default.
 ```js
   db = new arango.Connection()
 ```
@@ -154,7 +154,7 @@ String and object
 api()
 -----
 Allows you to select API:s to use for the connection.
-Dependencies are resolved automatically so that if you require the ```QueryAPI``` the ```CursorAPI```will be brought in as well. Includes all API:s by default. Pass an empty string to ```arango.api("")``` to clear all.
+Dependencies are resolved automatically so that if you require ```QueryAPI``` the ```CursorAPI``` will be brought in as well. Includes all API:s by default. Pass an empty string to ```arango.api("")``` if you don't want any predefined API:s.
 ```js
   arango.api('database collection document query');
 
@@ -163,7 +163,7 @@ Dependencies are resolved automatically so that if you require the ```QueryAPI``
 
 You may also include more API:s later using the ```db.api()``` method.
 ```js
-  db = db.api('transaction'); // => Spawns a new db instance and with the TransactionAPI included.
+  db = db.api('transaction'); // => Spawns a new db instance with TransactionAPI included.
   db.transaction(...); 
 ```
 
