@@ -46,8 +46,8 @@ Then you initialize a connection which returns a db handle.
 ```javascript
 var db = new arango.Connection("http://myarangodb.server.com:8529");
 
-db.documents.list().done(function(docs){
-  console.log("documents: %j", docs);
+db.collection.list().done(function(res){
+  console.log("collections: %j", res);
 });
 ```
 
