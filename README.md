@@ -529,7 +529,7 @@ Use ```db.batch.start()```to initialize a batch job and ```db.batch.exec()``` to
 
   // execute batch
   db.batch.exec().spread(function(batch,version,statistics,log,time){
-    console.log("Batch jobs requested=%s, returned results=%s", batch.jobs, batch.lenght);
+    console.log("Batch jobs requested=%s, returned results=%s", batch.jobs, batch.length);
     console.log("Version:", JSON.stringify(version,null,2));
     console.log("Statistics:", JSON.stringify(statistics,null,2));
     console.log("Log:", JSON.stringify(log,null,2));
