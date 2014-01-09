@@ -95,6 +95,7 @@ The following API:s are (more or less) supported, check out the ArangoDB [docume
   * [admin](http://www.arangodb.org/manuals/current/HttpSystem.html)
   * [query](http://www.arangodb.org/manuals/current/HttpQuery.html)
   * [graph](http://www.arangodb.org/manuals/current/HttpGraph.html)
+  * [batch](http://www.arangodb.org/manuals/current/HttpBatch.html)
   * [edge](http://www.arangodb.org/manuals/current/RestEdge.html)
   * [user](http://www.arangodb.org/manuals/current/HttpUser.html)
   * [key](http://www.arangodb.org/manuals/current/) 
