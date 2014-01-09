@@ -539,6 +539,37 @@ Use ```db.batch.start()```to initialize a batch job and ```db.batch.exec()``` to
   });
 ```
 
+Individual job results can be fetched as usual.
+```javascript
+  // start a batch
+  db.batch.start();
+  
+  // collect admin information  
+  db.admin.version().then(function(version){
+    console.log("Version:", JSON.stringify(version,null,2));
+  });
+
+  db.admin.statistics().then(function(statistics){
+    console.log("Statistics:", JSON.stringify(statistics,null,2));
+  });
+
+  // using callback
+  db.admin.log('info',function(err,ret){
+    if(!err){
+      console.log("Log:", JSON.stringify(ret,null,2));
+    } 
+  });
+  db.admin.time(function(err,ret){
+    if(!err) console.log("Time:", new Date(Math.floor(ret.time*1000)));
+  });
+
+  // execute batch
+  db.batch.exec().then(undefined,function(error){
+    console.log("Batch job failed: %j", error);
+  });  
+ 
+```
+
 
 License
 =======
