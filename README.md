@@ -512,6 +512,36 @@ The `options` argument can be used for altering http request headers if required
 ```
 
 
+Batch jobs
+----------
+The BatchAPI allows you to bundle database requests.
+
+Use ```db.batch.start()```to initialize a batch job. Please note that this is currently only working on db instance level.
+```javascript
+  // start capturing reqeust
+  db.batch.start();
+  
+  // get all admin info
+  
+  db.admin.version();
+  db.admin.statistics();
+  db.admin.log('info');
+  db.admin.time();
+
+  // execute batch job
+  db.batch.exec().spread(function(batch,version,statistics,log,time){
+    console.log("Version:", JSON.stringify(version,null,2));
+    console.log("Statistics:", JSON.stringify(statistics,null,2));
+    console.log("Log:", JSON.stringify(log,null,2));
+    console.log("Time:", JSON.stringify(time,null,2));
+  },function(error){
+    console.log("Batch job failed: %j", error);
+  });
+```
+
+
+```javascript
+
 License
 =======
 ```
