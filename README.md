@@ -516,20 +516,20 @@ Batch jobs
 ----------
 The BatchAPI allows you to bundle database requests.
 
-Use ```db.batch.start()```to initialize a batch job. Please note that this is currently only working on db instance level.
+Use ```db.batch.start()```to initialize a batch job and ```db.batch.exec()``` to execute jobs. 
 ```javascript
-  // start capturing reqeust
+  // start a batch
   db.batch.start();
   
-  // get all admin info
-  
+  // collect admin information  
   db.admin.version();
   db.admin.statistics();
   db.admin.log('info');
   db.admin.time();
 
-  // execute batch job
+  // execute batch
   db.batch.exec().spread(function(batch,version,statistics,log,time){
+    console.log("Batch jobs requested=%s, returned results=%s", batch.jobs, batch.lenght);
     console.log("Version:", JSON.stringify(version,null,2));
     console.log("Statistics:", JSON.stringify(statistics,null,2));
     console.log("Log:", JSON.stringify(log,null,2));
@@ -539,8 +539,6 @@ Use ```db.batch.start()```to initialize a batch job. Please note that this is cu
   });
 ```
 
-
-```javascript
 
 License
 =======
