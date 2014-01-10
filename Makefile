@@ -1,12 +1,13 @@
 NAME = arango
+COMPONENT = @./node_modules/.bin/component
 
 build: dependencies component
 
 component: 
 	@echo "Building web component"
-	@component build -v
+	$(COMPONENT) build -v
 	@echo "Building standalone web component"
-	@component build -v -n $(NAME) -s $(NAME)
+	$(COMPONENT) build -v -n $(NAME) -s $(NAME)
 	
 dependencies: node_modules components
 
@@ -16,7 +17,7 @@ node_modules:
 
 components:
 	@echo "Installing component dependencies"
-	@component install -v
+	$(COMPONENT) install -v
 
 test: build
 	@echo "Running tests for nodejs"
