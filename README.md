@@ -154,18 +154,46 @@ String and object
 
 api()
 -----
-Allows you to select API:s to use for the connection.
-Dependencies are resolved automatically so that if you require ```QueryAPI``` the ```CursorAPI``` will be brought in as well. Includes all API:s by default. Pass an empty string to ```arango.api("")``` if you don't want any predefined API:s.
-```js
-  arango.api('database collection document query');
+Allows you to plugin API:s.
 
-  var db = new arango.Connection(); // => DatabaseAPI, DocumentAPI, CollectionAPI, CursorAPI, QueryAPI  
-``` 
+```javascript
+  db = new arango.Connection("http://test.host.com:80/foxx",{api:{'foxx':require('foxx')}});
+```
 
-You may also include more API:s later using the ```db.api()``` method.
-```js
-  db = db.api('transaction'); // => Spawns a new db instance with TransactionAPI included.
-  db.transaction(...); 
+An API can be implemented like this.
+```javascript
+var Arango = require('arango');
+
+function StubAPI(db) {
+    return {
+      "get": function(callback){
+          /* The undefined argument can be used for passing htmlOptions */
+          /* example: options = {headers:{'content-type':'image/jpeg'}} */
+          return db.get('/path',undefined,callback);
+      },
+      "post": function(data,callback){
+          return db.post('/path',data,undefined,callback);
+      },
+      "put": function(data,callback){
+          return db.put('/path',data,undefined,callback);
+      },
+      "delete": function(callback){
+          return db.delete('/path',undefined,callback);
+      },
+      "head": function(callback){
+          return db.head('/path',undefined,callback);
+      },
+      "patch": function(data,callback){
+          return db.path('/path',data,undefined,callback);
+      },
+      "options": function(callback){
+          return db.options('/path',undefined,callback);
+      }
+    };
+}
+
+/* Attach the API into 'stub' namespace */
+module.exports = Arango.api('stub',StubAPI);
 ```
 
 
