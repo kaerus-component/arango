@@ -44,7 +44,7 @@ var arango = require('arango');
 
 Then you initialize a connection which returns a db handle.
 ```javascript
-var db = new arango.Connection("http://myarangodb.server.com:8529");
+var db = arango.Connection("http://myarangodb.server.com:8529");
 
 db.collection.list().done(function(res){
   console.log("collections: %j", res);
@@ -66,7 +66,7 @@ A minimal html page using the arangodb client from a web app can look like this.
   <script src="../build/arango.js"></script>
   <script>
     var arango = require('arango');
-    var db = new arango.Connection; // Defaults to http://127.0.0.1:8529
+    var db = arango.Connection; // Defaults to http://127.0.0.1:8529
     var output = document.getElementById('output');
 
     db.collection.list().then(function(res){
@@ -129,37 +129,36 @@ Connect()
 Factory for arango connection.
 Sets up a connection to localhost ```http://127.0.0.1:8529``` by default.
 ```js
-  db = new arango.Connection()
+  db = arango.Connection()
 ```
 
 Connection string
 ```js
-  db = new arango.Connection("http://127.0.0.1/mydb:collection");
+  db = arango.Connection("http://127.0.0.1/mydb:collection");
 ```
 
 Connection with http auth
 ```js
-  db = new arango.Connection("http://user:pass@your.host.com/database");
+  db = arango.Connection("http://user:pass@your.host.com/database");
 ```
 
 Connection object
 ```
-  db = new arango.Connection({_name:"database",_collection:"collection",_server:{hostname:"test.host"}});
+  db = arango.Connection({_name:"database",_collection:"collection",_server:{hostname:"test.host"}});
 ```
 
 String and object
 ```js
-  db = new arango.Connection("http://test.host.com:80/default",{_server:{username:"user",password:"pass"}});
+  db = arango.Connection("http://test.host.com:80/default",{_server:{username:"user",password:"pass"}});
 ```
 
-api()
------
-Allows you to plugin API:s.
-
+String and api plugin
 ```javascript
-  db = new arango.Connection("http://test.host.com:80/foxx",{api:{'foxx':require('foxx')}});
+  db = arango.Connection("http://test.host.com:80/foxx",{api:{'foxx':require('foxx')}});
 ```
 
+api
+----
 An API can be implemented like this.
 ```javascript
 var Arango = require('arango');
@@ -223,7 +222,7 @@ Creating collections & documents
 -------------------------------
 Initialize a Connection
 ```js
-var db = new arango.Connection('http://127.0.0.1:8529');
+var db = arango.Connection('http://127.0.0.1:8529');
 ```
 
 Create a new database
