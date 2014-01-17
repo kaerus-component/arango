@@ -66,7 +66,7 @@ A minimal html page using the arangodb client from a web app can look like this.
   <script src="../build/arango.js"></script>
   <script>
     var arango = require('arango');
-    var db = arango.Connection; // Defaults to http://127.0.0.1:8529
+    var db = arango.Connection(); // Defaults to http://127.0.0.1:8529
     var output = document.getElementById('output');
 
     db.collection.list().then(function(res){
@@ -330,13 +330,15 @@ db.document.create("newcollection",{b:"test"})
 });
 ```
 
-Chaining API calls
+Try & catch
+-----------
+If no collection named 'files' is found then.
 ```js
 try {
-  db.collection.list().then(function(collections){
-    for(var collection in collections){
-      if(collection.name === 'files') 
-        return db.document.list(collection.name);
+  db.collection.list().then(function(res){
+    for(var n in res.collections){
+      if(res.collections[n].name === 'files') 
+        return db.document.list(res.collections[n].name);
     }
     throw new Error("files not found");
   }).done(function(files){
@@ -345,7 +347,16 @@ try {
 } catch(err){
   console.log("Error: ", err);
 }
+```
 
+Joining
+--------
+```js
+  db.admin.version()
+    .join(db.admin.time())
+    .spread(function(v,t){ 
+    console.log(v.server,v.version,t.time);
+  });
 ```
 
 Calling API methods directly
@@ -550,10 +561,10 @@ Use ```db.batch.start()```to initialize a batch job and ```db.batch.exec()``` to
   db.batch.start();
   
   // collect admin information  
-  db.admin.version();
-  db.admin.statistics();
-  db.admin.log('info');
-  db.admin.time();
+  db.admin.version().and
+    .admin.statistics().and
+    .admin.log('info').and
+    .admin.time();
 
   // execute batch
   db.batch.exec().spread(function(batch,version,statistics,log,time){
@@ -587,6 +598,7 @@ Individual job results can be fetched as usual.
       console.log("Log:", JSON.stringify(ret,null,2));
     } 
   });
+  
   db.admin.time(function(err,ret){
     if(!err) console.log("Time:", new Date(Math.floor(ret.time*1000)));
   });
