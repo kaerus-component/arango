@@ -17,7 +17,6 @@
   ],
   "scripts": [
     "index.js",
-    "lib/index.js",
     "lib/arango.js",
     "lib/request.js",
     "lib/utils.js",
