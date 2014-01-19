@@ -561,10 +561,10 @@ Use ```db.batch.start()```to initialize a batch job and ```db.batch.exec()``` to
   db.batch.start();
   
   // collect admin information  
-  db.admin.version().and
-    .admin.statistics().and
-    .admin.log('info').and
-    .admin.time();
+  db.admin.version();
+  db.admin.statistics();
+  db.admin.log('info');
+  db.admin.time();
 
   // execute batch
   db.batch.exec().spread(function(batch,version,statistics,log,time){
