@@ -56,28 +56,56 @@ In a browser
 For usage in a web browser you can either use the standalone version arango.js or the build.js component.
 A minimal html page using the arangodb client from a web app can look like this.
 ```html
+<!doctype html>
 <html>
-  <head>
-    <title>ArangoDB Client</title>
-  </head>
-  <body>
-    <div id="output"></div>
-  </body>
-  <script src="../build/arango.js"></script>
-  <script>
-    var arango = require('arango');
-    var db = arango.Connection(); // Defaults to http://127.0.0.1:8529
-    var output = document.getElementById('output');
+<head>
+    <title>ArangoDB in your browser</title>
+    <meta charset="utf-8"/>
+</head>
+<body>
+    <div id="test"></div>
+    <script src="../build/build.js"></script>
+    <script>
+        var arango = require('arango'),
+            elem = document.getElementById('test'),
+            db = new arango.Connection;
 
-    db.collection.list().then(function(res){
-      output.innerHTML = res.collections;
-    },function(error){
-      output.innerHTML = error;
-    });
-  </script>
+        db.collection.list().then(function(res){
+            elem.innerHTML = JSON.stringify(res,null,2);
+        }, function(error){
+            elem.innerHTML = JSON.stringify(error,null,2);
+        })        
+    </script>
 </body>
 </html>
 ```
+
+The standalone version yields a global ```arango``` object.
+```html
+<!doctype html>
+<html>
+<head>
+    <title>ArangoDB in your browser</title>
+    <meta charset="utf-8"/>
+</head>
+<body>
+    <div id="test"></div>
+    <!-- Note: Exports global arango -->
+    <script src="../build/arango.js"></script>
+    <script>
+        var elem = document.getElementById('test'),
+            db = new arango.Connection;
+
+        db.collection.list().then(function(res){
+            elem.innerHTML = JSON.stringify(res,null,2);
+        }, function(error){
+            elem.innerHTML = JSON.stringify(error,null,2);
+        })        
+    </script>
+</body>
+</html>
+```
+
  
 
 API
