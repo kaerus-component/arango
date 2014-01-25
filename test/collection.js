@@ -5,7 +5,7 @@ try{ arango = require('arango') } catch (e){ arango = require('..') }
 function jerr(o){return JSON.stringify(o,null,2)}
 
 describe("collection",function(){
-    var db = new arango.Connection("http://127.0.0.1:8529");
+    var db = arango.Connection("http://127.0.0.1:8529");
 
     describe("create",function(){
         var collection = "test1", 
