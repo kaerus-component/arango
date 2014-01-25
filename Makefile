@@ -19,9 +19,13 @@ components:
 	@echo "Installing component dependencies"
 	$(COMPONENT) install -v
 
-test: build
+test: test-nodejs test-browser
+	
+test-nodejs: node_modules
 	@echo "Running tests for nodejs"
 	@./node_modules/.bin/mocha --require should --reporter spec
+	
+test-browser: components component
 	@echo "Running tests for browser"
 	@./node_modules/mocha-phantomjs/bin/mocha-phantomjs test/runner.html
 
