@@ -193,4 +193,20 @@ describe('use()',function(){
         db2._collection.should.eql('col2');
         db2._server.should.eql({protocol:"https",hostname:"test.host.com",port:1234});  
     })
+
+
+    it('should inherit server credentials & headers',function(){
+        var db1 = arango.Connection('https://user:pass@test.host.com:1234/db1:col1');
+        var db2 = db1.use('https://test2.host.com:4321/:col2');
+
+        var headers = {authorization:'Basic ' + arango.base64.encode('user' + ':' + 'pass') };
+        
+        db1._name.should.eql('db1');
+        db1._collection.should.eql('col1');
+        db1._server.should.eql({protocol:"https",hostname:"test.host.com",port:1234, username:'user', password:'pass', headers:headers});
+        db2._name.should.eql('db1');
+        db2._collection.should.eql('col2');
+        db2._server.should.eql({protocol:"https",hostname:"test2.host.com",port:4321, username:'user', password:'pass',headers:headers});  
+    })
+
 })
