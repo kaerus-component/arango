@@ -172,13 +172,26 @@ describe('use()',function(){
         db2._server.should.eql({protocol:"https",hostname:"another.server.test",port:1234});
     })
 
-    it('should be able to inherit settings',function(){
+    it('should inherit database & collection',function(){
         var db1 = new arango.Connection('/db1:col1');
         var db2 = db1.use(':col2');
         
         db1._name.should.eql('db1');
         db1._collection.should.eql('col1');
         db2._name.should.eql('db1');
-        db2._collection.should.eql('col2'); 
+        db2._collection.should.eql('col2');
+    })
+
+    it('should inherit server',function(){
+        var db1 = new arango.Connection('https://test.host.com:1234/db1:col1');
+        var db2 = db1.use(':col2');
+        
+        db1._name.should.eql('db1');
+        db1._collection.should.eql('col1');
+        db1._server.should.eql({protocol:"https",hostname:"test.host.com",port:1234});
+        db2._name.should.eql('db1');
+        db2._collection.should.eql('col2');
+        db2._server.should.eql({protocol:"https",hostname:"test.host.com",port:1234});
+        
     })
 })
