@@ -2,7 +2,7 @@ var arango;
 
 try{ arango = require('arango') } catch (e){ arango = require('..') }
 
-describe("Connection",function(){
+describe("Connection()",function(){
     it('should have a Connection method',function(){
         arango.should.have.ownProperty('Connection');
     })
@@ -115,5 +115,70 @@ describe("Connection",function(){
             headers: headers,
             port:8529,
         })
+    })
+})
+
+describe('use()',function(){
+    it('should have a use method',function(){
+        var db = new arango.Connection;
+
+        db.use.should.be.a.Function;
+    })  
+
+    it('should be able to switch collection',function(){
+        var db1 = new arango.Connection;
+
+        var db2 = db1.use(":collection");
+
+        db1._collection.should.eql('');
+        db2._collection.should.eql('collection');
+    })
+
+    it('should be able to switch database',function(){
+        var db1 = new arango.Connection('/db1');
+
+        var db2 = db1.use('/db2');
+
+        db1._name.should.eql('db1');
+        db2._name.should.eql('db2');
+    })
+
+    it('should be able to switch database & collection',function(){
+        var db1 = new arango.Connection('/db1:col1');
+
+        var db2 = db1.use('/db2:col2');
+
+        db1._name.should.eql('db1');
+        db1._collection.should.eql('col1');
+        db2._name.should.eql('db2');
+        db2._collection.should.eql('col2');
+    })
+
+    it('should be able to switch host',function(){
+        var db1 = new arango.Connection;
+
+        var db2 = db1.use('another.server.test');
+
+        db1._server.should.eql({protocol:"http",hostname:"127.0.0.1",port:8529});
+        db2._server.should.eql({protocol:"http",hostname:"another.server.test",port:8529});
+    })
+
+    it('should be able to switch host, protocol & port',function(){
+        var db1 = new arango.Connection;
+
+        var db2 = db1.use('https://another.server.test:1234');
+
+        db1._server.should.eql({protocol:"http",hostname:"127.0.0.1",port:8529});
+        db2._server.should.eql({protocol:"https",hostname:"another.server.test",port:1234});
+    })
+
+    it('should be able to inherit settings',function(){
+        var db1 = new arango.Connection('/db1:col1');
+        var db2 = db1.use(':col2');
+        
+        db1._name.should.eql('db1');
+        db1._collection.should.eql('col1');
+        db2._name.should.eql('db1');
+        db2._collection.should.eql('col2'); 
     })
 })
