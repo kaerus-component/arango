@@ -194,7 +194,6 @@ describe('use()',function(){
         db2._server.should.eql({protocol:"https",hostname:"test.host.com",port:1234});  
     })
 
-
     it('should inherit server credentials & headers',function(){
         var db1 = arango.Connection('https://user:pass@test.host.com:1234/db1:col1');
         var db2 = db1.use('https://test2.host.com:4321/:col2');

@@ -4,7 +4,7 @@ try{ arango = require('arango') } catch (e){ arango = require('..') }
 
 function jerr(o){return JSON.stringify(o,null,2)}
 
-describe("collection",function(){
+describe("collections",function(){
     var db = arango.Connection("http://127.0.0.1:8529");
 
     describe("create",function(){
@@ -48,7 +48,7 @@ describe("collection",function(){
         })
     })
 
-describe("get",function(){
+describe("collection",function(){
     var collection = "test2";
 
     beforeEach(function(done){
@@ -63,7 +63,7 @@ describe("get",function(){
         });
     })
 
-    describe('collection get',function(done){
+    describe('get',function(done){
         it('list',function(done){
             db.collection.list().then(function(res){
                 done();
