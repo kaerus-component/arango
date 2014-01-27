@@ -37,8 +37,7 @@ describe("collection",function(){
 			db.collection.create(collection,options,function(err,ret){
 				ret.waitForSync.should.eql(options.waitForSync);
 				db.collection.getProperties(ret.id,function(err,prop){
-					/* note: rounded to KB */ 
-					(prop.journalSize >> 10).should.equal(options.journalSize >> 10); 
+ 					(prop.journalSize >> 10).should.equal(options.journalSize >> 10);
 					prop.keyOptions.should.eql(options.keyOptions);
 					done(err?jerr(ret):err);
 				})
@@ -63,7 +62,7 @@ describe("collection",function(){
 
 		describe('collection get',function(done){
 			it('list',function(done){
-				db.collection.list().then(function(res){
+				db.collection.list(false).then(function(res){
 					done();
 				},function(e){ throw e });
 			})
@@ -114,7 +113,47 @@ describe("collection",function(){
 				});
 			})
 
-			it('properties',function(done){
+            it('checksum',function(done){
+                db.collection.get(collection,function(err,ret){
+                    if(err) done(err);
+
+                    db.collection.checksum(ret.id,function(err,ret){
+                        done(err);
+                    });
+                });
+            })
+
+            it('rename',function(done){
+                db.collection.get(collection,function(err,ret){
+                    if(err) done(err);
+
+                    db.collection.rename(ret.id, "heinz", function(err,ret){
+                        done(err);
+                    });
+                });
+            })
+
+            it('load',function(done){
+                db.collection.get(collection,function(err,ret){
+                    if(err) done(err);
+
+                    db.collection.load(ret.id, function(err,ret){
+                        done(err);
+                    });
+                });
+            })
+
+            it('unload',function(done){
+                db.collection.get(collection,function(err,ret){
+                    if(err) done(err);
+
+                    db.collection.unload(ret.id, function(err,ret){
+                        done(err);
+                    });
+                });
+            })
+
+            it('properties',function(done){
 				db.collection.get(collection,function(err,ret){
 					if(err) done(err);
 
@@ -123,7 +162,43 @@ describe("collection",function(){
 					});
 				});
 			})
+
+            it('truncate',function(done){
+                db.collection.get(collection,function(err,ret){
+                    if(err) done(err);
+
+                    db.collection.truncate(ret.id,function(err,ret){
+                        done(err);
+                    });
+                });
+            })
+
+            it('list',function(done){
+                db.collection.get(collection,function(err,ret){
+                    if(err) done(err);
+
+                    db.collection.list(true,function(err,ret){
+                        done(err);
+                    });
+                });
+            })
+
+
+            it('setProperties',function(done){
+                db.collection.get(collection,function(err,ret){
+                    if(err) done(err);
+                    var data = {};
+                    data.waitForSync = true;
+                    data.isSystem = true;
+                    data.isVolatile = false;
+                    db.collection.setProperties(ret.id, data,function(err,ret){
+                        done(err);
+                    });
+                });
+            })
 		})
 	})
 
 })
+
+

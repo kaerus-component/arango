@@ -32,6 +32,8 @@
     "lib/api/simple.js",
     "lib/api/index.js",
     "lib/api/admin.js",
+    "lib/api/aqlfunction.js",
+    "lib/api/endpoint.js",
     "lib/api/query.js",
     "lib/api/graph.js",
     "lib/api/batch.js",
