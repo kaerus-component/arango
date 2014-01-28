@@ -21,7 +21,7 @@
 <script src="collection.js"></script>
 <script>
     if (window.mochaPhantomJS) { mochaPhantomJS.run(); }
-    else { mocha.run(); }
+    else { mocha.grep("import").run(); }
 </script>
 </body>
 </html>

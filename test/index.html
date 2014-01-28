@@ -9,7 +9,7 @@
 <script>
 	var arango = require('arango');
 	var e = document.getElementById('test');
-	var db = new arango.Connection;
+    var db = new arango.Connection;
 	var promise = db.promise();
 	promise.then(function(val){
 		e.innerHTML = "got a value: " + val;

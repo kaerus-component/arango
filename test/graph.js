@@ -14,6 +14,7 @@ var verticescollection;
 var edgecollection;
 var vertices = [];
 var edges = [];
+var db;
 
 describe("graph",function(){
 

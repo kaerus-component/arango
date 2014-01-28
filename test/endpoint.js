@@ -50,7 +50,6 @@ describe("endpoint",function(){
         it('list endpoints',function(done){
             db.endpoint.get(function(err,ret, message){
                 check( done, function () {
-                    console.log(ret);
                     ret.length.should.equal(2);
                     message.statusCode.should.equal(200);
                 } );
@@ -67,7 +66,6 @@ describe("endpoint",function(){
         it('list endpoints',function(done){
             db.endpoint.get(function(err,ret, message){
                 check( done, function () {
-                    console.log(ret);
                     ret.length.should.equal(1);
                     message.statusCode.should.equal(200);
                 } );

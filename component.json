@@ -2,7 +2,7 @@
   "name": "arango",
   "version": "0.3.3",
   "description": "ArangoDB client",
-  "repo": "kaerus-component/arango",
+  "repo": "triAGENS/ArangoDB-NodeJS",
   "dependencies": {
     "kaerus-component/uP": "0.3.5",
     "kaerus-component/ajax": "0.3.0",
@@ -34,6 +34,7 @@
     "lib/api/admin.js",
     "lib/api/aqlfunction.js",
     "lib/api/endpoint.js",
+    "lib/api/import.js",
     "lib/api/query.js",
     "lib/api/graph.js",
     "lib/api/batch.js",
