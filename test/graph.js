@@ -20,14 +20,14 @@ describe("graph",function(){
 
 
     before(function(done){
-        this.timeout(20000);
+        this.timeout(30000);
         db = new arango.Connection("http://127.0.0.1:8529");
         db.database.delete("newDatabase",function(err, ret){
             db.database.create("newDatabase",function(err, ret){
                 db = new arango.Connection({_name:"newDatabase",_server:{hostname:"localhost"}});
                 db.collection.create("edgeCollection", {"type" : 3}, function(err,ret){
                     edgecollection = ret;
-                    db.collection.create("verticescollection", null, function(err,ret){
+                    db.collection.create("verticescollection", function(err,ret){
                         verticescollection = ret;
                         db.document.create(verticescollection.id, {"key1" : "val1", "key2" : "val2", "key3" : null}, null, function(err,ret, message){
                             ret.error.should.equal(false);

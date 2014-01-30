@@ -19,11 +19,11 @@ describe("document",function(){
     db = new arango.Connection("http://127.0.0.1:8529");
 
     before(function(done){
-        this.timeout(20000);
+        this.timeout(30000);
         db.database.delete("newDatabase",function(err, ret){
             db.database.create("newDatabase",function(err, ret){
                 db = new arango.Connection({_name:"newDatabase",_server:{hostname:"localhost"}});
-                db.collection.create("newCollection", null, function(err,ret){
+                db.collection.create("newCollection", function(err,ret){
                     collection = ret;
                     done()
                 });

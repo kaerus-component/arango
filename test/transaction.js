@@ -21,8 +21,8 @@ describe("transaction",function(){
         db.database.delete("newDatabase",function(err, ret){
             db.database.create("newDatabase",function(err, ret){
                 db = new arango.Connection({_name:"newDatabase",_server:{hostname:"localhost"}});
-                db.collection.create("collection", null, function(err,ret){
-                    db.collection.create("collection2", null, function(err,ret){
+                db.collection.create("collection", function(err,ret){
+                    db.collection.create("collection2", function(err,ret){
                         done();
                     });
                 });

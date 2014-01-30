@@ -27,7 +27,7 @@ describe("edge",function(){
                 db = new arango.Connection({_name:"newDatabase",_server:{hostname:"localhost"}});
                 db.collection.create("edgeCollection", {"type" : 3}, function(err,ret){
                     edgecollection = ret;
-                    db.collection.create("verticescollection", null, function(err,ret){
+                    db.collection.create("verticescollection", function(err,ret){
                         verticescollection = ret;
                         db.document.create(verticescollection.id, {"key1" : "val1", "key2" : "val2", "key3" : null}, null, function(err,ret, message){
                             ret.error.should.equal(false);
