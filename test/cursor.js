@@ -180,4 +180,49 @@ describe("cursor",function(){
         });
     })
 
+    it('using query module',function(done){
+        var query = db.query.for('u').in('@@collection').return('u');
+        query.exec({'@collection':'newCollection'}, function(err,ret){
+            check( done, function () {
+                ret.error.should.equal(false);
+                ret.code.should.equal(201);
+            } );
+        });
+
+    })
+
+    it('using query module with plain query',function(done){
+        db.query.exec("for u in newCollection return u", function(err,ret){
+            check( done, function () {
+                ret.error.should.equal(false);
+                ret.code.should.equal(201);
+            } );
+        });
+
+    })
+
+    it('using query module explain',function(done){
+        var query = db.query.for('u').in('@@collection').return('u');
+        query.explain({'@collection':'newCollection'}, function(err,ret){
+            check( done, function () {
+                ret.error.should.equal(false);
+                ret.code.should.equal(200);
+            } );
+        });
+
+    })
+
+    it('using query module test',function(done){
+        var query = db.query.for('u').in('@@collection').return('u');
+        query.test({'@collection':'newCollection'}, function(err,ret){
+            check( done, function () {
+                ret.error.should.equal(false);
+                ret.code.should.equal(200);
+            } );
+        });
+
+    })
+
+
+
 })

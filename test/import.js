@@ -92,13 +92,70 @@ describe("import",function(){
                 } );
             });
         })
+
+
+        it('importJSONData with single JSON Object, without options',function(done){
+
+
+            var data = [{"_key":"abcuu","value1":25,"value2":"test","allowed":true},{"_key":"abcuu","name":"baz"},
+                {"name":{"detailed":"detailed name","short":"short name"}}];
+
+
+            db.import.importJSONData("collection", data, function(err,ret, message){
+                check( done, function () {
+                    ret.error.should.equal(false);
+                    ret.errors.should.equal(1);
+                    ret.created.should.equal(2);
+                    message.statusCode.should.equal(201);
+                } );
+            });
+        })
+        it('importJSONData with single JSON Object, without options and with default collection',function(done){
+
+
+            var data = [{"_key":"abcww","value1":25,"value2":"test","allowed":true},{"_key":"abcww","name":"baz"},
+                {"name":{"detailed":"detailed name","short":"short name"}}];
+
+            db = new arango.Connection({_name:"newDatabase",_server:{hostname:"localhost"}, _collection: "collection"});
+            db.import.importJSONData(data, function(err,ret, message){
+                check( done, function () {
+                    ret.error.should.equal(false);
+                    ret.errors.should.equal(1);
+                    ret.created.should.equal(2);
+                    message.statusCode.should.equal(201);
+                } );
+            });
+        })
+        it('importJSONData with single JSON Object, with options and with default collection',function(done){
+
+            var options = {"waitForSync" : true};
+
+            var data = [{"_key":"abcoo","value1":25,"value2":"test","allowed":true},{"_key":"abcoo","name":"baz"},
+                {"name":{"detailed":"detailed name","short":"short name"}}];
+
+
+            db.import.importJSONData(data, options, function(err,ret, message){
+                check( done, function () {
+                    ret.error.should.equal(false);
+                    ret.errors.should.equal(1);
+                    ret.created.should.equal(2);
+                    message.statusCode.should.equal(201);
+                } );
+            });
+        })
+
+
+
+
+
+
         it('importJSONData with single JSON Object and complete. Provoke a unique constraint violation and expect a 409',function(done){
 
             var options = {"waitForSync" : true, "details" : true, "complete" : true};
 
             var data = [{"_key":"abc","value1":25,"value2":"test","allowed":true},{"_key":"abc","name":"baz"},
                 {"name":{"detailed":"detailed name","short":"short name"}}];
-
+            db = new arango.Connection({_name:"newDatabase",_server:{hostname:"localhost"}});
 
             db.import.importJSONData("collection", data, options, function(err,ret, message){
                 check( done, function () {
@@ -169,6 +226,69 @@ describe("import",function(){
                 } );
             });
         })
+
+
+
+
+
+
+
+
+        it('importValueList with single JSON Object, without options',function(done){
+
+
+            var options = {"waitForSync" : true, "details" : true};
+
+            var data = '[ "_key", "value1", "value2" ]\n\n\n[ "abcuu", 25, "test" ]\n[ "aabcdee", 253, "stest" ]';
+
+
+            db.import.importValueList("collection", data, function(err,ret, message){
+                check( done, function () {
+                    ret.error.should.equal(false);
+                    ret.created.should.equal(2);
+                    message.statusCode.should.equal(201);
+                } );
+            });
+        })
+        it('importValueList with single JSON Object, without options and with default collection',function(done){
+
+
+            var data = '[ "_key", "value1", "value2" ]\n\n\n[ "abczz", 25, "test" ]\n[ "aabcdww", 253, "stest" ]'
+
+            db = new arango.Connection({_name:"newDatabase",_server:{hostname:"localhost"}, _collection: "collection"});
+            db.import.importValueList(data, function(err,ret, message){
+                check( done, function () {
+                    ret.error.should.equal(false);
+                    ret.created.should.equal(2);
+                    message.statusCode.should.equal(201);
+                } );
+            });
+        })
+        it('importValueList with single JSON Object, with options and with default collection',function(done){
+
+            var options = {"waitForSync" : true,  "details" : true};
+
+            var data = '[ "_key", "value1", "value2" ]\n\n\n[ "abctt", 25, "test" ]\n[ "aabcdqq", 253, "stest" ]'
+
+
+            db.import.importValueList(data, options, function(err,ret, message){
+                check( done, function () {
+                    ret.error.should.equal(false);
+                    ret.created.should.equal(2);
+                    message.statusCode.should.equal(201);
+                } );
+            });
+        })
+
+
+
+
+
+
+
+
+
+
 
 
     })

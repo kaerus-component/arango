@@ -203,7 +203,35 @@ describe("edge",function(){
         })
 
 
+        it('lets get the list again with default direction', function(done){
+            db.edge.list(edgecollection.id, vertices[1]._id, function(err,ret, message){
+                check( done, function () {
+                    ret.edges.length.should.equal(2);
+                    message.statusCode.should.equal(200);
+                } );
+            });
+        })
+        it('lets get the list again with default collection', function(done){
+            db = new arango.Connection({_name:"newDatabase",_server:{hostname:"localhost"}, _collection: edgecollection.id});
+            db.edge.list(vertices[1]._id, "any" ,function(err,ret, message){
+                check( done, function () {
+                    ret.edges.length.should.equal(2);
+                    message.statusCode.should.equal(200);
+                } );
+            });
+        })
+        it('lets get the list again with default collection and direction', function(done){
+            db.edge.list(vertices[1]._id ,function(err,ret, message){
+                check( done, function () {
+                    ret.edges.length.should.equal(2);
+                    message.statusCode.should.equal(200);
+                } );
+            });
+        })
+
+
         it('lets patch a non existing edge"', function(done){
+            db = new arango.Connection({_name:"newDatabase",_server:{hostname:"localhost"}});
             var data = {"newKey" : "newValue"};
             db.edge.patch(edge._id + 200, data, null, function(err,ret, message){
                 check( done, function () {

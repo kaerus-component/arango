@@ -28,7 +28,7 @@ describe("database",function(){
     describe("create/delete",function(){
 
         it('create a database with some users',function(done){
-            this.timeout(3500);
+            this.timeout(4500);
             var databaseName = "newDatabase";
             var users = [{"username" : "Heinz", "passwd" : "pjotr"},
                          {"username" : "Herbert", "active" : false, extra : {"age" : 44}} ,
@@ -41,7 +41,7 @@ describe("database",function(){
             });
         })
         it('create another database with some users',function(done){
-            this.timeout(3500);
+            this.timeout(4500);
             var databaseName = "newDatabase2";
             var users = [{"username" : "Heinz", "passwd" : "pjotr"}];
             db.database.create(databaseName, users, function(err,ret, message){
