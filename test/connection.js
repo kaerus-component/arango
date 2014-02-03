@@ -94,7 +94,7 @@ describe("Connection()",function(){
             username:'username',
             password:'password',
             headers: headers,
-            port:8529,
+            port:8529
         })
         db._name.should.eql("database");
         db._collection.should.eql("collection");
@@ -113,8 +113,49 @@ describe("Connection()",function(){
             username:'username',
             password:'password',
             headers: headers,
-            port:8529,
+            port:8529
         })
+    })
+    it('test use',function(){
+        db = new arango.Connection("https://localhost:8529");
+
+        db._server.should.eql({
+            protocol:'https',
+            hostname:'localhost',
+            port:8529
+        })
+        db._collection.should.eql('');
+        db = db.use("http://test.host:8520");
+        db._server.should.eql({
+            protocol:'http',
+            hostname:'test.host',
+            port:8520
+        })
+        db._collection.should.eql('');
+        db = db.use("/databaseName");
+        db._server.should.eql({
+            protocol:'http',
+            hostname:'test.host',
+            port:8520
+        })
+        db._name.should.eql('databaseName');
+        db._collection.should.eql('');
+        db = db.use("/databaseName:collectionName");
+        db._server.should.eql({
+            protocol:'http',
+            hostname:'test.host',
+            port:8520
+        })
+        db._name.should.eql('databaseName');
+        db._collection.should.eql('collectionName');
+        db = db.use(":anotherCollectionName");
+        db._server.should.eql({
+            protocol:'http',
+            hostname:'test.host',
+            port:8520
+        })
+        db._name.should.eql('databaseName');
+        db._collection.should.eql('anotherCollectionName');
     })
 })
 

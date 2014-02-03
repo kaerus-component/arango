@@ -12,7 +12,7 @@
             elem = document.getElementById('test'),
             db = new arango.Connection;
 
-        db.collection.list().then(function(res){
+            db.collection.list().then(function(res){
             elem.innerHTML = JSON.stringify(res,null,2);
         }, function(error){
             elem.innerHTML = JSON.stringify(error,null,2);
