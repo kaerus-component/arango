@@ -21,21 +21,16 @@ describe("action",function(){
                 // write a new route directly into arango
                 var route = {action : {"callback":"function (req,res){\n \n res.status = 200;\n; res.contentType = \"text/html\";\n res.body = \"Already existing route!\";\n }"}}
                 route.url = {"match":"/alreadyExistingRoute","methods":["GET"]};
-                db.use(":_routing").document.create(route).then(function(res){
-                    submit[o.name].route = res._id;
-                    /* reload routes */
-                    db.admin.routesReload();
-                }, function(error){});
-
-                //register an action and create a new route and reload routes
-                db.action.define({name:"hello",url:"/hello"},function(req,res){
-                    /* Note: this code runs in the ArangoDB */
-                    res.status = 200;
-                    res.contentType = "text/html";
-                    res.body = "Hello World!";
-                },true);
-                // write a new route directly into arango
-                done();
+                db.use(":_routing").document.create(route)
+                    .then(db.admin.routesReload)
+                    .then(function(r){
+                        return db.action.define({name:"hello",url:"/hello"},function(req,res){
+                            /* Note: this code runs in the ArangoDB */
+                            res.status = 200;
+                            res.contentType = "text/html";
+                            res.body = "Hello World!";
+                        },true);
+                    }).done(done);
             });
         });
     })
