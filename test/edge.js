@@ -25,13 +25,13 @@ describe("edge",function(){
                     edgecollection = ret;
                     db.collection.create("verticescollection", function(err,ret){
                         verticescollection = ret;
-                        db.document.create(verticescollection.id, {"key1" : "val1", "key2" : "val2", "key3" : null}, null, function(err,ret, message){
+                        db.document.create(verticescollection.id, {"key1" : "val1", "key2" : "val2", "key3" : null}, function(err,ret, message){
                             ret.error.should.equal(false);
                             vertices.push(ret);
-                            db.document.create(verticescollection.id, {"key1" : "val2", "key2" : "val3", "key3" : "val4"}, null, function(err,ret, message){
+                            db.document.create(verticescollection.id, {"key1" : "val2", "key2" : "val3", "key3" : "val4"}, function(err,ret, message){
                                 ret.error.should.equal(false);
                                 vertices.push(ret);
-                                db.document.create(verticescollection.id, {"key4" : "val2", "key5" : "val3", "key6" : "val4"}, null, function(err,ret, message){
+                                db.document.create(verticescollection.id, {"key4" : "val2", "key5" : "val3", "key6" : "val4"}, function(err,ret, message){
                                     ret.error.should.equal(false);
                                     vertices.push(ret);
                                     done()
@@ -48,7 +48,7 @@ describe("edge",function(){
     describe("edgeFunctions",function(){
 
         it('create a edge',function(done){
-            db.edge.create(edgecollection.id,vertices[0]._id, vertices[1]._id, {"key1" : "val1", "key2" : "val2", "key3" : null}, null, function(err,ret, message){
+            db.edge.create(edgecollection.id,vertices[0]._id, vertices[1]._id, {"key1" : "val1", "key2" : "val2", "key3" : null}, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(false);
                     edge = ret;
@@ -57,7 +57,7 @@ describe("edge",function(){
             });
         })
         it('create another edge',function(done){
-            db.edge.create(edgecollection.id, vertices[1]._id, vertices[2]._id, {"key1" : "val1", "key3" : "val3"}, null, function(err,ret, message){
+            db.edge.create(edgecollection.id, vertices[1]._id, vertices[2]._id, {"key1" : "val1", "key3" : "val3"}, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(false);
                     message.status.should.equal(202);
@@ -398,7 +398,7 @@ describe("edge",function(){
             });
         })
         it('create a edge',function(done){
-            db.edge.create(edgecollection.id,vertices[0]._id, vertices[1]._id, {"key1" : "val1", "key2" : "val2", "key3" : null}, null, function(err,ret, message){
+            db.edge.create(edgecollection.id,vertices[0]._id, vertices[1]._id, {"key1" : "val1", "key2" : "val2", "key3" : null}, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(false);
                     edge = ret;

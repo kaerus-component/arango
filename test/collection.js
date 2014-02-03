@@ -39,7 +39,7 @@ describe("collections",function(){
                 ret.type.should.eql(2);
                 ret.isVolatile.should.eql(false);
                 ret.error.should.eql(false);
-                done(err?jerr(ret):err);
+                done();
             });
         })
 
@@ -50,7 +50,7 @@ describe("collections",function(){
                     /* note: rounded to KB */ 
                     (prop.journalSize >> 10).should.equal(options.journalSize >> 10); 
                     prop.keyOptions.should.eql(options.keyOptions);
-                    done(err?jerr(ret):err);
+                    done();
                 })
             });
         })

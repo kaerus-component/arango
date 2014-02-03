@@ -98,7 +98,7 @@ describe("async",function(){
             });
         })
         it('create a document',function(done){
-            db.document.create("newCollection10", {"key1" : "val1", "key2" : "val2", "key3" : null}, null, function(err,ret, message){
+            db.document.create("newCollection10", {"key1" : "val1", "key2" : "val2", "key3" : null}, function(err,ret, message){
                 check( done, function () {
                     ret.should.equal("");
                     message.headers.should.have.property("x-arango-async-id");
@@ -107,7 +107,7 @@ describe("async",function(){
             });
         })
         it('create a document',function(done){
-            db.document.create("newCollection10", {"key1" : "val1", "key2" : "val2", "key3" : null}, null, function(err,ret, message){
+            db.document.create("newCollection10", {"key1" : "val1", "key2" : "val2", "key3" : null}, function(err,ret, message){
                 check( done, function () {
                     ret.should.equal("");
                     message.headers.should.have.property("x-arango-async-id");
@@ -116,7 +116,7 @@ describe("async",function(){
             });
         })
         it('create a document',function(done){
-            db.document.create("newCollection100", {"key1" : "val1", "key2" : "val2", "key3" : null}, null, function(err,ret, message){
+            db.document.create("newCollection100", {"key1" : "val1", "key2" : "val2", "key3" : null}, function(err,ret, message){
                 check( done, function () {
                     ret.should.equal("");
                     message.headers.should.have.property("x-arango-async-id");
@@ -125,7 +125,7 @@ describe("async",function(){
             });
         })
         it('create a document',function(done){
-            db.document.create("newCollection10", {"key1" : "val1", "key2" : "val2", "key3" : null}, null, function(err,ret, message){
+            db.document.create("newCollection10", {"key1" : "val1", "key2" : "val2", "key3" : null}, function(err,ret, message){
                 check( done, function () {
                     ret.should.equal("");
                     message.headers.should.have.property("x-arango-async-id");
@@ -168,7 +168,7 @@ describe("async",function(){
             });
         })
         it('create a failing document',function(done){
-            db.document.create("newCollection100", {"key1" : "val1", "key2" : "val2", "key3" : null}, null, function(err,ret, message){
+            db.document.create("newCollection100", {"key1" : "val1", "key2" : "val2", "key3" : null}, function(err,ret, message){
                 check( done, function () {
                     storedJobs[message.headers["x-arango-async-id"]] = 404;
                     ret.should.equal("");
@@ -178,7 +178,7 @@ describe("async",function(){
             });
         })
         it('create a document',function(done){
-            db.document.create("newCollection10", {"key1" : "val1", "key2" : "val2", "key3" : null}, null, function(err,ret, message){
+            db.document.create("newCollection10", {"key1" : "val1", "key2" : "val2", "key3" : null}, function(err,ret, message){
                 check( done, function () {
                     ret.should.equal("");
                     storedJobs[message.headers["x-arango-async-id"]] = 200;
@@ -188,7 +188,7 @@ describe("async",function(){
             });
         })
         it('create a failing document',function(done){
-            db.document.create("newCollection100", {"key1" : "val1", "key2" : "val2", "key3" : null}, null, function(err,ret, message){
+            db.document.create("newCollection100", {"key1" : "val1", "key2" : "val2", "key3" : null}, function(err,ret, message){
                 check( done, function () {
                     ret.should.equal("");
                     storedJobs[message.headers["x-arango-async-id"]] = 404;

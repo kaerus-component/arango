@@ -33,7 +33,7 @@ describe("document",function(){
     describe("documentFunctions",function(){
 
         it('create a document',function(done){
-            db.document.create(collection.id, {"key1" : "val1", "key2" : "val2", "key3" : null}, null, function(err,ret, message){
+            db.document.create(collection.id, {"key1" : "val1", "key2" : "val2", "key3" : null}, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(false);
                     doc = ret;
@@ -42,7 +42,7 @@ describe("document",function(){
             });
         })
         it('create another document',function(done){
-            db.document.create(collection.id, {"key1" : "val1", "key3" : "val3"}, null, function(err,ret, message){
+            db.document.create(collection.id, {"key1" : "val1", "key3" : "val3"}, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(false);
                     message.status.should.equal(202);
@@ -345,7 +345,7 @@ describe("document",function(){
             });
         })
         it('create a document',function(done){
-            db.document.create(collection.id, {"key1" : "val1", "key2" : "val2", "key3" : null}, null, function(err,ret, message){
+            db.document.create(collection.id, {"key1" : "val1", "key2" : "val2", "key3" : null}, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(false);
                     doc = ret;
