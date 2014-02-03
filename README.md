@@ -44,7 +44,7 @@ var arango = require('arango');
 
 Then you initialize a connection which returns a db handle.
 ```javascript
-var db = new arango.Connection("http://myarangodb.server.com:8529");
+var db = arango.Connection("http://myarangodb.server.com:8529");
 
 db.collection.list().done(function(res){
   console.log("collections: %j", res);
@@ -56,28 +56,56 @@ In a browser
 For usage in a web browser you can either use the standalone version arango.js or the build.js component.
 A minimal html page using the arangodb client from a web app can look like this.
 ```html
+<!doctype html>
 <html>
-  <head>
-    <title>ArangoDB Client</title>
-  </head>
-  <body>
-    <div id="output"></div>
-  </body>
-  <script src="../build/arango.js"></script>
-  <script>
-    var arango = require('arango');
-    var db = new arango.Connection; // Defaults to http://127.0.0.1:8529
-    var output = document.getElementById('output');
+<head>
+    <title>ArangoDB in your browser</title>
+    <meta charset="utf-8"/>
+</head>
+<body>
+    <div id="test"></div>
+    <script src="../build/build.js"></script>
+    <script>
+        var arango = require('arango'),
+            elem = document.getElementById('test'),
+            db = new arango.Connection;
 
-    db.collection.list().then(function(res){
-      output.innerHTML = res.collections;
-    },function(error){
-      output.innerHTML = error;
-    });
-  </script>
+        db.collection.list().then(function(res){
+            elem.innerHTML = JSON.stringify(res,null,2);
+        }, function(error){
+            elem.innerHTML = JSON.stringify(error,null,2);
+        })        
+    </script>
 </body>
 </html>
 ```
+
+The standalone version yields a global ```arango``` object.
+```html
+<!doctype html>
+<html>
+<head>
+    <title>ArangoDB in your browser</title>
+    <meta charset="utf-8"/>
+</head>
+<body>
+    <div id="test"></div>
+    <!-- Note: Exports global arango -->
+    <script src="../build/arango.js"></script>
+    <script>
+        var elem = document.getElementById('test'),
+            db = new arango.Connection;
+
+        db.collection.list().then(function(res){
+            elem.innerHTML = JSON.stringify(res,null,2);
+        }, function(error){
+            elem.innerHTML = JSON.stringify(error,null,2);
+        })        
+    </script>
+</body>
+</html>
+```
+
  
 
 API
@@ -97,6 +125,7 @@ The following API:s are (more or less) supported, check out the ArangoDB [docume
   * [batch](https://www.arangodb.org/manuals/current/HttpBatch.html)
   * [query](http://www.arangodb.org/manuals/current/HttpQuery.html)
   * [graph](http://www.arangodb.org/manuals/current/HttpGraph.html)
+  * [batch](http://www.arangodb.org/manuals/current/HttpBatch.html)
   * [edge](http://www.arangodb.org/manuals/current/RestEdge.html)
   * [user](http://www.arangodb.org/manuals/current/HttpUser.html)
   * [key](http://www.arangodb.org/manuals/current/) 
@@ -130,43 +159,70 @@ Connect()
 Factory for arango connection.
 Sets up a connection to localhost ```http://127.0.0.1:8529``` by default.
 ```js
-  db = new arango.Connection()
+  db = arango.Connection()
 ```
 
 Connection string
 ```js
-  db = new arango.Connection("http://127.0.0.1/mydb:collection");
+  db = arango.Connection("http://127.0.0.1/mydb:collection");
 ```
 
 Connection with http auth
 ```js
-  db = new arango.Connection("http://user:pass@your.host.com/database");
+  db = arango.Connection("http://user:pass@your.host.com/database");
 ```
 
 Connection object
 ```
-  db = new arango.Connection({_name:"database",_collection:"collection",_server:{hostname:"test.host"}});
+  db = arango.Connection({_name:"database",_collection:"collection",_server:{hostname:"test.host"}});
 ```
 
 String and object
 ```js
-  db = new arango.Connection("http://test.host.com:80/default",{_server:{username:"user",password:"pass"}});
+  db = arango.Connection("http://test.host.com:80/default",{_server:{username:"user",password:"pass"}});
 ```
 
-api()
------
-Allows you to select API:s to use for the connection.
-Dependencies are resolved automatically so that if you require ```QueryAPI``` the ```CursorAPI``` will be brought in as well. Includes all API:s by default. Pass an empty string to ```arango.api("")``` if you don't want any predefined API:s.
-```js
-  arango.api('database collection document query');
+String and api plugin
+```javascript
+  db = arango.Connection("http://test.host.com:80/foxx",{api:{'foxx':require('foxx')}});
+```
 
-  var db = new arango.Connection(); // => DatabaseAPI, DocumentAPI, CollectionAPI, CursorAPI, QueryAPI  
-``` 
+api
+----
+An API can be implemented like this.
+```javascript
+var Arango = require('arango');
 
-You may also include more API:s later using the ```db.api()``` method.
-```js
-  db = db.api('transaction'); // => Spawns a new db instance with TransactionAPI included.
-  db.transaction(...); 
+function StubAPI(db) {
+    return {
+      "get": function(callback){
+          /* The undefined argument can be used for passing htmlOptions */
+          /* example: options = {headers:{'content-type':'image/jpeg'}} */
+          return db.get('/path',undefined,callback);
+      },
+      "post": function(data,callback){
+          return db.post('/path',data,undefined,callback);
+      },
+      "put": function(data,callback){
+          return db.put('/path',data,undefined,callback);
+      },
+      "delete": function(callback){
+          return db.delete('/path',undefined,callback);
+      },
+      "head": function(callback){
+          return db.head('/path',undefined,callback);
+      },
+      "patch": function(data,callback){
+          return db.path('/path',data,undefined,callback);
+      },
+      "options": function(callback){
+          return db.options('/path',undefined,callback);
+      }
+    };
+}
+
+/* Attach the API into 'stub' namespace */
+module.exports = Arango.api('stub',StubAPI);
 ```
 
 
@@ -196,7 +252,7 @@ Creating collections & documents
 -------------------------------
 Initialize a Connection
 ```js
-var db = new arango.Connection('http://127.0.0.1:8529');
+var db = arango.Connection('http://127.0.0.1:8529');
 ```
 
 Create a new database
@@ -304,13 +360,15 @@ db.document.create("newcollection",{b:"test"})
 });
 ```
 
-Chaining API calls
+Try & catch
+-----------
+If no collection named 'files' is found then.
 ```js
 try {
-  db.collection.list().then(function(collections){
-    for(var collection in collections){
-      if(collection.name === 'files') 
-        return db.document.list(collection.name);
+  db.collection.list().then(function(res){
+    for(var n in res.collections){
+      if(res.collections[n].name === 'files') 
+        return db.document.list(res.collections[n].name);
     }
     throw new Error("files not found");
   }).done(function(files){
@@ -319,7 +377,16 @@ try {
 } catch(err){
   console.log("Error: ", err);
 }
+```
 
+Joining
+--------
+```js
+  db.admin.version()
+    .join(db.admin.time())
+    .spread(function(v,t){ 
+    console.log(v.server,v.version,t.time);
+  });
 ```
 
 Calling API methods directly
@@ -511,6 +578,66 @@ The `options` argument can be used for altering http request headers if required
     }
   );
 
+```
+
+
+Batch jobs
+----------
+The BatchAPI allows you to bundle database requests.
+
+Use ```db.batch.start()```to initialize a batch job and ```db.batch.exec()``` to execute jobs. 
+```javascript
+  // start a batch
+  db.batch.start();
+  
+  // collect admin information  
+  db.admin.version();
+  db.admin.statistics();
+  db.admin.log('info');
+  db.admin.time();
+
+  // execute batch
+  db.batch.exec().spread(function(batch,version,statistics,log,time){
+    console.log("Batch jobs requested=%s, returned results=%s", batch.jobs, batch.length);
+    console.log("Version:", JSON.stringify(version,null,2));
+    console.log("Statistics:", JSON.stringify(statistics,null,2));
+    console.log("Log:", JSON.stringify(log,null,2));
+    console.log("Time:", JSON.stringify(time,null,2));
+  },function(error){
+    console.log("Batch job failed: %j", error);
+  });
+```
+
+Individual job results can be fetched as usual.
+```javascript
+  // start a batch
+  db.batch.start();
+  
+  // collect admin information  
+  db.admin.version().then(function(version){
+    console.log("Version:", JSON.stringify(version,null,2));
+  });
+
+  db.admin.statistics().then(function(statistics){
+    console.log("Statistics:", JSON.stringify(statistics,null,2));
+  });
+
+  // using callback
+  db.admin.log('info',function(err,ret){
+    if(!err){
+      console.log("Log:", JSON.stringify(ret,null,2));
+    } 
+  });
+  
+  db.admin.time(function(err,ret){
+    if(!err) console.log("Time:", new Date(Math.floor(ret.time*1000)));
+  });
+
+  // execute batch
+  db.batch.exec().then(undefined,function(error){
+    console.log("Batch job failed: %j", error);
+  });  
+ 
 ```
 
 

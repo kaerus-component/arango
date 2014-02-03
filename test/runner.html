@@ -5,23 +5,23 @@
     <link rel="stylesheet" href="../node_modules/mocha/mocha.css" />
 </head>
 <body>
-<div id="mocha"></div>
-<script src="../node_modules/mocha/mocha.js"></script>
-<script src="../node_modules/chai/chai.js"></script>
-<script src="../build/build.js"></script>
-<script>
-    mocha.ui('bdd');
-    mocha.reporter('html');
-    var expect = chai.expect;
-</script>
-<script>
-    chai.should();
-</script>
-<script src="connection.js"></script>
-<script src="collection.js"></script>
-<script>
-    if (window.mochaPhantomJS) { mochaPhantomJS.run(); }
-    else { mocha.grep("import").run(); }
-</script>
+    <div id="mocha"></div>
+    <script src="../node_modules/mocha/mocha.js"></script>
+    <script src="../node_modules/chai/chai.js"></script>
+    <script src="../build/build.js"></script>
+    <script>
+        mocha.ui('bdd');
+        mocha.reporter('html');
+        var expect = chai.expect;
+    </script>
+    <script>
+        chai.should();
+    </script>
+    <script src="connection.js"></script>
+    <script src="collection.js"></script>
+    <script>
+        if (window.mochaPhantomJS) { mochaPhantomJS.run(); }
+        else { mocha.run(); }
+    </script>
 </body>
 </html>

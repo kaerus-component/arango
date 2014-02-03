@@ -65,6 +65,14 @@ describe("graph",function(){
                 } );
             });
         })
+        it('create another graph',function(done){
+            db.graph.waitForSync(false).create("graph2", "hans", "dampf", function(err,ret, message){
+                check( done, function () {
+                    ret.error.should.equal(false);
+                    message.statusCode.should.equal(202);
+                } );
+            });
+        })
         it('list graphs',function(done){
             db.graph.list(function(err,ret, message){
                 check( done, function () {
@@ -82,7 +90,7 @@ describe("graph",function(){
             });
         })
         it('create a graph without waitForSync',function(done){
-            db.graph.create("graph2", "bla", "blub", false, function(err,ret, message){
+            db.graph.create("graph3", "bla", "blub", false, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(false);
                     message.statusCode.should.equal(202);
@@ -90,7 +98,7 @@ describe("graph",function(){
             });
         })
         it('delete graph  without waitForSync',function(done){
-            db.graph.delete("graph2", false, function(err,ret, message){
+            db.graph.delete("graph3", false, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(false);
                     message.statusCode.should.equal(202);
@@ -301,7 +309,7 @@ describe("graph",function(){
 
         it('lets patch a non existing vertex"', function(done){
             var data = {"newKey" : "newValue"};
-            db.graph.vertex.patch("graph1", vertices[1]._id + 200, data, null, function(err,ret, message){
+            db.graph.vertex.patch("graph1", vertices[1]._id + 200, data,  function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(true);
                     message.statusCode.should.equal(404);
@@ -357,8 +365,18 @@ describe("graph",function(){
             });
         })
 
+        it('lets patch a vertex and not keep null values with keepNUll and wailForSync functions', function(done){
+            this.timeout(20000)
+            var data = {"newKey" : "newValue", "key3" : null};
+            db.graph.keepNull(false).waitForSync(true).vertex.patch("graph1", vertices[1]._id, data,  function(err,ret, message){
+                check( done, function () {
+                    message.statusCode.should.equal(201);
+                } );
+            });
+        })
+
         it('lets verify the last patch', function(done){
-            db.graph.vertex.get("graph1", vertices[1]._id, null, function(err,ret, message){
+            db.graph.vertex.get("graph1", vertices[1]._id,  function(err,ret, message){
                 check( done, function () {
                     ret.vertex.should.not.have.property("key3");
                     ret.vertex.should.have.property('newKey');
@@ -368,7 +386,7 @@ describe("graph",function(){
 
         it('lets put a non existing vertex"', function(done){
             var data = {"newKey" : "newValue"};
-            db.graph.vertex.put("graph1", vertices[1]._id + 200, data, null, function(err,ret, message){
+            db.graph.vertex.put("graph1", vertices[1]._id + 200, data,  function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(true);
                     message.statusCode.should.equal(404);
@@ -380,7 +398,7 @@ describe("graph",function(){
             var options = {};
             options.match = false;
             options.rev = vertices[1]._rev + 1;
-            db.graph.vertex.put("graph1", vertices[1]._id, data , options, function(err,ret, message){
+            db.graph.waitForSync(false).vertex.put("graph1", vertices[1]._id, data , options, function(err,ret, message){
                 check( done, function () {
                     vertices[1]._rev = ret.vertex._rev;
                     message.statusCode.should.equal(202);
@@ -413,7 +431,7 @@ describe("graph",function(){
         })
         it('lets put a vertex with "match" header', function(done){
             var data = {"newKey" : "newValue"};
-            db.graph.vertex.put("graph1", vertices[1]._id, data, null, function(err,ret, message){
+            db.graph.vertex.put("graph1", vertices[1]._id, data,  function(err,ret, message){
                 check( done, function () {
                     message.statusCode.should.equal(202);
 
@@ -421,7 +439,7 @@ describe("graph",function(){
             });
         })
         it('lets verify the last put', function(done){
-            db.graph.vertex.get("graph1", vertices[1]._id, null, function(err,ret, message){
+            db.graph.vertex.get("graph1", vertices[1]._id,  function(err,ret, message){
                 check( done, function () {
                     ret.vertex.should.not.have.property("key3");
                     ret.vertex.should.not.have.property("key2");
@@ -432,7 +450,7 @@ describe("graph",function(){
         })
 
         it('lets delete a non existing vertex"', function(done){
-            db.graph.vertex.delete("graph1", vertices[1]._id + 200, null, function(err,ret, message){
+            db.graph.vertex.delete("graph1", vertices[1]._id + 200,  function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(true);
                     message.statusCode.should.equal(404);
@@ -582,7 +600,7 @@ describe("graph",function(){
 
         it('lets patch a non existing edge"', function(done){
             var data = {"newKey" : "newValue"};
-            db.graph.edge.patch("graph1", edges[0]._id + 200, data, null, function(err,ret, message){
+            db.graph.edge.patch("graph1", edges[0]._id + 200, data,  function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(true);
                     message.statusCode.should.equal(404);
@@ -640,7 +658,7 @@ describe("graph",function(){
         })
 
         it('lets verify the last patch', function(done){
-            db.graph.edge.get("graph1", edges[0]._id, null, function(err,ret, message){
+            db.graph.edge.get("graph1", edges[0]._id,  function(err,ret, message){
                 check( done, function () {
                     ret.edge.should.not.have.property("key3");
                     ret.edge.should.have.property("newKey");
@@ -650,7 +668,7 @@ describe("graph",function(){
 
         it('lets put a non existing edge"', function(done){
             var data = {"newKey" : "newValue"};
-            db.graph.edge.put("graph1", edges[0]._id + 200, data, null, function(err,ret, message){
+            db.graph.edge.put("graph1", edges[0]._id + 200, data,  function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(true);
                     message.statusCode.should.equal(404);
@@ -694,7 +712,7 @@ describe("graph",function(){
             });
         })
         it('lets verify the last put', function(done){
-            db.graph.edge.get("graph1", edges[0]._id, null, function(err,ret, message){
+            db.graph.edge.get("graph1", edges[0]._id,  function(err,ret, message){
                 check( done, function () {
                     ret.edge.should.not.have.property("key3");
                     ret.edge.should.not.have.property("key2");
@@ -705,7 +723,7 @@ describe("graph",function(){
         })
 
         it('lets delete a non existing edge"', function(done){
-            db.graph.edge.delete("graph1", edges[0]._id + 200, null, function(err,ret, message){
+            db.graph.edge.delete("graph1", edges[0]._id + 200,  function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(true);
                     message.statusCode.should.equal(404);
@@ -734,7 +752,7 @@ describe("graph",function(){
             });
         })
         it('create a edge',function(done){
-            db.graph.edge.create("graph1", edgecollection.id,vertices[0]._id, vertices[1]._id, {"key1" : "val1", "key2" : "val2", "key3" : null}, null, function(err,ret, message){
+            db.graph.edge.create("graph1", edgecollection.id,vertices[0]._id, vertices[1]._id, {"key1" : "val1", "key2" : "val2", "key3" : null},  function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(false);
                     edges[0] = ret.edge;

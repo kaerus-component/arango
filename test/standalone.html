@@ -6,13 +6,13 @@
 </head>
 <body>
     <div id="test"></div>
-    <script src="../build/build.js"></script>
+    <!-- Note: Exports global arango -->
+    <script src="../build/arango.js"></script>
     <script>
-        var arango = require('arango'),
-            elem = document.getElementById('test'),
+        var elem = document.getElementById('test'),
             db = new arango.Connection;
 
-            db.collection.list().then(function(res){
+        db.collection.list().then(function(res){
             elem.innerHTML = JSON.stringify(res,null,2);
         }, function(error){
             elem.innerHTML = JSON.stringify(error,null,2);

@@ -13,7 +13,7 @@ function check( done, f ) {
 var db;
 var actions;
 
-describe("action",function(){
+describe("eeaction",function(){
 
     before(function(done){
         db = new arango.Connection("http://127.0.0.1:8529");

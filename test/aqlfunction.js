@@ -10,9 +10,11 @@ function check( done, f ) {
     }
 }
 
+var db;
 
 describe("aqlfunction",function(){
-	var db = new arango.Connection("http://127.0.0.1:8529");
+	db = arango.Connection("http://127.0.0.1:8529");
+
 
     it('should be able to create an aql function',function(done){
         db.aqlfunction.create("myfunctions::temperature::celsiustofahrenheit",

@@ -239,7 +239,7 @@ describe("document",function(){
         })
 
         it('lets verify the last patch', function(done){
-            db.document.get(document._id, null, function(err,ret, message){
+            db.document.get(document._id, function(err,ret, message){
                 check( done, function () {
                     ret.should.not.have.property("key3");
                     ret.should.have.property("newKey");
@@ -306,7 +306,7 @@ describe("document",function(){
             });
         })
         it('lets verify the last put', function(done){
-            db.document.get(document._id, null, function(err,ret, message){
+            db.document.get(document._id, function(err,ret, message){
                 check( done, function () {
                     ret.should.not.have.property("key3");
                     ret.should.not.have.property("key2");

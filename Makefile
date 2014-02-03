@@ -1,36 +1,40 @@
 NAME = arango
-TARGET = ./build
+COMPONENT = @./node_modules/.bin/component
 
-all: build
+build: dependencies component
 
-build: dependencies standalone
-	@echo "Building component "
-	@component build -v -o $(TARGET)
+component: 
+	@echo "Building web component"
+	$(COMPONENT) build -v
+	@echo "Building standalone web component"
+	$(COMPONENT) build -v -n $(NAME) -s $(NAME)
+	
+dependencies: node_modules components
 
-standalone: 
-	@echo "Building standalone version"
-	@component build -v -o $(TARGET) -n $(NAME) -s $(NAME)
+node_modules:
+	@echo "Installing node dependencies"
+	@npm i -d
 
-dependencies:
-	@component install -v	
+components:
+	@echo "Installing component dependencies"
+	$(COMPONENT) install -v
 
-test: node_modules
+test: test-nodejs test-browser
+	
+test-nodejs: node_modules
 	@echo "Running tests for nodejs"
-	@./node_modules/.bin/mocha \
-		--require should \
-		--reporter spec
+	@./node_modules/.bin/mocha --require should --reporter spec
+	
+test-browser: components component
 	@echo "Running tests for browser"
 	@./node_modules/mocha-phantomjs/bin/mocha-phantomjs test/runner.html
 
-node_modules:
-	@npm i -d
-
 distclean:
-	@echo "Cleaning upp files"
+	@echo "Cleaning up build files"
 	@rm -rf ./node_modules
 	@rm -rf ./components
 	@rm -rf ./build
 
 
-.PHONY: all test
+.PHONY: build
 	
