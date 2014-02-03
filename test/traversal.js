@@ -1,3 +1,5 @@
+var arango;
+
 try{ arango = require('arango') } catch (e){ arango = require('..') }
 
 function check( done, f ) {
@@ -17,10 +19,10 @@ describe("traversal",function(){
 
     before(function(done){
         this.timeout(20000);
-        db = new arango.Connection("http://127.0.0.1:8529");
+        db = arango.Connection("http://127.0.0.1:8529");
         db.database.delete("newDatabase",function(err, ret){
             db.database.create("newDatabase",function(err, ret){
-                db = new arango.Connection({_name:"newDatabase",_server:{hostname:"localhost"}});
+                db = arango.Connection({_name:"newDatabase",_server:{hostname:"localhost"}});
                 db.graph.create("graph1", "verticescollection", "edgecollection", true, function(err,ret, message){
                     var data = [{"_key":"Anton","value1":25,"value2":"test","allowed":true},
                                 {"_key":"Bert","value1":"baz"},
@@ -47,7 +49,7 @@ describe("traversal",function(){
         db.document.list("verticescollection", function(err,ret, message){
             check( done, function () {
                 ret.documents.length.should.equal(4);
-                message.statusCode.should.equal(200);
+                message.status.should.equal(200);
             } );
         });
     })
@@ -61,7 +63,7 @@ describe("traversal",function(){
             check( done, function () {
                 ret.error.should.equal(false);
                 ret.result.visited.vertices.length.should.equal(5);
-                message.statusCode.should.equal(200);
+                message.status.should.equal(200);
             } );
         });
     })
@@ -77,7 +79,7 @@ describe("traversal",function(){
             check( done, function () {
                 ret.error.should.equal(false);
                 ret.result.visited.vertices.length.should.equal(3);
-                message.statusCode.should.equal(200);
+                message.status.should.equal(200);
             } );
         });
     })
@@ -95,7 +97,7 @@ describe("traversal",function(){
             check( done, function () {
                 ret.error.should.equal(false);
                 ret.result.visited.vertices.length.should.equal(4);
-                message.statusCode.should.equal(200);
+                message.status.should.equal(200);
             } );
         });
     })
@@ -135,7 +137,7 @@ describe("traversal",function(){
                 ret.error.should.equal(false);
                 ret.result.visited.should.equal(5);
                 ret.result.should.have.property('myVertices');
-                message.statusCode.should.equal(200);
+                message.status.should.equal(200);
             } );
         });
     })

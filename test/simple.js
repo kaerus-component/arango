@@ -1,3 +1,5 @@
+var arango;
+
 try{ arango = require('arango') } catch (e){ arango = require('..') }
 
 function check( done, f ) {
@@ -29,10 +31,10 @@ describe("simple",function(){
 
     before(function(done){
         this.timeout(20000);
-        db = new arango.Connection("http://127.0.0.1:8529");
+        db = arango.Connection("http://127.0.0.1:8529");
         db.database.delete("newDatabase",function(err, ret){
             db.database.create("newDatabase",function(err, ret){
-                db = new arango.Connection({_name:"newDatabase",_server:{hostname:"localhost"}});
+                db = arango.Connection({_name:"newDatabase",_server:{hostname:"localhost"}});
                 db.collection.create("GeoCollection", function(err,ret, message){
                     var data = [
                         {"_key":"Ort1", "longitude" : 20.00, latitude : 22.00, location : [20.00, 12.00]},
@@ -80,7 +82,7 @@ describe("simple",function(){
                 check( done, function () {
                     ret.error.should.equal(false);
                     ret.result.length.should.equal(2);
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -89,7 +91,7 @@ describe("simple",function(){
                 check( done, function () {
                     ret.should.have.property("document");
                     ret.error.should.equal(false);
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -100,7 +102,7 @@ describe("simple",function(){
                 check( done, function () {
                     ret.error.should.equal(false);
                     ret.result.length.should.equal(3);
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -110,7 +112,7 @@ describe("simple",function(){
                 check( done, function () {
                     ret.error.should.equal(false);
                     ret.deleted.should.equal(1);
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -120,7 +122,7 @@ describe("simple",function(){
                 check( done, function () {
                     ret.error.should.equal(false);
                     ret.replaced.should.equal(1);
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -130,7 +132,7 @@ describe("simple",function(){
                 check( done, function () {
                     ret.error.should.equal(false);
                     ret.updated.should.equal(2);
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -141,7 +143,7 @@ describe("simple",function(){
                 check( done, function () {
                     ret.error.should.equal(false);
                     ret.should.have.property("document");
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -151,7 +153,7 @@ describe("simple",function(){
                 check( done, function () {
                     ret.error.should.equal(false);
                     ret.result.length.should.equal(3);
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -160,7 +162,7 @@ describe("simple",function(){
                 check( done, function () {
                     ret.error.should.equal(false);
                     ret.result.length.should.equal(3);
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -170,7 +172,7 @@ describe("simple",function(){
                 check( done, function () {
                     ret.error.should.equal(false);
                     ret.result.length.should.equal(2);
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -179,7 +181,7 @@ describe("simple",function(){
                 check( done, function () {
                     ret.error.should.equal(false);
                     ret.result.length.should.equal(1);
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -188,7 +190,7 @@ describe("simple",function(){
                 check( done, function () {
                     indices.GeoCollection = ret.indexes;
                     ret.error.should.equal(false);
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -197,7 +199,7 @@ describe("simple",function(){
                 check( done, function () {
                     indices.SkiptListcollection = ret.indexes;
                     ret.error.should.equal(false);
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -207,7 +209,7 @@ describe("simple",function(){
                 check( done, function () {
                     ret.error.should.equal(false);
                     ret.result.length.should.equal(4);
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -217,7 +219,7 @@ describe("simple",function(){
                 check( done, function () {
                     ret.error.should.equal(false);
                     ret.result.length.should.equal(4);
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -227,7 +229,7 @@ describe("simple",function(){
                 check( done, function () {
                     ret.error.should.equal(false);
                     ret.result.length.should.equal(3);
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -237,7 +239,7 @@ describe("simple",function(){
                 check( done, function () {
                     ret.error.should.equal(false);
                     ret.result.length.should.equal(2);
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -248,7 +250,7 @@ describe("simple",function(){
                 check( done, function () {
                     ret.error.should.equal(false);
                     ret.result.length.should.equal(3);
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -259,7 +261,7 @@ describe("simple",function(){
                 check( done, function () {
                     ret.error.should.equal(false);
                     ret.result.length.should.equal(3);
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })

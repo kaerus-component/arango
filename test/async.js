@@ -1,3 +1,5 @@
+var arango;
+
 try{ arango = require('arango') } catch (e){ arango = require('..') }
 
 function check( done, f ) {
@@ -22,13 +24,13 @@ var storedJobs = {};
 
 describe("async",function(){
 
-    db = new arango.Connection("http://127.0.0.1:8529");
+    db = arango.Connection("http://127.0.0.1:8529");
 
     before(function(done){
         this.timeout(20000);
         db.database.delete("newDatabase",function(err, ret){
             db.database.create("newDatabase",function(err, ret){
-                db = new arango.Connection({_name:"newDatabase",_server:{hostname:"localhost"}});
+                db = arango.Connection({_name:"newDatabase",_server:{hostname:"localhost"}});
                 done();
             });
         });
@@ -42,7 +44,7 @@ describe("async",function(){
 				check( done, function () {
                     ret.status.should.equal(3);
                     ret.error.should.equal(false);
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
 			});
         })
@@ -51,7 +53,7 @@ describe("async",function(){
                 check( done, function () {
                     ret.should.equal("");
                     message.headers.should.have.property("x-arango-async-id");
-                    message.statusCode.should.equal(202);
+                    message.status.should.equal(202);
                 } );
             });
         })
@@ -60,7 +62,7 @@ describe("async",function(){
                 check( done, function () {
                     ret.should.equal("");
                     message.headers.should.not.have.property("x-arango-async-id");
-                    message.statusCode.should.equal(202);
+                    message.status.should.equal(202);
                 } );
             });
         })
@@ -70,7 +72,7 @@ describe("async",function(){
                 check( done, function () {
                     ret.should.equal("");
                     message.headers.should.not.have.property("x-arango-async-id");
-                    message.statusCode.should.equal(202);
+                    message.status.should.equal(202);
                 } );
             });
         })
@@ -79,7 +81,7 @@ describe("async",function(){
                 check( done, function () {
                     ret.status.should.equal(3);
                     ret.error.should.equal(false);
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -88,7 +90,7 @@ describe("async",function(){
                 check( done, function () {
                     ret.status.should.equal(3);
                     ret.error.should.equal(false);
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -97,7 +99,7 @@ describe("async",function(){
                 check( done, function () {
                     ret.should.equal("");
                     message.headers.should.have.property("x-arango-async-id");
-                    message.statusCode.should.equal(202);
+                    message.status.should.equal(202);
                 } );
             });
         })
@@ -106,7 +108,7 @@ describe("async",function(){
                 check( done, function () {
                     ret.should.equal("");
                     message.headers.should.have.property("x-arango-async-id");
-                    message.statusCode.should.equal(202);
+                    message.status.should.equal(202);
                 } );
             });
         })
@@ -115,7 +117,7 @@ describe("async",function(){
                 check( done, function () {
                     ret.should.equal("");
                     message.headers.should.have.property("x-arango-async-id");
-                    message.statusCode.should.equal(202);
+                    message.status.should.equal(202);
                 } );
             });
         })
@@ -124,7 +126,7 @@ describe("async",function(){
                 check( done, function () {
                     ret.should.equal("");
                     message.headers.should.have.property("x-arango-async-id");
-                    message.statusCode.should.equal(202);
+                    message.status.should.equal(202);
                 } );
             });
         })
@@ -133,7 +135,7 @@ describe("async",function(){
                 check( done, function () {
                     ret.should.equal("");
                     message.headers.should.have.property("x-arango-async-id");
-                    message.statusCode.should.equal(202);
+                    message.status.should.equal(202);
                 } );
             });
         })
@@ -141,7 +143,7 @@ describe("async",function(){
             db.setAsyncMode(false).job.get("pending", function(err,ret,message){
                 check( done, function () {
                     ret.length.should.be.above(4);
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -149,7 +151,7 @@ describe("async",function(){
             db.job.delete("all", function(err,ret,message){
                 check( done, function () {
                     ret.result.should.equal(true);
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -157,7 +159,7 @@ describe("async",function(){
             db.job.get("done", function(err,ret,message){
                 check( done, function () {
                     ret.length.should.equal(0);
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -167,7 +169,7 @@ describe("async",function(){
                     storedJobs[message.headers["x-arango-async-id"]] = 409;
                     ret.should.equal("");
                     message.headers.should.have.property("x-arango-async-id");
-                    message.statusCode.should.equal(202);
+                    message.status.should.equal(202);
                 } );
             });
         })
@@ -177,7 +179,7 @@ describe("async",function(){
                     storedJobs[message.headers["x-arango-async-id"]] = 404;
                     ret.should.equal("");
                     message.headers.should.have.property("x-arango-async-id");
-                    message.statusCode.should.equal(202);
+                    message.status.should.equal(202);
                 } );
             });
         })
@@ -187,7 +189,7 @@ describe("async",function(){
                     ret.should.equal("");
                     storedJobs[message.headers["x-arango-async-id"]] = 200;
                     message.headers.should.have.property("x-arango-async-id");
-                    message.statusCode.should.equal(202);
+                    message.status.should.equal(202);
                 } );
             });
         })
@@ -197,7 +199,7 @@ describe("async",function(){
                     ret.should.equal("");
                     storedJobs[message.headers["x-arango-async-id"]] = 404;
                     message.headers.should.have.property("x-arango-async-id");
-                    message.statusCode.should.equal(202);
+                    message.status.should.equal(202);
                 } );
             });
         })

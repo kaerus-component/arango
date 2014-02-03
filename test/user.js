@@ -1,3 +1,5 @@
+var arango;
+
 try{ arango = require('arango') } catch (e){ arango = require('..') }
 
 function check( done, f ) {
@@ -17,22 +19,22 @@ describe("user",function(){
 
     before(function(done){
         this.timeout(20000);
-        db = new arango.Connection("http://127.0.0.1:8529");
+        db = arango.Connection("http://127.0.0.1:8529");
         db.database.delete("newDatabase",function(err, ret){
             db.database.create("newDatabase",function(err, ret){
-                db = new arango.Connection({_name:"newDatabase",_server:{hostname:"localhost"}});
+                db = arango.Connection({_name:"newDatabase",_server:{hostname:"localhost"}});
                 done();
             });
         });
 
     })
- +
+
     it('create a user',function(done){
         this.timeout(20000);
         db.user.create( "hans", "passwordHans", true, {"vorname": "hans", "nachname" : "otto"}, function(err,ret, message){
             check( done, function () {
                 ret.error.should.equal(false);
-                message.statusCode.should.equal(201);
+                message.status.should.equal(201);
             } );
         });
     })
@@ -42,7 +44,7 @@ describe("user",function(){
         db.user.create( "hans2", "passwordHans2", true, {"vorname": "hans2", "nachname" : "otto2"}, function(err,ret, message){
             check( done, function () {
                 ret.error.should.equal(false);
-                message.statusCode.should.equal(201);
+                message.status.should.equal(201);
             } );
         });
     })
@@ -52,7 +54,7 @@ describe("user",function(){
         db.user.create( "hans", "passwordHans", true, {"vorname": "hans", "nachname" : "otto"}, function(err,ret, message){
             check( done, function () {
                 ret.error.should.equal(true);
-                message.statusCode.should.equal(400);
+                message.status.should.equal(400);
             } );
         });
     })
@@ -62,7 +64,7 @@ describe("user",function(){
         db.user.get( "hans", function(err,ret, message){
             check( done, function () {
                 ret.error.should.equal(false);
-                message.statusCode.should.equal(200);
+                message.status.should.equal(200);
             } );
         });
     })
@@ -71,7 +73,7 @@ describe("user",function(){
         db.user.get( "hansGibtsNicht", function(err,ret, message){
             check( done, function () {
                 ret.error.should.equal(true);
-                message.statusCode.should.equal(404);
+                message.status.should.equal(404);
             } );
         });
     })
@@ -81,7 +83,7 @@ describe("user",function(){
         db.user.delete( "hans2", function(err,ret, message){
             check( done, function () {
                 ret.error.should.equal(false);
-                message.statusCode.should.equal(202);
+                message.status.should.equal(202);
             } );
         });
     })
@@ -90,7 +92,7 @@ describe("user",function(){
         db.user.delete( "hansGibtsNicht", function(err,ret, message){
             check( done, function () {
                 ret.error.should.equal(true);
-                message.statusCode.should.equal(404);
+                message.status.should.equal(404);
             } );
         });
     })
@@ -100,7 +102,7 @@ describe("user",function(){
         db.user.patch( "hans2", "newPassword", function(err,ret, message){
             check( done, function () {
                 ret.error.should.equal(true);
-                message.statusCode.should.equal(404);
+                message.status.should.equal(404);
             } );
         });
     })
@@ -109,7 +111,7 @@ describe("user",function(){
         db.user.patch( "hans", "newPassword", false , {"nachname" : "otto-müller", "married" : true}, function(err,ret, message){
             check( done, function () {
                 ret.error.should.equal(false);
-                message.statusCode.should.equal(200);
+                message.status.should.equal(200);
             } );
         });
     })
@@ -121,7 +123,7 @@ describe("user",function(){
                 ret.extra.should.have.property("nachname");
                 ret.extra.should.have.property("married");
                 ret.extra.should.have.property("vorname");
-                message.statusCode.should.equal(200);
+                message.status.should.equal(200);
             } );
         });
     })
@@ -131,7 +133,7 @@ describe("user",function(){
         db.user.put( "hans2", "newPassword", function(err,ret, message){
             check( done, function () {
                 ret.error.should.equal(true);
-                message.statusCode.should.equal(404);
+                message.status.should.equal(404);
             } );
         });
     })
@@ -140,7 +142,7 @@ describe("user",function(){
         db.user.put( "hans", "newPassword", false ,  {"married" : false, "sad" : true}, function(err,ret, message){
             check( done, function () {
                 ret.error.should.equal(false);
-                message.statusCode.should.equal(200);
+                message.status.should.equal(200);
             } );
         });
     })
@@ -153,7 +155,7 @@ describe("user",function(){
                 ret.extra.should.have.property("sad");
                 ret.extra.should.not.have.property("vorname");
                 ret.error.should.equal(false);
-                message.statusCode.should.equal(200);
+                message.status.should.equal(200);
             } );
         });
     })

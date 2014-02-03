@@ -1,3 +1,5 @@
+var arango;
+
 try{ arango = require('arango') } catch (e){ arango = require('..') }
 
 function check( done, f ) {
@@ -18,13 +20,13 @@ var db;
 
 describe("edge",function(){
 
-    db = new arango.Connection("http://127.0.0.1:8529");
+    db = arango.Connection("http://127.0.0.1:8529");
 
     before(function(done){
         this.timeout(20000);
         db.database.delete("newDatabase",function(err, ret){
             db.database.create("newDatabase",function(err, ret){
-                db = new arango.Connection({_name:"newDatabase",_server:{hostname:"localhost"}});
+                db = arango.Connection({_name:"newDatabase",_server:{hostname:"localhost"}});
                 db.collection.create("edgeCollection", {"type" : 3}, function(err,ret){
                     edgecollection = ret;
                     db.collection.create("verticescollection", function(err,ret){
@@ -56,7 +58,7 @@ describe("edge",function(){
                 check( done, function () {
                     ret.error.should.equal(false);
                     edge = ret;
-                    message.statusCode.should.equal(202);
+                    message.status.should.equal(202);
                 } );
             });
         })
@@ -64,7 +66,7 @@ describe("edge",function(){
             db.edge.create(edgecollection.id, vertices[1]._id, vertices[2]._id, {"key1" : "val1", "key3" : "val3"}, null, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(false);
-                    message.statusCode.should.equal(202);
+                    message.status.should.equal(202);
                 } );
             });
         })
@@ -75,7 +77,7 @@ describe("edge",function(){
             db.edge.create("anotherCollection", vertices[0]._id, vertices[1]._id, {"key1" : "val1", "key2" : "val2"}, options, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(false);
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -84,7 +86,7 @@ describe("edge",function(){
             db.edge.get(edge._id + 200, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(true);
-                    message.statusCode.should.equal(404);
+                    message.status.should.equal(404);
                 } );
             });
         })
@@ -94,7 +96,7 @@ describe("edge",function(){
             options.rev = edge._rev;
             db.edge.get(edge._id, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(304);
+                    message.status.should.equal(304);
                 } );
             });
         })
@@ -104,7 +106,7 @@ describe("edge",function(){
             options.rev = edge._rev + 1;
             db.edge.get(edge._id, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -114,7 +116,7 @@ describe("edge",function(){
             options.rev = edge._rev;
             db.edge.get(edge._id, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -124,14 +126,14 @@ describe("edge",function(){
             options.rev = edge._rev + 1;
             db.edge.get(edge._id, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(412);
+                    message.status.should.equal(412);
                 } );
             });
         })
         it('lets get a non existing edges head"', function(done){
             db.edge.head(edge._id + 200, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(404);
+                    message.status.should.equal(404);
                 } );
             });
         })
@@ -141,7 +143,7 @@ describe("edge",function(){
             options.rev = edge._rev;
             db.edge.head(edge._id, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(304);
+                    message.status.should.equal(304);
                 } );
             });
         })
@@ -151,7 +153,7 @@ describe("edge",function(){
             options.rev = edge._rev + 1;
             db.edge.head(edge._id, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -161,7 +163,7 @@ describe("edge",function(){
             options.rev = edge._rev;
             db.edge.head(edge._id, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -171,7 +173,7 @@ describe("edge",function(){
             options.rev = edge._rev + 1;
             db.edge.head(edge._id, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(412);
+                    message.status.should.equal(412);
                 } );
             });
         })
@@ -179,7 +181,7 @@ describe("edge",function(){
             db.edge.list(edgecollection.id, vertices[1]._id, "in", function(err,ret, message){
                 check( done, function () {
                     ret.edges.length.should.equal(1);
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -188,7 +190,7 @@ describe("edge",function(){
             db.edge.list(edgecollection.id, vertices[1]._id, "out", function(err,ret, message){
                 check( done, function () {
                     ret.edges.length.should.equal(1);
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -197,7 +199,7 @@ describe("edge",function(){
             db.edge.list(edgecollection.id, vertices[1]._id, "any" ,function(err,ret, message){
                 check( done, function () {
                     ret.edges.length.should.equal(2);
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -207,16 +209,16 @@ describe("edge",function(){
             db.edge.list(edgecollection.id, vertices[1]._id, function(err,ret, message){
                 check( done, function () {
                     ret.edges.length.should.equal(2);
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
         it('lets get the list again with default collection', function(done){
-            db = new arango.Connection({_name:"newDatabase",_server:{hostname:"localhost"}, _collection: edgecollection.id});
+            db = arango.Connection({_name:"newDatabase",_server:{hostname:"localhost"}, _collection: edgecollection.id});
             db.edge.list(vertices[1]._id, "any" ,function(err,ret, message){
                 check( done, function () {
                     ret.edges.length.should.equal(2);
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -224,19 +226,19 @@ describe("edge",function(){
             db.edge.list(vertices[1]._id ,function(err,ret, message){
                 check( done, function () {
                     ret.edges.length.should.equal(2);
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
 
 
         it('lets patch a non existing edge"', function(done){
-            db = new arango.Connection({_name:"newDatabase",_server:{hostname:"localhost"}});
+            db = arango.Connection({_name:"newDatabase",_server:{hostname:"localhost"}});
             var data = {"newKey" : "newValue"};
             db.edge.patch(edge._id + 200, data, null, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(true);
-                    message.statusCode.should.equal(404);
+                    message.status.should.equal(404);
                 } );
             });
         })
@@ -248,7 +250,7 @@ describe("edge",function(){
             db.edge.patch(edge._id, data , options, function(err,ret, message){
                 check( done, function () {
                     edge._rev = ret._rev;
-                    message.statusCode.should.equal(202);
+                    message.status.should.equal(202);
                 } );
             });
         })
@@ -261,7 +263,7 @@ describe("edge",function(){
             db.edge.patch(edge._id, data, options, function(err,ret, message){
                 check( done, function () {
                     edge._rev = ret._rev;
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -272,7 +274,7 @@ describe("edge",function(){
             options.rev = edge._rev + 1;
             db.edge.patch(edge._id, data, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(412);
+                    message.status.should.equal(412);
                 } );
             });
         })
@@ -288,7 +290,7 @@ describe("edge",function(){
             db.edge.patch(edge._id, data, options, function(err,ret, message){
                 check( done, function () {
 
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -307,7 +309,7 @@ describe("edge",function(){
             db.edge.put(edge._id + 200, data, null, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(true);
-                    message.statusCode.should.equal(404);
+                    message.status.should.equal(404);
                 } );
             });
         })
@@ -319,7 +321,7 @@ describe("edge",function(){
             db.edge.put(edge._id, data , options, function(err,ret, message){
                 check( done, function () {
                     edge._rev = ret._rev;
-                    message.statusCode.should.equal(202);
+                    message.status.should.equal(202);
                 } );
             });
         })
@@ -332,7 +334,7 @@ describe("edge",function(){
             db.edge.put(edge._id, data, options, function(err,ret, message){
                 check( done, function () {
                     edge._rev = ret._rev;
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -343,7 +345,7 @@ describe("edge",function(){
             options.rev = edge._rev + 1;
             db.edge.put(edge._id, data, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(412);
+                    message.status.should.equal(412);
                 } );
             });
         })
@@ -355,7 +357,7 @@ describe("edge",function(){
             options.forceUpdate = true;
             db.edge.put(edge._id, data, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(202);
+                    message.status.should.equal(202);
 
                 } );
             });
@@ -375,7 +377,7 @@ describe("edge",function(){
             db.edge.delete(edge._id + 200, null, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(true);
-                    message.statusCode.should.equal(404);
+                    message.status.should.equal(404);
                 } );
             });
         })
@@ -385,7 +387,7 @@ describe("edge",function(){
             options.rev = edge._rev + 1;
             db.edge.delete(edge._id,  options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(412);
+                    message.status.should.equal(412);
                 } );
             });
         })
@@ -397,7 +399,7 @@ describe("edge",function(){
             db.edge.delete(edge._id, options, function(err,ret, message){
                 check( done, function () {
                     edge._rev = ret._rev;
-                    message.statusCode.should.equal(202);
+                    message.status.should.equal(202);
                 } );
             });
         })
@@ -406,7 +408,7 @@ describe("edge",function(){
                 check( done, function () {
                     ret.error.should.equal(false);
                     edge = ret;
-                    message.statusCode.should.equal(202);
+                    message.status.should.equal(202);
                 } );
             });
         })
@@ -418,7 +420,7 @@ describe("edge",function(){
             db.edge.delete(edge._id, options, function(err,ret, message){
                 check( done, function () {
                     edge._rev = ret._rev;
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })

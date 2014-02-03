@@ -1,3 +1,5 @@
+var arango;
+
 try{ arango = require('arango') } catch (e){ arango = require('..') }
 
 function check( done, f ) {
@@ -18,17 +20,17 @@ describe("indexWithDefaultCollection",function(){
 
     before(function(done){
         this.timeout(20000);
-        db = new arango.Connection("http://127.0.0.1:8529");
+        db = arango.Connection("http://127.0.0.1:8529");
         db.database.delete("newDatabase",function(err, ret){
             db.database.create("newDatabase",function(err, ret){
-                db = new arango.Connection({_name:"newDatabase",_server:{hostname:"localhost"}});
+                db = arango.Connection({_name:"newDatabase",_server:{hostname:"localhost"}});
                 db.collection.create("collection1", function(err,ret, message){
                     var data = [{"_key":"Anton","value1":25,"value2":"test","allowed":true},
                         {"_key":"Bert","value1":"baz"},
                         {"_key":"Cindy","value1":"baaaz"},
                         {"_key":"Emil","value1":"batz"}
                     ];
-                    db = new arango.Connection({_name:"newDatabase",_server:{hostname:"localhost"}, _collection: "collection1"});
+                    db = arango.Connection({_name:"newDatabase",_server:{hostname:"localhost"}, _collection: "collection1"});
                     done();
                 });
             });
@@ -42,7 +44,7 @@ describe("indexWithDefaultCollection",function(){
             db.index.createCapIndex({"size": 100, "byteSize" : 1000000}, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(false);
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -50,7 +52,7 @@ describe("indexWithDefaultCollection",function(){
             db.index.createCapIndex({"size": 100, "byteSize" : 1000000}, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(false);
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -59,7 +61,7 @@ describe("indexWithDefaultCollection",function(){
             db.index.createGeoSpatialIndex(["latitude", "longitude"], function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(false);
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -67,7 +69,7 @@ describe("indexWithDefaultCollection",function(){
             db.index.createGeoSpatialIndex(["latitude", "longitude"], function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(false);
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -75,7 +77,7 @@ describe("indexWithDefaultCollection",function(){
             db.index.createGeoSpatialIndex(["location"], {"geoJson": true}, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(false);
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -84,7 +86,7 @@ describe("indexWithDefaultCollection",function(){
             db.index.createHashIndex(["value1"],  function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(false);
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -92,7 +94,7 @@ describe("indexWithDefaultCollection",function(){
             db.index.createHashIndex(["value1"], function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(false);
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -101,7 +103,7 @@ describe("indexWithDefaultCollection",function(){
             db.index.createSkipListIndex(["value1"], function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(false);
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -109,7 +111,7 @@ describe("indexWithDefaultCollection",function(){
             db.index.createSkipListIndex(["value1"], function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(false);
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -118,7 +120,7 @@ describe("indexWithDefaultCollection",function(){
             db.index.createFulltextIndex(["value1"], function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(false);
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -126,7 +128,7 @@ describe("indexWithDefaultCollection",function(){
             db.index.createFulltextIndex(["value1"], function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(false);
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -135,7 +137,7 @@ describe("indexWithDefaultCollection",function(){
             db.index.createBitarrayIndex([ "x", [0,1,[]], "y", ["a","b",[]] ],  function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(false);
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -143,7 +145,7 @@ describe("indexWithDefaultCollection",function(){
             db.index.createBitarrayIndex([ "x", [0,1,[]], "y", ["a","b",[]] ], function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(false);
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -154,7 +156,7 @@ describe("indexWithDefaultCollection",function(){
                     indices = ret.indexes;
                     ret.error.should.equal(false);
                     ret.indexes.length.should.equal(8);
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -162,7 +164,7 @@ describe("indexWithDefaultCollection",function(){
             db.index.get(indices[1].id, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(false);
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -170,7 +172,7 @@ describe("indexWithDefaultCollection",function(){
             db.index.get(indices[5].id, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(false);
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -178,7 +180,7 @@ describe("indexWithDefaultCollection",function(){
             db.index.delete(indices[5].id, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(false);
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -188,7 +190,7 @@ describe("indexWithDefaultCollection",function(){
                     indices = ret.indexes;
                     ret.error.should.equal(false);
                     ret.indexes.length.should.equal(7);
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })

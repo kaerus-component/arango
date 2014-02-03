@@ -1,3 +1,5 @@
+var arango;
+
 try{ arango = require('arango') } catch (e){ arango = require('..') }
 
 function check( done, f ) {
@@ -16,7 +18,7 @@ describe("batch",function(){
 
     // now we end bacth mode and execute
     it('should exec bacth mode',function(done){
-        var db = new arango.Connection("http://127.0.0.1:8529");
+        var db = arango.Connection("http://127.0.0.1:8529");
         this.timeout(5000);
         // init batch mode
         var batch = db.batch.start();
@@ -32,7 +34,7 @@ describe("batch",function(){
 
         batch.batch.exec(function(err,ret, message){
             check( done, function () {
-                message.statusCode.should.equal(200);
+                message.status.should.equal(200);
             } );
         });
     })

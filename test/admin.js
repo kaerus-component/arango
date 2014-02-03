@@ -1,3 +1,5 @@
+var arango;
+
 try{ arango = require('arango') } catch (e){ arango = require('..') }
 
 function check( done, f ) {
@@ -12,7 +14,7 @@ function check( done, f ) {
 
 
 describe("admin",function(){
-	var db = new arango.Connection("http://127.0.0.1:8529");
+	var db = arango.Connection("http://127.0.0.1:8529");
 
     it('should be able to get the arango version',function(done){
         db.admin.version(true,function(err,ret){

@@ -38,8 +38,7 @@
     "lib/api/graph.js",
     "lib/api/batch.js",
     "lib/api/edge.js",
-    "lib/api/user.js",
-    "lib/api/key.js"
+    "lib/api/user.js"
   ],
   "license": "Apache2_0"
 }

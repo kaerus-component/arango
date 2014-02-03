@@ -94,7 +94,7 @@ describe("collections",function(){
                         ret.type.should.equal(2);
                         ret.isVolatile.should.equal(false);
                         ret.error.should.equal(false);
-                        message.statusCode.should.equal(200);
+                        message.status.should.equal(200);
                     } );
                 });
             })
@@ -106,7 +106,7 @@ describe("collections",function(){
                         ret.type.should.equal(2);
                         ret.isVolatile.should.equal(false);
                         ret.error.should.equal(false);
-                        message.statusCode.should.equal(200);
+                        message.status.should.equal(200);
                     } );
                 });
             })
@@ -115,7 +115,7 @@ describe("collections",function(){
                 db.collection.list(function(err,ret,message){
                     check( done, function () {
                         ret.error.should.equal(false);
-                        message.statusCode.should.equal(200);
+                        message.status.should.equal(200);
                     } );
                 });
             })
@@ -124,7 +124,7 @@ describe("collections",function(){
                     check( done, function () {
                         ret.error.should.equal(false);
                         ret.collections.length.should.equal(2);
-                        message.statusCode.should.equal(200);
+                        message.status.should.equal(200);
                     } );
                 });
             })
@@ -134,7 +134,7 @@ describe("collections",function(){
                     check( done, function () {
                         ret.error.should.equal(false);
                         ret.type.should.equal(2);
-                        message.statusCode.should.equal(200);
+                        message.status.should.equal(200);
                     } );
                 });
             })
@@ -142,7 +142,7 @@ describe("collections",function(){
                 db.collection.get("ndddewCollection2", function(err,ret,message){
                     check( done, function () {
                         ret.error.should.equal(true);
-                        message.statusCode.should.equal(404);
+                        message.status.should.equal(404);
                     } );
                 });
             })
@@ -150,7 +150,7 @@ describe("collections",function(){
                 db.collection.delete("newCollection2", function(err,ret,message){
                     check( done, function () {
                         ret.error.should.equal(false);
-                        message.statusCode.should.equal(200);
+                        message.status.should.equal(200);
                     } );
                 });
             })
@@ -158,7 +158,7 @@ describe("collections",function(){
                 db.collection.delete("ndddewCollection2", function(err,ret,message){
                     check( done, function () {
                         ret.error.should.equal(true);
-                        message.statusCode.should.equal(404);
+                        message.status.should.equal(404);
                     } );
                 });
             })
@@ -167,7 +167,7 @@ describe("collections",function(){
                 db.collection.truncate("newCollection", function(err,ret,message){
                     check( done, function () {
                         ret.error.should.equal(false);
-                        message.statusCode.should.equal(200);
+                        message.status.should.equal(200);
                     } );
                 });
             })
@@ -175,7 +175,7 @@ describe("collections",function(){
                 db.collection.truncate("ndddewCollection2", function(err,ret,message){
                     check( done, function () {
                         ret.error.should.equal(true);
-                        message.statusCode.should.equal(404);
+                        message.status.should.equal(404);
                     } );
                 });
             })
@@ -185,7 +185,7 @@ describe("collections",function(){
                     check( done, function () {
                         ret.error.should.equal(false);
                         ret.count.should.equal(0);
-                        message.statusCode.should.equal(200);
+                        message.status.should.equal(200);
                     } );
                 });
             })
@@ -193,7 +193,7 @@ describe("collections",function(){
                 db.collection.count("ndddewCollection2", function(err,ret,message){
                     check( done, function () {
                         ret.error.should.equal(true);
-                        message.statusCode.should.equal(404);
+                        message.status.should.equal(404);
                     } );
                 });
             })
@@ -204,7 +204,7 @@ describe("collections",function(){
                         ret.count.should.equal(0);
                         ret.should.have.property("figures");
                         ret.error.should.equal(false);
-                        message.statusCode.should.equal(200);
+                        message.status.should.equal(200);
                     } );
                 });
             })
@@ -212,7 +212,7 @@ describe("collections",function(){
                 db.collection.figures("ndddewCollection2", function(err,ret,message){
                     check( done, function () {
                         ret.error.should.equal(true);
-                        message.statusCode.should.equal(404);
+                        message.status.should.equal(404);
                     } );
                 });
             })
@@ -222,7 +222,7 @@ describe("collections",function(){
                     check( done, function () {
                         ret.error.should.equal(false);
                         ret.should.have.property("count");
-                        message.statusCode.should.equal(200);
+                        message.status.should.equal(200);
                     } );
                 });
             })
@@ -231,7 +231,7 @@ describe("collections",function(){
                     check( done, function () {
                         ret.error.should.equal(false);
                         ret.should.not.have.property("count");
-                        message.statusCode.should.equal(200);
+                        message.status.should.equal(200);
                     } );
                 });
             })
@@ -239,7 +239,7 @@ describe("collections",function(){
                 db.collection.load("ndddewCollection2", function(err,ret,message){
                     check( done, function () {
                         ret.error.should.equal(true);
-                        message.statusCode.should.equal(404);
+                        message.status.should.equal(404);
                     } );
                 });
             })
@@ -248,7 +248,7 @@ describe("collections",function(){
                 db.collection.unload("newCollection", function(err,ret,message){
                     check( done, function () {
                         ret.error.should.equal(false);
-                        message.statusCode.should.equal(200);
+                        message.status.should.equal(200);
                     } );
                 });
             })
@@ -256,7 +256,7 @@ describe("collections",function(){
                 db.collection.unload("ndddewCollection2", function(err,ret,message){
                     check( done, function () {
                         ret.error.should.equal(true);
-                        message.statusCode.should.equal(404);
+                        message.status.should.equal(404);
                     } );
                 });
             })
@@ -265,7 +265,7 @@ describe("collections",function(){
                 db.collection.rename("newCollection", "newCollectionName", function(err,ret,message){
                     check( done, function () {
                         ret.error.should.equal(false);
-                        message.statusCode.should.equal(200);
+                        message.status.should.equal(200);
                     } );
                 });
             })
@@ -273,7 +273,7 @@ describe("collections",function(){
                 db.collection.rename("ndddewCollection2", "newCollectionName", function(err,ret,message){
                     check( done, function () {
                         ret.error.should.equal(true);
-                        message.statusCode.should.equal(404);
+                        message.status.should.equal(404);
                     } );
                 });
             })
@@ -287,7 +287,7 @@ describe("collections",function(){
                         ret.keyOptions.offset.should.equal(0);
                         ret.keyOptions.increment.should.equal(5);
                         ret.keyOptions.allowUserKeys.should.equal(true);
-                        message.statusCode.should.equal(200);
+                        message.status.should.equal(200);
                     } );
                 });
             })
@@ -295,7 +295,7 @@ describe("collections",function(){
                 db.collection.getProperties("ndddewCollection2", function(err,ret,message){
                     check( done, function () {
                         ret.error.should.equal(true);
-                        message.statusCode.should.equal(404);
+                        message.status.should.equal(404);
                     } );
                 });
             })
@@ -303,7 +303,7 @@ describe("collections",function(){
                 db.collection.setProperties("newCollectionName", {}, function(err,ret,message){
                     check( done, function () {
                         ret.error.should.equal(false);
-                        message.statusCode.should.equal(200);
+                        message.status.should.equal(200);
                     } );
                 });
             })
@@ -311,7 +311,7 @@ describe("collections",function(){
                 db.collection.setProperties("ndddewCollection2", {}, function(err,ret,message){
                     check( done, function () {
                         ret.error.should.equal(true);
-                        message.statusCode.should.equal(404);
+                        message.status.should.equal(404);
                     } );
                 });
             })
@@ -320,7 +320,7 @@ describe("collections",function(){
                     check( done, function () {
                         ret.should.have.property("revision");
                         ret.error.should.equal(false);
-                        message.statusCode.should.equal(200);
+                        message.status.should.equal(200);
                     } );
                 });
             })
@@ -328,7 +328,7 @@ describe("collections",function(){
                 db.collection.revision("ndddewCollection2", function(err,ret,message){
                     check( done, function () {
                         ret.error.should.equal(true);
-                        message.statusCode.should.equal(404);
+                        message.status.should.equal(404);
                     } );
                 });
             })
@@ -337,7 +337,7 @@ describe("collections",function(){
                 db.document.create("newCollectionName", {"key1" : "val1", "key2" : "val2", "key3" : null}, null, function(err,ret, message){
                     check( done, function () {
                         ret.error.should.equal(false);
-                        message.statusCode.should.equal(201);
+                        message.status.should.equal(201);
                     } );
                 });
             })
@@ -348,7 +348,7 @@ describe("collections",function(){
                         ret.should.have.property("checksum");
                         checksum = ret.checksum;
                         ret.error.should.equal(false);
-                        message.statusCode.should.equal(200);
+                        message.status.should.equal(200);
                     } );
                 });
             })
@@ -358,7 +358,7 @@ describe("collections",function(){
                         ret.should.have.property("checksum");
                         ret.checksum.should.not.equal(checksum);
                         ret.error.should.equal(false);
-                        message.statusCode.should.equal(200);
+                        message.status.should.equal(200);
                     } );
                 });
             })
@@ -366,7 +366,7 @@ describe("collections",function(){
                 db.collection.checksum("ndddewCollection2", function(err,ret,message){
                     check( done, function () {
                         ret.error.should.equal(true);
-                        message.statusCode.should.equal(404);
+                        message.status.should.equal(404);
                     } );
                 });
             })

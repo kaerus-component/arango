@@ -1,3 +1,5 @@
+var arango;
+
 try{ arango = require('arango') } catch (e){ arango = require('..') }
 
 function check( done, f ) {
@@ -16,13 +18,13 @@ var db;
 
 describe("document",function(){
 
-    db = new arango.Connection("http://127.0.0.1:8529");
+    db = arango.Connection("http://127.0.0.1:8529");
 
     before(function(done){
         this.timeout(30000);
         db.database.delete("newDatabase",function(err, ret){
             db.database.create("newDatabase",function(err, ret){
-                db = new arango.Connection({_name:"newDatabase",_server:{hostname:"localhost"}});
+                db = arango.Connection({_name:"newDatabase",_server:{hostname:"localhost"}});
                 db.collection.create("newCollection", function(err,ret){
                     collection = ret;
                     done()
@@ -39,7 +41,7 @@ describe("document",function(){
                 check( done, function () {
                     ret.error.should.equal(false);
                     document = ret;
-                    message.statusCode.should.equal(202);
+                    message.status.should.equal(202);
                 } );
             });
         })
@@ -47,7 +49,7 @@ describe("document",function(){
             db.document.create(collection.id, {"key1" : "val1", "key3" : "val3"}, null, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(false);
-                    message.statusCode.should.equal(202);
+                    message.status.should.equal(202);
                 } );
             });
         })
@@ -58,7 +60,7 @@ describe("document",function(){
             db.document.create("anotherCollection", {"key1" : "val1", "key2" : "val2"}, options, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(false);
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -66,7 +68,7 @@ describe("document",function(){
             db.collection.rotate(collection.id, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(false);
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -75,7 +77,7 @@ describe("document",function(){
             db.document.get(document._id + 200, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(true);
-                    message.statusCode.should.equal(404);
+                    message.status.should.equal(404);
                 } );
             });
         })
@@ -85,7 +87,7 @@ describe("document",function(){
             options.rev = document._rev;
             db.document.get(document._id, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(304);
+                    message.status.should.equal(304);
                 } );
             });
         })
@@ -95,7 +97,7 @@ describe("document",function(){
             options.rev = document._rev + 1;
             db.document.get(document._id, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -105,7 +107,7 @@ describe("document",function(){
             options.rev = document._rev;
             db.document.get(document._id, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -115,14 +117,14 @@ describe("document",function(){
             options.rev = document._rev + 1;
             db.document.get(document._id, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(412);
+                    message.status.should.equal(412);
                 } );
             });
         })
         it('lets get a non existing documents head"', function(done){
             db.document.head(document._id + 200, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(404);
+                    message.status.should.equal(404);
                 } );
             });
         })
@@ -132,7 +134,7 @@ describe("document",function(){
             options.rev = document._rev;
             db.document.head(document._id, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(304);
+                    message.status.should.equal(304);
                 } );
             });
         })
@@ -142,7 +144,7 @@ describe("document",function(){
             options.rev = document._rev + 1;
             db.document.head(document._id, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -152,7 +154,7 @@ describe("document",function(){
             options.rev = document._rev;
             db.document.head(document._id, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -162,7 +164,7 @@ describe("document",function(){
             options.rev = document._rev + 1;
             db.document.head(document._id, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(412);
+                    message.status.should.equal(412);
                 } );
             });
         })
@@ -170,7 +172,7 @@ describe("document",function(){
             db.document.list(collection.id, function(err,ret, message){
                 check( done, function () {
                     ret.documents.length.should.equal(2);
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -180,7 +182,7 @@ describe("document",function(){
             db.document.patch(document._id + 200, data, null, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(true);
-                    message.statusCode.should.equal(404);
+                    message.status.should.equal(404);
                 } );
             });
         })
@@ -192,7 +194,7 @@ describe("document",function(){
             db.document.patch(document._id, data , options, function(err,ret, message){
                 check( done, function () {
                     document._rev = ret._rev;
-                    message.statusCode.should.equal(202);
+                    message.status.should.equal(202);
                 } );
             });
         })
@@ -205,7 +207,7 @@ describe("document",function(){
             db.document.patch(document._id, data, options, function(err,ret, message){
                 check( done, function () {
                     document._rev = ret._rev;
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -216,7 +218,7 @@ describe("document",function(){
             options.rev = document._rev + 1;
             db.document.patch(document._id, data, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(412);
+                    message.status.should.equal(412);
                 } );
             });
         })
@@ -233,7 +235,7 @@ describe("document",function(){
             db.document.patch(document._id, data, options, function(err,ret, message){
                 check( done, function () {
 
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -252,7 +254,7 @@ describe("document",function(){
             db.document.put(document._id + 200, data, null, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(true);
-                    message.statusCode.should.equal(404);
+                    message.status.should.equal(404);
                 } );
             });
         })
@@ -264,7 +266,7 @@ describe("document",function(){
             db.document.put(document._id, data , options, function(err,ret, message){
                 check( done, function () {
                     document._rev = ret._rev;
-                    message.statusCode.should.equal(202);
+                    message.status.should.equal(202);
                 } );
             });
         })
@@ -277,7 +279,7 @@ describe("document",function(){
             db.document.put(document._id, data, options, function(err,ret, message){
                 check( done, function () {
                     document._rev = ret._rev;
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -288,7 +290,7 @@ describe("document",function(){
             options.rev = document._rev + 1;
             db.document.put(document._id, data, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(412);
+                    message.status.should.equal(412);
                 } );
             });
         })
@@ -300,7 +302,7 @@ describe("document",function(){
             options.forceUpdate = true;
             db.document.put(document._id, data, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(202);
+                    message.status.should.equal(202);
 
                 } );
             });
@@ -320,7 +322,7 @@ describe("document",function(){
             db.document.delete(document._id + 200, null, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(true);
-                    message.statusCode.should.equal(404);
+                    message.status.should.equal(404);
                 } );
             });
         })
@@ -330,7 +332,7 @@ describe("document",function(){
             options.rev = document._rev + 1;
             db.document.delete(document._id,  options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(412);
+                    message.status.should.equal(412);
                 } );
             });
         })
@@ -342,7 +344,7 @@ describe("document",function(){
             db.document.delete(document._id, options, function(err,ret, message){
                 check( done, function () {
                     document._rev = ret._rev;
-                    message.statusCode.should.equal(202);
+                    message.status.should.equal(202);
                 } );
             });
         })
@@ -351,7 +353,7 @@ describe("document",function(){
                 check( done, function () {
                     ret.error.should.equal(false);
                     document = ret;
-                    message.statusCode.should.equal(202);
+                    message.status.should.equal(202);
                 } );
             });
         })
@@ -363,7 +365,7 @@ describe("document",function(){
             db.document.delete(document._id, options, function(err,ret, message){
                 check( done, function () {
                     document._rev = ret._rev;
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
