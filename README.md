@@ -93,6 +93,8 @@ The following API:s are (more or less) supported, check out the ArangoDB [docume
   * [simple](http://www.arangodb.org/manuals/current/HttpSimple.html)
   * [index](http://www.arangodb.org/manuals/current/HttpIndex.html)
   * [admin](http://www.arangodb.org/manuals/current/HttpSystem.html)
+  * [aqlfunction](https://www.arangodb.org/manuals/current/HttpAqlFunctions.html)
+  * [batch](https://www.arangodb.org/manuals/current/HttpBatch.html)
   * [query](http://www.arangodb.org/manuals/current/HttpQuery.html)
   * [graph](http://www.arangodb.org/manuals/current/HttpGraph.html)
   * [edge](http://www.arangodb.org/manuals/current/RestEdge.html)
