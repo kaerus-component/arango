@@ -175,6 +175,7 @@ describe("simpleWithDefaultCollection",function(){
             });
         })
         it('update all documents matching an example, without options',function(done){
+            this.timeout(30000);
             db.simple.updateByExample( {"age" : 31}, {"married" : false}, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(false);
