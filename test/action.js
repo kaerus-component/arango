@@ -1,4 +1,4 @@
-var arango;
+var arango, db, actions;
 
 try{ arango = require('arango') } catch (e){ arango = require('..') }
 
@@ -11,9 +11,6 @@ function check( done, f ) {
         done( e )
     }
 }
-
-var db;
-var actions;
 
 describe("action",function(){
 

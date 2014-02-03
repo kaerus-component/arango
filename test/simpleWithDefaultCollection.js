@@ -1,4 +1,4 @@
-var arango;
+var arango, db, indices = {};
 
 try{ arango = require('arango') } catch (e){ arango = require('..') }
 
@@ -22,9 +22,6 @@ function getIndexByType(collection, type) {
     return result;
 }
 
-
-var db;
-var indices = {};
 
 describe("simpleWithDefaultCollection",function(){
 

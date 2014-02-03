@@ -12,9 +12,7 @@ function check( done, f ) {
     }
 }
 
-
 describe("batch",function(){
-
 
     // now we end bacth mode and execute
     it('should exec bacth mode',function(done){
@@ -38,7 +36,4 @@ describe("batch",function(){
             } );
         });
     })
-
-
-
 })

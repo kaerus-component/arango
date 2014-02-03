@@ -1,4 +1,4 @@
-var arango;
+var arango, db, jobs = [], storedJobs = {};
 
 try{ arango = require('arango') } catch (e){ arango = require('..') }
 
@@ -15,12 +15,6 @@ function check( done, f ) {
 function setJobs() {
 
 }
-var db;
-var jobs = [];
-var storedJobs = {};
-
-
-
 
 describe("async",function(){
 

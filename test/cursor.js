@@ -1,4 +1,4 @@
-var arango;
+var arango, db;
 
 try{ arango = require('arango') } catch (e){ arango = require('..') }
 
@@ -12,11 +12,6 @@ function check( done, f ) {
     }
 }
 
-var collection;
-var document;
-var db;
-var cursor;
-
 describe("cursor",function(){
     db = arango.Connection("http://127.0.0.1:8529");
 
@@ -26,7 +21,7 @@ describe("cursor",function(){
             db.database.create("newDatabase",function(err, ret){
                 db = arango.Connection({_name:"newDatabase",_server:{hostname:"localhost"}});
                 db.collection.create("newCollection", function(err,ret){
-                    collection = ret;
+                    var collection = ret;
                     db.document.create(collection.id, {"key1" : "val2", "key2" : "val3", "key3" : "val4"}, null, function(err,ret, message){
                         ret.error.should.equal(false);
                         db.document.create(collection.id, {"key1" : "val2", "key5" : "val3", "key6" : "val4"}, null, function(err,ret, message){

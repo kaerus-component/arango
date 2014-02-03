@@ -1,4 +1,4 @@
-var arango;
+var arango, db;
 
 try{ arango = require('arango') } catch (e){ arango = require('..') }
 
@@ -11,8 +11,6 @@ function check( done, f ) {
         done( e )
     }
 }
-
-var db;
 
 describe("import",function(){
 
@@ -28,7 +26,6 @@ describe("import",function(){
                 });
             });
         });
-
     })
 
     describe("importFunctions",function(){
@@ -38,14 +35,13 @@ describe("import",function(){
         })
 
         afterEach(function(done){
+            this.timeout(5000);
             db.collection.delete("collection", function(err,ret){
                 db.collection.delete("newCollection", function(err,ret){
                     done();
                 });
             })
         })
-
-
         it('importJSONData with single JSON Object and waitForSync',function(done){
 
             var options = {"waitForSync" : true, "details" : true};
@@ -94,8 +90,6 @@ describe("import",function(){
                 } );
             });
         })
-
-
         it('importJSONData with single JSON Object, without options',function(done){
 
 
@@ -145,12 +139,6 @@ describe("import",function(){
                 } );
             });
         })
-
-
-
-
-
-
         it('importJSONData with single JSON Object and complete. Provoke a unique constraint violation and expect a 409',function(done){
 
             var options = {"waitForSync" : true, "details" : true, "complete" : true};
@@ -166,8 +154,6 @@ describe("import",function(){
                 } );
             });
         })
-
-
         it('importValueList with single JSON Object and waitForSync',function(done){
 
             var options = {"waitForSync" : true, "details" : true};
@@ -228,14 +214,6 @@ describe("import",function(){
                 } );
             });
         })
-
-
-
-
-
-
-
-
         it('importValueList with single JSON Object, without options',function(done){
 
 
@@ -281,17 +259,5 @@ describe("import",function(){
                 } );
             });
         })
-
-
-
-
-
-
-
-
-
-
-
-
     })
 })

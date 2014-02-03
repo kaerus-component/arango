@@ -1,4 +1,4 @@
-var arango;
+var arango, db, verticescollection, edgecollection, vertices = [], edges = [];
 
 try{ arango = require('arango') } catch (e){ arango = require('..') }
 
@@ -12,11 +12,6 @@ function check( done, f ) {
     }
 }
 
-var verticescollection;
-var edgecollection;
-var vertices = [];
-var edges = [];
-var db;
 
 describe("graph",function(){
 

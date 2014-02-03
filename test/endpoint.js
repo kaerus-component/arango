@@ -1,4 +1,4 @@
-var arango;
+var arango, db;
 
 try{ arango = require('arango') } catch (e){ arango = require('..') }
 
@@ -12,7 +12,7 @@ function check( done, f ) {
     }
 }
 
-var db;
+
 describe("endpoint",function(){
 
     db = arango.Connection("http://127.0.0.1:8529");

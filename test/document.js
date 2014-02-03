@@ -1,4 +1,4 @@
-var arango;
+var arango, db, collection, doc;
 
 try{ arango = require('arango') } catch (e){ arango = require('..') }
 
@@ -11,10 +11,6 @@ function check( done, f ) {
         done( e )
     }
 }
-
-var collection;
-var document;
-var db;
 
 describe("document",function(){
 
@@ -40,7 +36,7 @@ describe("document",function(){
             db.document.create(collection.id, {"key1" : "val1", "key2" : "val2", "key3" : null}, null, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(false);
-                    document = ret;
+                    doc = ret;
                     message.status.should.equal(202);
                 } );
             });
@@ -74,7 +70,7 @@ describe("document",function(){
         })
 
         it('lets get a non existing document"', function(done){
-            db.document.get(document._id + 200, function(err,ret, message){
+            db.document.get(doc._id + 200, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(true);
                     message.status.should.equal(404);
@@ -84,8 +80,8 @@ describe("document",function(){
         it('lets get a document with "match" header == false and correct revision"', function(done){
             var options = {};
             options.match = false;
-            options.rev = document._rev;
-            db.document.get(document._id, options, function(err,ret, message){
+            options.rev = doc._rev;
+            db.document.get(doc._id, options, function(err,ret, message){
                 check( done, function () {
                     message.status.should.equal(304);
                 } );
@@ -94,8 +90,8 @@ describe("document",function(){
         it('lets get a document with "match" header == false and wrong revision"', function(done){
             var options = {};
             options.match = false;
-            options.rev = document._rev + 1;
-            db.document.get(document._id, options, function(err,ret, message){
+            options.rev = doc._rev + 1;
+            db.document.get(doc._id, options, function(err,ret, message){
                 check( done, function () {
                     message.status.should.equal(200);
                 } );
@@ -104,8 +100,8 @@ describe("document",function(){
         it('lets get a document with "match" header and correct revision"', function(done){
             var options = {};
             options.match = true;
-            options.rev = document._rev;
-            db.document.get(document._id, options, function(err,ret, message){
+            options.rev = doc._rev;
+            db.document.get(doc._id, options, function(err,ret, message){
                 check( done, function () {
                     message.status.should.equal(200);
                 } );
@@ -114,15 +110,15 @@ describe("document",function(){
         it('lets get a document with "match" header and wrong revision', function(done){
             var options = {};
             options.match = true;
-            options.rev = document._rev + 1;
-            db.document.get(document._id, options, function(err,ret, message){
+            options.rev = doc._rev + 1;
+            db.document.get(doc._id, options, function(err,ret, message){
                 check( done, function () {
                     message.status.should.equal(412);
                 } );
             });
         })
         it('lets get a non existing documents head"', function(done){
-            db.document.head(document._id + 200, function(err,ret, message){
+            db.document.head(doc._id + 200, function(err,ret, message){
                 check( done, function () {
                     message.status.should.equal(404);
                 } );
@@ -131,8 +127,8 @@ describe("document",function(){
         it('lets get a documents head with "match" header == false and correct revision"', function(done){
             var options = {};
             options.match = false;
-            options.rev = document._rev;
-            db.document.head(document._id, options, function(err,ret, message){
+            options.rev = doc._rev;
+            db.document.head(doc._id, options, function(err,ret, message){
                 check( done, function () {
                     message.status.should.equal(304);
                 } );
@@ -141,8 +137,8 @@ describe("document",function(){
         it('lets get a documents head with "match" header == false and wrong revision"', function(done){
             var options = {};
             options.match = false;
-            options.rev = document._rev + 1;
-            db.document.head(document._id, options, function(err,ret, message){
+            options.rev = doc._rev + 1;
+            db.document.head(doc._id, options, function(err,ret, message){
                 check( done, function () {
                     message.status.should.equal(200);
                 } );
@@ -151,8 +147,8 @@ describe("document",function(){
         it('lets get a documents head with "match" header and correct revision"', function(done){
             var options = {};
             options.match = true;
-            options.rev = document._rev;
-            db.document.head(document._id, options, function(err,ret, message){
+            options.rev = doc._rev;
+            db.document.head(doc._id, options, function(err,ret, message){
                 check( done, function () {
                     message.status.should.equal(200);
                 } );
@@ -161,8 +157,8 @@ describe("document",function(){
         it('lets get a documents head with "match" header and wrong revision', function(done){
             var options = {};
             options.match = true;
-            options.rev = document._rev + 1;
-            db.document.head(document._id, options, function(err,ret, message){
+            options.rev = doc._rev + 1;
+            db.document.head(doc._id, options, function(err,ret, message){
                 check( done, function () {
                     message.status.should.equal(412);
                 } );
@@ -179,7 +175,7 @@ describe("document",function(){
 
         it('lets patch a non existing document"', function(done){
             var data = {"newKey" : "newValue"};
-            db.document.patch(document._id + 200, data, null, function(err,ret, message){
+            db.document.patch(doc._id + 200, data, null, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(true);
                     message.status.should.equal(404);
@@ -190,10 +186,10 @@ describe("document",function(){
             var data = {"newKey" : "newValue"};
             var options = {};
             options.match = false;
-            options.rev = document._rev + 1;
-            db.document.patch(document._id, data , options, function(err,ret, message){
+            options.rev = doc._rev + 1;
+            db.document.patch(doc._id, data , options, function(err,ret, message){
                 check( done, function () {
-                    document._rev = ret._rev;
+                    doc._rev = ret._rev;
                     message.status.should.equal(202);
                 } );
             });
@@ -203,10 +199,10 @@ describe("document",function(){
             var options = {};
             options.match = true;
             options.waitForSync = true;
-            options.rev = document._rev;
-            db.document.patch(document._id, data, options, function(err,ret, message){
+            options.rev = doc._rev;
+            db.document.patch(doc._id, data, options, function(err,ret, message){
                 check( done, function () {
-                    document._rev = ret._rev;
+                    doc._rev = ret._rev;
                     message.status.should.equal(201);
                 } );
             });
@@ -215,8 +211,8 @@ describe("document",function(){
             var data = {"newKey" : "newValue"};
             var options = {};
             options.match = true;
-            options.rev = document._rev + 1;
-            db.document.patch(document._id, data, options, function(err,ret, message){
+            options.rev = doc._rev + 1;
+            db.document.patch(doc._id, data, options, function(err,ret, message){
                 check( done, function () {
                     message.status.should.equal(412);
                 } );
@@ -227,12 +223,12 @@ describe("document",function(){
             var data = {"newKey" : "newValue", "key3" : null};
             var options = {};
             options.match = true;
-            options.rev = document._rev + 1;
+            options.rev = doc._rev + 1;
             options.forceUpdate = true;
 
             options.waitForSync = true;
             options.keepNull = "false";
-            db.document.patch(document._id, data, options, function(err,ret, message){
+            db.document.patch(doc._id, data, options, function(err,ret, message){
                 check( done, function () {
 
                     message.status.should.equal(201);
@@ -241,7 +237,7 @@ describe("document",function(){
         })
 
         it('lets verify the last patch', function(done){
-            db.document.get(document._id, function(err,ret, message){
+            db.document.get(doc._id, function(err,ret, message){
                 check( done, function () {
                     ret.should.not.have.property("key3");
                     ret.should.have.property("newKey");
@@ -251,7 +247,7 @@ describe("document",function(){
 
         it('lets put a non existing document"', function(done){
             var data = {"newKey" : "newValue"};
-            db.document.put(document._id + 200, data, null, function(err,ret, message){
+            db.document.put(doc._id + 200, data, null, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(true);
                     message.status.should.equal(404);
@@ -262,10 +258,10 @@ describe("document",function(){
             var data = {"newKey" : "newValue"};
             var options = {};
             options.match = false;
-            options.rev = document._rev + 1;
-            db.document.put(document._id, data , options, function(err,ret, message){
+            options.rev = doc._rev + 1;
+            db.document.put(doc._id, data , options, function(err,ret, message){
                 check( done, function () {
-                    document._rev = ret._rev;
+                    doc._rev = ret._rev;
                     message.status.should.equal(202);
                 } );
             });
@@ -275,10 +271,10 @@ describe("document",function(){
             var options = {};
             options.match = true;
             options.waitForSync = true;
-            options.rev = document._rev;
-            db.document.put(document._id, data, options, function(err,ret, message){
+            options.rev = doc._rev;
+            db.document.put(doc._id, data, options, function(err,ret, message){
                 check( done, function () {
-                    document._rev = ret._rev;
+                    doc._rev = ret._rev;
                     message.status.should.equal(201);
                 } );
             });
@@ -287,8 +283,8 @@ describe("document",function(){
             var data = {"newKey" : "newValue"};
             var options = {};
             options.match = true;
-            options.rev = document._rev + 1;
-            db.document.put(document._id, data, options, function(err,ret, message){
+            options.rev = doc._rev + 1;
+            db.document.put(doc._id, data, options, function(err,ret, message){
                 check( done, function () {
                     message.status.should.equal(412);
                 } );
@@ -298,9 +294,9 @@ describe("document",function(){
             var data = {"newKey" : "newValue"};
             var options = {};
             options.match = true;
-            options.rev = document._rev + 1;
+            options.rev = doc._rev + 1;
             options.forceUpdate = true;
-            db.document.put(document._id, data, options, function(err,ret, message){
+            db.document.put(doc._id, data, options, function(err,ret, message){
                 check( done, function () {
                     message.status.should.equal(202);
 
@@ -308,7 +304,7 @@ describe("document",function(){
             });
         })
         it('lets verify the last put', function(done){
-            db.document.get(document._id, function(err,ret, message){
+            db.document.get(doc._id, function(err,ret, message){
                 check( done, function () {
                     ret.should.not.have.property("key3");
                     ret.should.not.have.property("key2");
@@ -319,7 +315,7 @@ describe("document",function(){
         })
 
         it('lets delete a non existing document"', function(done){
-            db.document.delete(document._id + 200, null, function(err,ret, message){
+            db.document.delete(doc._id + 200, null, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(true);
                     message.status.should.equal(404);
@@ -329,8 +325,8 @@ describe("document",function(){
         it('lets delete a document with "match" header and wrong revision', function(done){
             var options = {};
             options.match = true;
-            options.rev = document._rev + 1;
-            db.document.delete(document._id,  options, function(err,ret, message){
+            options.rev = doc._rev + 1;
+            db.document.delete(doc._id,  options, function(err,ret, message){
                 check( done, function () {
                     message.status.should.equal(412);
                 } );
@@ -340,10 +336,10 @@ describe("document",function(){
         it('lets delete a document with "match" header == false and wrong revision"', function(done){
             var options = {};
             options.match = false;
-            options.rev = document._rev + 1;
-            db.document.delete(document._id, options, function(err,ret, message){
+            options.rev = doc._rev + 1;
+            db.document.delete(doc._id, options, function(err,ret, message){
                 check( done, function () {
-                    document._rev = ret._rev;
+                    doc._rev = ret._rev;
                     message.status.should.equal(202);
                 } );
             });
@@ -352,7 +348,7 @@ describe("document",function(){
             db.document.create(collection.id, {"key1" : "val1", "key2" : "val2", "key3" : null}, null, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(false);
-                    document = ret;
+                    doc = ret;
                     message.status.should.equal(202);
                 } );
             });
@@ -361,10 +357,10 @@ describe("document",function(){
             var options = {};
             options.match = true;
             options.waitForSync = true;
-            options.rev = document._rev;
-            db.document.delete(document._id, options, function(err,ret, message){
+            options.rev = doc._rev;
+            db.document.delete(doc._id, options, function(err,ret, message){
                 check( done, function () {
-                    document._rev = ret._rev;
+                    doc._rev = ret._rev;
                     message.status.should.equal(200);
                 } );
             });
