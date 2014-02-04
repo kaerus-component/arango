@@ -53,7 +53,6 @@ describe("import",function(){
 
 
             db.import.importJSONData("collection", data, options, function(err,ret, message){
-                console.log("err(%s):", err, JSON.stringify(ret));
                 check( done, function () {
                     ret.error.should.equal(false);
                     ret.created.should.equal(3);
