@@ -1,3 +1,5 @@
+var arango, db;
+
 try{ arango = require('arango') } catch (e){ arango = require('..') }
 
 function check( done, f ) {
@@ -10,17 +12,16 @@ function check( done, f ) {
     }
 }
 
-var db;
 
 describe("transaction",function(){
 
 
     before(function(done){
         this.timeout(20000);
-        db = new arango.Connection("http://127.0.0.1:8529");
+        db = arango.Connection("http://127.0.0.1:8529");
         db.database.delete("newDatabase",function(err, ret){
             db.database.create("newDatabase",function(err, ret){
-                db = new arango.Connection({_name:"newDatabase",_server:{hostname:"localhost"}});
+                db = arango.Connection({_name:"newDatabase",_server:{hostname:"localhost"}});
                 db.collection.create("collection", function(err,ret){
                     db.collection.create("collection2", function(err,ret){
                         done();
@@ -43,7 +44,7 @@ describe("transaction",function(){
             check( done, function () {
                 ret.error.should.equal(false);
                 ret.result.should.equal(3);
-                message.statusCode.should.equal(200);
+                message.status.should.equal(200);
             } );
         });
     })
@@ -59,7 +60,7 @@ describe("transaction",function(){
         db.transaction.submit(collection, action, options, function(err,ret, message){
             check( done, function () {
                 ret.error.should.equal(true);
-                message.statusCode.should.equal(400);
+                message.status.should.equal(400);
             } );
         });
     })
@@ -75,7 +76,7 @@ describe("transaction",function(){
         db.transaction.submit(collection, action, options, function(err,ret, message){
             check( done, function () {
                 ret.error.should.equal(true);
-                message.statusCode.should.equal(404);
+                message.status.should.equal(404);
             } );
         });
     })

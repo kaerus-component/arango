@@ -1,3 +1,5 @@
+var arango;
+
 try{ arango = require('arango') } catch (e){ arango = require('..') }
 
 function check( done, f ) {
@@ -20,7 +22,7 @@ beforeEach(function(done){
 */
 
 describe("database",function(){
-    var db = new arango.Connection("http://127.0.0.1:8529");
+    var db = arango.Connection("http://127.0.0.1:8529");
     before(function(done){
         db.database.delete("newDatabase",function(){ done() });
         db.database.delete("newDatabase2",function(){ done() });

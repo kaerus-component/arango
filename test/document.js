@@ -1,3 +1,5 @@
+var arango, db, collection, doc;
+
 try{ arango = require('arango') } catch (e){ arango = require('..') }
 
 function check( done, f ) {
@@ -10,19 +12,15 @@ function check( done, f ) {
     }
 }
 
-var collection;
-var document;
-var db;
-
 describe("document",function(){
 
-    db = new arango.Connection("http://127.0.0.1:8529");
+    db = arango.Connection("http://127.0.0.1:8529");
 
     before(function(done){
         this.timeout(30000);
         db.database.delete("newDatabase",function(err, ret){
             db.database.create("newDatabase",function(err, ret){
-                db = new arango.Connection({_name:"newDatabase",_server:{hostname:"localhost"}});
+                db = arango.Connection({_name:"newDatabase",_server:{hostname:"localhost"}});
                 db.collection.create("newCollection", function(err,ret){
                     collection = ret;
                     done()
@@ -35,19 +33,19 @@ describe("document",function(){
     describe("documentFunctions",function(){
 
         it('create a document',function(done){
-            db.document.create(collection.id, {"key1" : "val1", "key2" : "val2", "key3" : null}, null, function(err,ret, message){
+            db.document.create(collection.id, {"key1" : "val1", "key2" : "val2", "key3" : null}, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(false);
-                    document = ret;
-                    message.statusCode.should.equal(202);
+                    doc = ret;
+                    message.status.should.equal(202);
                 } );
             });
         })
         it('create another document',function(done){
-            db.document.create(collection.id, {"key1" : "val1", "key3" : "val3"}, null, function(err,ret, message){
+            db.document.create(collection.id, {"key1" : "val1", "key3" : "val3"}, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(false);
-                    message.statusCode.should.equal(202);
+                    message.status.should.equal(202);
                 } );
             });
         })
@@ -58,7 +56,7 @@ describe("document",function(){
             db.document.create("anotherCollection", {"key1" : "val1", "key2" : "val2"}, options, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(false);
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -66,103 +64,103 @@ describe("document",function(){
             db.collection.rotate(collection.id, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(false);
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
 
         it('lets get a non existing document"', function(done){
-            db.document.get(document._id + 200, function(err,ret, message){
+            db.document.get(doc._id + 200, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(true);
-                    message.statusCode.should.equal(404);
+                    message.status.should.equal(404);
                 } );
             });
         })
         it('lets get a document with "match" header == false and correct revision"', function(done){
             var options = {};
             options.match = false;
-            options.rev = document._rev;
-            db.document.get(document._id, options, function(err,ret, message){
+            options.rev = doc._rev;
+            db.document.get(doc._id, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(304);
+                    message.status.should.equal(304);
                 } );
             });
         })
         it('lets get a document with "match" header == false and wrong revision"', function(done){
             var options = {};
             options.match = false;
-            options.rev = document._rev + 1;
-            db.document.get(document._id, options, function(err,ret, message){
+            options.rev = doc._rev + 1;
+            db.document.get(doc._id, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
         it('lets get a document with "match" header and correct revision"', function(done){
             var options = {};
             options.match = true;
-            options.rev = document._rev;
-            db.document.get(document._id, options, function(err,ret, message){
+            options.rev = doc._rev;
+            db.document.get(doc._id, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
         it('lets get a document with "match" header and wrong revision', function(done){
             var options = {};
             options.match = true;
-            options.rev = document._rev + 1;
-            db.document.get(document._id, options, function(err,ret, message){
+            options.rev = doc._rev + 1;
+            db.document.get(doc._id, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(412);
+                    message.status.should.equal(412);
                 } );
             });
         })
         it('lets get a non existing documents head"', function(done){
-            db.document.head(document._id + 200, function(err,ret, message){
+            db.document.head(doc._id + 200, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(404);
+                    message.status.should.equal(404);
                 } );
             });
         })
         it('lets get a documents head with "match" header == false and correct revision"', function(done){
             var options = {};
             options.match = false;
-            options.rev = document._rev;
-            db.document.head(document._id, options, function(err,ret, message){
+            options.rev = doc._rev;
+            db.document.head(doc._id, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(304);
+                    message.status.should.equal(304);
                 } );
             });
         })
         it('lets get a documents head with "match" header == false and wrong revision"', function(done){
             var options = {};
             options.match = false;
-            options.rev = document._rev + 1;
-            db.document.head(document._id, options, function(err,ret, message){
+            options.rev = doc._rev + 1;
+            db.document.head(doc._id, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
         it('lets get a documents head with "match" header and correct revision"', function(done){
             var options = {};
             options.match = true;
-            options.rev = document._rev;
-            db.document.head(document._id, options, function(err,ret, message){
+            options.rev = doc._rev;
+            db.document.head(doc._id, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
         it('lets get a documents head with "match" header and wrong revision', function(done){
             var options = {};
             options.match = true;
-            options.rev = document._rev + 1;
-            db.document.head(document._id, options, function(err,ret, message){
+            options.rev = doc._rev + 1;
+            db.document.head(doc._id, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(412);
+                    message.status.should.equal(412);
                 } );
             });
         })
@@ -170,17 +168,17 @@ describe("document",function(){
             db.document.list(collection.id, function(err,ret, message){
                 check( done, function () {
                     ret.documents.length.should.equal(2);
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
 
         it('lets patch a non existing document"', function(done){
             var data = {"newKey" : "newValue"};
-            db.document.patch(document._id + 200, data, null, function(err,ret, message){
+            db.document.patch(doc._id + 200, data, null, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(true);
-                    message.statusCode.should.equal(404);
+                    message.status.should.equal(404);
                 } );
             });
         })
@@ -188,11 +186,11 @@ describe("document",function(){
             var data = {"newKey" : "newValue"};
             var options = {};
             options.match = false;
-            options.rev = document._rev + 1;
-            db.document.patch(document._id, data , options, function(err,ret, message){
+            options.rev = doc._rev + 1;
+            db.document.patch(doc._id, data , options, function(err,ret, message){
                 check( done, function () {
-                    document._rev = ret._rev;
-                    message.statusCode.should.equal(202);
+                    doc._rev = ret._rev;
+                    message.status.should.equal(202);
                 } );
             });
         })
@@ -201,11 +199,11 @@ describe("document",function(){
             var options = {};
             options.match = true;
             options.waitForSync = true;
-            options.rev = document._rev;
-            db.document.patch(document._id, data, options, function(err,ret, message){
+            options.rev = doc._rev;
+            db.document.patch(doc._id, data, options, function(err,ret, message){
                 check( done, function () {
-                    document._rev = ret._rev;
-                    message.statusCode.should.equal(201);
+                    doc._rev = ret._rev;
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -213,10 +211,10 @@ describe("document",function(){
             var data = {"newKey" : "newValue"};
             var options = {};
             options.match = true;
-            options.rev = document._rev + 1;
-            db.document.patch(document._id, data, options, function(err,ret, message){
+            options.rev = doc._rev + 1;
+            db.document.patch(doc._id, data, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(412);
+                    message.status.should.equal(412);
                 } );
             });
         })
@@ -225,21 +223,21 @@ describe("document",function(){
             var data = {"newKey" : "newValue", "key3" : null};
             var options = {};
             options.match = true;
-            options.rev = document._rev + 1;
+            options.rev = doc._rev + 1;
             options.forceUpdate = true;
 
             options.waitForSync = true;
             options.keepNull = "false";
-            db.document.patch(document._id, data, options, function(err,ret, message){
+            db.document.patch(doc._id, data, options, function(err,ret, message){
                 check( done, function () {
 
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
 
         it('lets verify the last patch', function(done){
-            db.document.get(document._id, function(err,ret, message){
+            db.document.get(doc._id, function(err,ret, message){
                 check( done, function () {
                     ret.should.not.have.property("key3");
                     ret.should.have.property("newKey");
@@ -249,10 +247,10 @@ describe("document",function(){
 
         it('lets put a non existing document"', function(done){
             var data = {"newKey" : "newValue"};
-            db.document.put(document._id + 200, data, null, function(err,ret, message){
+            db.document.put(doc._id + 200, data, null, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(true);
-                    message.statusCode.should.equal(404);
+                    message.status.should.equal(404);
                 } );
             });
         })
@@ -260,11 +258,11 @@ describe("document",function(){
             var data = {"newKey" : "newValue"};
             var options = {};
             options.match = false;
-            options.rev = document._rev + 1;
-            db.document.put(document._id, data , options, function(err,ret, message){
+            options.rev = doc._rev + 1;
+            db.document.put(doc._id, data , options, function(err,ret, message){
                 check( done, function () {
-                    document._rev = ret._rev;
-                    message.statusCode.should.equal(202);
+                    doc._rev = ret._rev;
+                    message.status.should.equal(202);
                 } );
             });
         })
@@ -273,11 +271,11 @@ describe("document",function(){
             var options = {};
             options.match = true;
             options.waitForSync = true;
-            options.rev = document._rev;
-            db.document.put(document._id, data, options, function(err,ret, message){
+            options.rev = doc._rev;
+            db.document.put(doc._id, data, options, function(err,ret, message){
                 check( done, function () {
-                    document._rev = ret._rev;
-                    message.statusCode.should.equal(201);
+                    doc._rev = ret._rev;
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -285,10 +283,10 @@ describe("document",function(){
             var data = {"newKey" : "newValue"};
             var options = {};
             options.match = true;
-            options.rev = document._rev + 1;
-            db.document.put(document._id, data, options, function(err,ret, message){
+            options.rev = doc._rev + 1;
+            db.document.put(doc._id, data, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(412);
+                    message.status.should.equal(412);
                 } );
             });
         })
@@ -296,17 +294,17 @@ describe("document",function(){
             var data = {"newKey" : "newValue"};
             var options = {};
             options.match = true;
-            options.rev = document._rev + 1;
+            options.rev = doc._rev + 1;
             options.forceUpdate = true;
-            db.document.put(document._id, data, options, function(err,ret, message){
+            db.document.put(doc._id, data, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(202);
+                    message.status.should.equal(202);
 
                 } );
             });
         })
         it('lets verify the last put', function(done){
-            db.document.get(document._id, function(err,ret, message){
+            db.document.get(doc._id, function(err,ret, message){
                 check( done, function () {
                     ret.should.not.have.property("key3");
                     ret.should.not.have.property("key2");
@@ -317,20 +315,20 @@ describe("document",function(){
         })
 
         it('lets delete a non existing document"', function(done){
-            db.document.delete(document._id + 200, null, function(err,ret, message){
+            db.document.delete(doc._id + 200, null, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(true);
-                    message.statusCode.should.equal(404);
+                    message.status.should.equal(404);
                 } );
             });
         })
         it('lets delete a document with "match" header and wrong revision', function(done){
             var options = {};
             options.match = true;
-            options.rev = document._rev + 1;
-            db.document.delete(document._id,  options, function(err,ret, message){
+            options.rev = doc._rev + 1;
+            db.document.delete(doc._id,  options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(412);
+                    message.status.should.equal(412);
                 } );
             });
         })
@@ -338,20 +336,20 @@ describe("document",function(){
         it('lets delete a document with "match" header == false and wrong revision"', function(done){
             var options = {};
             options.match = false;
-            options.rev = document._rev + 1;
-            db.document.delete(document._id, options, function(err,ret, message){
+            options.rev = doc._rev + 1;
+            db.document.delete(doc._id, options, function(err,ret, message){
                 check( done, function () {
-                    document._rev = ret._rev;
-                    message.statusCode.should.equal(202);
+                    doc._rev = ret._rev;
+                    message.status.should.equal(202);
                 } );
             });
         })
         it('create a document',function(done){
-            db.document.create(collection.id, {"key1" : "val1", "key2" : "val2", "key3" : null}, null, function(err,ret, message){
+            db.document.create(collection.id, {"key1" : "val1", "key2" : "val2", "key3" : null}, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(false);
-                    document = ret;
-                    message.statusCode.should.equal(202);
+                    doc = ret;
+                    message.status.should.equal(202);
                 } );
             });
         })
@@ -359,11 +357,11 @@ describe("document",function(){
             var options = {};
             options.match = true;
             options.waitForSync = true;
-            options.rev = document._rev;
-            db.document.delete(document._id, options, function(err,ret, message){
+            options.rev = doc._rev;
+            db.document.delete(doc._id, options, function(err,ret, message){
                 check( done, function () {
-                    document._rev = ret._rev;
-                    message.statusCode.should.equal(200);
+                    doc._rev = ret._rev;
+                    message.status.should.equal(200);
                 } );
             });
         })

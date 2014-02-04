@@ -1,3 +1,5 @@
+var arango, db, verticescollection, edgecollection, vertices = [], edges = [];
+
 try{ arango = require('arango') } catch (e){ arango = require('..') }
 
 function check( done, f ) {
@@ -10,21 +12,16 @@ function check( done, f ) {
     }
 }
 
-var verticescollection;
-var edgecollection;
-var vertices = [];
-var edges = [];
-var db;
 
 describe("graph",function(){
 
 
     before(function(done){
         this.timeout(30000);
-        db = new arango.Connection("http://127.0.0.1:8529");
+        db = arango.Connection("http://127.0.0.1:8529");
         db.database.delete("newDatabase",function(err, ret){
             db.database.create("newDatabase",function(err, ret){
-                db = new arango.Connection({_name:"newDatabase",_server:{hostname:"localhost"}});
+                db = arango.Connection({_name:"newDatabase",_server:{hostname:"localhost"}});
                 db.collection.create("edgeCollection", {"type" : 3}, function(err,ret){
                     edgecollection = ret;
                     db.collection.create("verticescollection", function(err,ret){
@@ -61,7 +58,7 @@ describe("graph",function(){
             db.graph.create("graph1", verticescollection.name, edgecollection.name, true, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(false);
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -70,7 +67,7 @@ describe("graph",function(){
                 check( done, function () {
                     ret.error.should.equal(false);
                     //Assertion currently not working , bug in Arango DB
-                    //message.statusCode.should.equal(202);
+                    //message.status.should.equal(202);
                 } );
             });
         })
@@ -78,7 +75,7 @@ describe("graph",function(){
             db.graph.list(function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(false);
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -86,7 +83,7 @@ describe("graph",function(){
             db.graph.get("graph1",function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(false);
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -95,7 +92,7 @@ describe("graph",function(){
                 check( done, function () {
                     ret.error.should.equal(false);
                     //Assertion currently not working , bug in Arango DB
-                    //message.statusCode.should.equal(202);
+                    //message.status.should.equal(202);
                 } );
             });
         })
@@ -104,7 +101,7 @@ describe("graph",function(){
                 check( done, function () {
                     ret.error.should.equal(false);
                     //Assertion currently not working , bug in Arango DB
-                    //message.statusCode.should.equal(202);
+                    //message.status.should.equal(202);
                 } );
             });
         })
@@ -114,7 +111,7 @@ describe("graph",function(){
                     ret.error.should.equal(false);
                     ret.result.length.should.equal(2);
                     ret.hasMore.should.equal(false);
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -125,7 +122,7 @@ describe("graph",function(){
                     ret.error.should.equal(false);
                     ret.result.length.should.equal(1);
                     ret.hasMore.should.equal(true);
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -135,7 +132,7 @@ describe("graph",function(){
                     ret.error.should.equal(false);
                     ret.result.length.should.equal(1);
                     ret.hasMore.should.equal(false);
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -146,7 +143,7 @@ describe("graph",function(){
                     ret.error.should.equal(false);
                     ret.result.length.should.equal(1);
                     ret.hasMore.should.equal(false);
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -157,7 +154,7 @@ describe("graph",function(){
                     ret.error.should.equal(false);
                     ret.result.length.should.equal(2);
                     ret.hasMore.should.equal(false);
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -168,7 +165,7 @@ describe("graph",function(){
                     ret.error.should.equal(false);
                     ret.result.length.should.equal(1);
                     ret.hasMore.should.equal(true);
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -178,7 +175,7 @@ describe("graph",function(){
                     ret.error.should.equal(false);
                     ret.result.length.should.equal(1);
                     ret.hasMore.should.equal(false);
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -189,7 +186,7 @@ describe("graph",function(){
                     ret.error.should.equal(false);
                     ret.result.length.should.equal(1);
                     ret.hasMore.should.equal(false);
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -200,7 +197,7 @@ describe("graph",function(){
                     ret.error.should.equal(false);
                     ret.result.length.should.equal(2);
                     ret.hasMore.should.equal(false);
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -211,7 +208,7 @@ describe("graph",function(){
                     ret.error.should.equal(false);
                     ret.result.length.should.equal(1);
                     ret.hasMore.should.equal(true);
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -222,7 +219,7 @@ describe("graph",function(){
                     ret.error.should.equal(false);
                     ret.result.length.should.equal(1);
                     ret.hasMore.should.equal(false);
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -233,7 +230,7 @@ describe("graph",function(){
                     ret.error.should.equal(false);
                     ret.result.length.should.equal(3);
                     ret.hasMore.should.equal(false);
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -244,7 +241,7 @@ describe("graph",function(){
                     ret.error.should.equal(false);
                     ret.result.length.should.equal(1);
                     ret.hasMore.should.equal(true);
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -255,7 +252,7 @@ describe("graph",function(){
                     ret.error.should.equal(false);
                     ret.result.length.should.equal(1);
                     ret.hasMore.should.equal(false);
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -265,7 +262,7 @@ describe("graph",function(){
             db.graph.vertex.get("graph1", "nonExisting", function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(true);
-                    message.statusCode.should.equal(404);
+                    message.status.should.equal(404);
                 } );
             });
         })
@@ -275,7 +272,7 @@ describe("graph",function(){
             options.rev = vertices[1]._rev;
             db.graph.vertex.get("graph1", vertices[1]._id, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(304);
+                    message.status.should.equal(304);
                 } );
             });
         })
@@ -285,7 +282,7 @@ describe("graph",function(){
             options.rev = vertices[1]._rev + 1;
             db.graph.vertex.get("graph1", vertices[1]._id, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -295,7 +292,7 @@ describe("graph",function(){
             options.rev = vertices[1]._rev;
             db.graph.vertex.get("graph1", vertices[1]._id, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -305,7 +302,7 @@ describe("graph",function(){
             options.rev = vertices[1]._rev + 1;
             db.graph.vertex.get("graph1", vertices[1]._id, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(412);
+                    message.status.should.equal(412);
                 } );
             });
         })
@@ -315,7 +312,7 @@ describe("graph",function(){
             db.graph.vertex.patch("graph1", vertices[1]._id + 200, data,  function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(true);
-                    message.statusCode.should.equal(404);
+                    message.status.should.equal(404);
                 } );
             });
         })
@@ -327,7 +324,7 @@ describe("graph",function(){
             db.graph.vertex.patch("graph1", vertices[1]._id, data , options, function(err,ret, message){
                 check( done, function () {
                     vertices[1]._rev = ret.vertex._rev;
-                    message.statusCode.should.equal(202);
+                    message.status.should.equal(202);
                 } );
             });
         })
@@ -340,7 +337,7 @@ describe("graph",function(){
             db.graph.vertex.patch("graph1", vertices[1]._id, data, options, function(err,ret, message){
                 check( done, function () {
                     vertices[1]._rev = ret.vertex._rev;
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -351,7 +348,7 @@ describe("graph",function(){
             options.rev = vertices[1]._rev + 1;
             db.graph.vertex.patch("graph1", vertices[1]._id, data, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(412);
+                    message.status.should.equal(412);
                 } );
             });
         })
@@ -363,7 +360,7 @@ describe("graph",function(){
             options.keepNull = "false";
             db.graph.vertex.patch("graph1", vertices[1]._id, data, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -373,7 +370,7 @@ describe("graph",function(){
             var data = {"newKey" : "newValue", "key3" : null};
             db.graph.keepNull(false).waitForSync(true).vertex.patch("graph1", vertices[1]._id, data,  function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -392,7 +389,7 @@ describe("graph",function(){
             db.graph.vertex.put("graph1", vertices[1]._id + 200, data,  function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(true);
-                    message.statusCode.should.equal(404);
+                    message.status.should.equal(404);
                 } );
             });
         })
@@ -404,7 +401,7 @@ describe("graph",function(){
             db.graph.waitForSync(false).vertex.put("graph1", vertices[1]._id, data , options, function(err,ret, message){
                 check( done, function () {
                     vertices[1]._rev = ret.vertex._rev;
-                    message.statusCode.should.equal(202);
+                    message.status.should.equal(202);
                 } );
             });
         })
@@ -417,7 +414,7 @@ describe("graph",function(){
             db.graph.vertex.put("graph1", vertices[1]._id, data, options, function(err,ret, message){
                 check( done, function () {
                     vertices[1]._rev = ret.vertex._rev;
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -428,7 +425,7 @@ describe("graph",function(){
             options.rev = vertices[1]._rev + 1;
             db.graph.vertex.put("graph1", vertices[1]._id, data, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(412);
+                    message.status.should.equal(412);
                 } );
             });
         })
@@ -436,7 +433,7 @@ describe("graph",function(){
             var data = {"newKey" : "newValue"};
             db.graph.vertex.put("graph1", vertices[1]._id, data,  function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(202);
+                    message.status.should.equal(202);
 
                 } );
             });
@@ -456,7 +453,7 @@ describe("graph",function(){
             db.graph.vertex.delete("graph1", vertices[1]._id + 200,  function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(true);
-                    message.statusCode.should.equal(404);
+                    message.status.should.equal(404);
                 } );
             });
         })
@@ -466,7 +463,7 @@ describe("graph",function(){
             options.rev = vertices[1]._rev + 1;
             db.graph.vertex.delete("graph1", vertices[1]._id,  options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(412);
+                    message.status.should.equal(412);
                 } );
             });
         })
@@ -477,7 +474,7 @@ describe("graph",function(){
             options.rev = vertices[1]._rev + 1;
             db.graph.vertex.delete("graph1", vertices[1]._id, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(202);
+                    message.status.should.equal(202);
                 } );
             });
         })
@@ -487,7 +484,7 @@ describe("graph",function(){
                     ret.error.should.equal(false);
                     vertices[1] = ret.vertex;
                     //Assertion currently not working , bug in Arango DB
-                    //message.statusCode.should.equal(202);
+                    //message.status.should.equal(202);
                 } );
             });
         })
@@ -498,7 +495,7 @@ describe("graph",function(){
             options.rev = vertices[1]._rev;
             db.graph.vertex.delete("graph1", vertices[1]._id, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -508,7 +505,7 @@ describe("graph",function(){
                     ret.error.should.equal(false);
                     vertices[1] = ret.vertex;
                     //Assertion currently not working , bug in Arango DB
-                    //message.statusCode.should.equal(202);
+                    //message.status.should.equal(202);
                 } );
             });
         })
@@ -520,7 +517,7 @@ describe("graph",function(){
                     edges = [];
                     ret.error.should.equal(false);
                     edges.push(ret.edge);
-                    message.statusCode.should.equal(202);
+                    message.status.should.equal(202);
                 } );
             });
         })
@@ -529,7 +526,7 @@ describe("graph",function(){
                 check( done, function () {
                     edges.push(ret.edge)
                     ret.error.should.equal(false);
-                    message.statusCode.should.equal(202);
+                    message.status.should.equal(202);
                 } );
             });
         })
@@ -538,7 +535,7 @@ describe("graph",function(){
                 check( done, function () {
                     edges.push(ret.edge)
                     ret.error.should.equal(false);
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -547,7 +544,7 @@ describe("graph",function(){
             db.graph.edge.get("graph1", edges[0]._id + 200, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(true);
-                    message.statusCode.should.equal(404);
+                    message.status.should.equal(404);
                 } );
             });
         })
@@ -558,7 +555,7 @@ describe("graph",function(){
                     ret.error.should.equal(false);
                     ret.result.length.should.equal(3);
                     ret.hasMore.should.equal(false);
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -568,7 +565,7 @@ describe("graph",function(){
             options.rev = edges[0]._rev;
             db.graph.edge.get("graph1", edges[0]._id, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(304);
+                    message.status.should.equal(304);
                 } );
             });
         })
@@ -578,7 +575,7 @@ describe("graph",function(){
             options.rev = edges[0]._rev + 1;
             db.graph.edge.get("graph1", edges[0]._id, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -588,7 +585,7 @@ describe("graph",function(){
             options.rev = edges[0]._rev;
             db.graph.edge.get("graph1", edges[0]._id, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -598,7 +595,7 @@ describe("graph",function(){
             options.rev = edges[0]._rev + 1;
             db.graph.edge.get("graph1", edges[0]._id, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(412);
+                    message.status.should.equal(412);
                 } );
             });
         })
@@ -608,7 +605,7 @@ describe("graph",function(){
             db.graph.edge.patch("graph1", edges[0]._id + 200, data,  function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(true);
-                    message.statusCode.should.equal(404);
+                    message.status.should.equal(404);
                 } );
             });
         })
@@ -620,7 +617,7 @@ describe("graph",function(){
             db.graph.edge.patch("graph1", edges[0]._id, data , options, function(err,ret, message){
                 check( done, function () {
                     edges[0]._rev = ret.edge._rev;
-                    message.statusCode.should.equal(202);
+                    message.status.should.equal(202);
                 } );
             });
         })
@@ -633,7 +630,7 @@ describe("graph",function(){
             db.graph.edge.patch("graph1", edges[0]._id, data, options, function(err,ret, message){
                 check( done, function () {
                     edges[0]._rev = ret.edge._rev;
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -644,7 +641,7 @@ describe("graph",function(){
             options.rev = edges[0]._rev + 1;
             db.graph.edge.patch("graph1", edges[0]._id, data, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(412);
+                    message.status.should.equal(412);
                 } );
             });
         })
@@ -657,7 +654,7 @@ describe("graph",function(){
             db.graph.edge.patch("graph1", edges[0]._id, data, options, function(err,ret, message){
                 check( done, function () {
 
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -676,7 +673,7 @@ describe("graph",function(){
             db.graph.edge.put("graph1", edges[0]._id + 200, data,  function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(true);
-                    message.statusCode.should.equal(404);
+                    message.status.should.equal(404);
                 } );
             });
         })
@@ -688,7 +685,7 @@ describe("graph",function(){
             db.graph.edge.put("graph1", edges[0]._id, data , options, function(err,ret, message){
                 check( done, function () {
                     edges[0]._rev = ret.edge._rev;
-                    message.statusCode.should.equal(202);
+                    message.status.should.equal(202);
                 } );
             });
         })
@@ -701,7 +698,7 @@ describe("graph",function(){
             db.graph.edge.put("graph1", edges[0]._id, data, options, function(err,ret, message){
                 check( done, function () {
                     edges[0]._rev = ret.edge._rev;
-                    message.statusCode.should.equal(201);
+                    message.status.should.equal(201);
                 } );
             });
         })
@@ -712,7 +709,7 @@ describe("graph",function(){
             options.rev = edges[0]._rev + 1;
             db.graph.edge.put("graph1", edges[0]._id, data, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(412);
+                    message.status.should.equal(412);
                 } );
             });
         })
@@ -731,7 +728,7 @@ describe("graph",function(){
             db.graph.edge.delete("graph1", edges[0]._id + 200,  function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(true);
-                    message.statusCode.should.equal(404);
+                    message.status.should.equal(404);
                 } );
             });
         })
@@ -741,7 +738,7 @@ describe("graph",function(){
             options.rev = edges[0]._rev + 1;
             db.graph.edge.delete("graph1", edges[0]._id,  options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(412);
+                    message.status.should.equal(412);
                 } );
             });
         })
@@ -752,7 +749,7 @@ describe("graph",function(){
             options.rev = edges[0]._rev + 1;
             db.graph.edge.delete("graph1", edges[0]._id, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(202);
+                    message.status.should.equal(202);
                 } );
             });
         })
@@ -761,7 +758,7 @@ describe("graph",function(){
                 check( done, function () {
                     ret.error.should.equal(false);
                     edges[0] = ret.edge;
-                    message.statusCode.should.equal(202);
+                    message.status.should.equal(202);
                 } );
             });
         })
@@ -772,7 +769,7 @@ describe("graph",function(){
             options.rev = edges[0]._rev;
             db.graph.edge.delete("graph1", edges[0]._id, options, function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -781,7 +778,7 @@ describe("graph",function(){
             db.graph.delete("graph1", true, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(false);
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })

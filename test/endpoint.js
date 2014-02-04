@@ -1,3 +1,5 @@
+var arango, db;
+
 try{ arango = require('arango') } catch (e){ arango = require('..') }
 
 function check( done, f ) {
@@ -10,10 +12,10 @@ function check( done, f ) {
     }
 }
 
-var db;
+
 describe("endpoint",function(){
 
-    db = new arango.Connection("http://127.0.0.1:8529");
+    db = arango.Connection("http://127.0.0.1:8529");
 
     before(function(done){
         this.timeout(20000);
@@ -35,7 +37,7 @@ describe("endpoint",function(){
             db.endpoint.create("tcp://127.0.0.1:8530", ["newDatabase3", "newDatabase4"], function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(false);
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -43,7 +45,7 @@ describe("endpoint",function(){
             db.endpoint.create(null, ["newDatabase3", "newDatabase4"], function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(true);
-                    message.statusCode.should.equal(400);
+                    message.status.should.equal(400);
                 } );
             });
         })
@@ -51,7 +53,7 @@ describe("endpoint",function(){
             db.endpoint.get(function(err,ret, message){
                 check( done, function () {
                     ret.length.should.equal(2);
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -59,7 +61,7 @@ describe("endpoint",function(){
             db.endpoint.delete("tcp://127.0.0.1:8530", function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(false);
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -67,7 +69,7 @@ describe("endpoint",function(){
             db.endpoint.get(function(err,ret, message){
                 check( done, function () {
                     ret.length.should.equal(1);
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })

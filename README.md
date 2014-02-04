@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/kaerus-component/arango.png)](https://travis-ci.org/kaerus-component/arango)
+
 ArangoDB client
 ===============
 A client for the ArangoDB nosql database for nodejs and browsers.
@@ -186,45 +188,6 @@ String and api plugin
 ```javascript
   db = arango.Connection("http://test.host.com:80/foxx",{api:{'foxx':require('foxx')}});
 ```
-
-api
-----
-An API can be implemented like this.
-```javascript
-var Arango = require('arango');
-
-function StubAPI(db) {
-    return {
-      "get": function(callback){
-          /* The undefined argument can be used for passing htmlOptions */
-          /* example: options = {headers:{'content-type':'image/jpeg'}} */
-          return db.get('/path',undefined,callback);
-      },
-      "post": function(data,callback){
-          return db.post('/path',data,undefined,callback);
-      },
-      "put": function(data,callback){
-          return db.put('/path',data,undefined,callback);
-      },
-      "delete": function(callback){
-          return db.delete('/path',undefined,callback);
-      },
-      "head": function(callback){
-          return db.head('/path',undefined,callback);
-      },
-      "patch": function(data,callback){
-          return db.path('/path',data,undefined,callback);
-      },
-      "options": function(callback){
-          return db.options('/path',undefined,callback);
-      }
-    };
-}
-
-/* Attach the API into 'stub' namespace */
-module.exports = Arango.api('stub',StubAPI);
-```
-
 
 use()
 -----
@@ -638,6 +601,45 @@ Individual job results can be fetched as usual.
     console.log("Batch job failed: %j", error);
   });  
  
+```
+
+
+api
+----
+An API can be implemented like this.
+```javascript
+var Arango = require('arango');
+
+function StubAPI(db) {
+    return {
+      "get": function(callback){
+          /* The undefined argument can be used for passing htmlOptions */
+          /* example: options = {headers:{'content-type':'image/jpeg'}} */
+          return db.get('/path',undefined,callback);
+      },
+      "post": function(data,callback){
+          return db.post('/path',data,undefined,callback);
+      },
+      "put": function(data,callback){
+          return db.put('/path',data,undefined,callback);
+      },
+      "delete": function(callback){
+          return db.delete('/path',undefined,callback);
+      },
+      "head": function(callback){
+          return db.head('/path',undefined,callback);
+      },
+      "patch": function(data,callback){
+          return db.path('/path',data,undefined,callback);
+      },
+      "options": function(callback){
+          return db.options('/path',undefined,callback);
+      }
+    };
+}
+
+/* Attach the API into 'stub' namespace */
+module.exports = Arango.api('stub',StubAPI);
 ```
 
 

@@ -1,6 +1,6 @@
 {
   "name": "arango",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "ArangoDB javascript client",
   "keywords": [
     "arangodb",
@@ -13,7 +13,8 @@
     "web": "http://kaerus.com"
   },
   "contributors": [
-    "anders elo <anders@kaerus.com>"
+    "anders elo <anders@kaerus.com>",
+    "florian bartels <f.bartels@triagens.de>"
   ],
   "dependencies":{
     "micropromise": "git://github.com/kaerus-component/uP#0.3.7",
