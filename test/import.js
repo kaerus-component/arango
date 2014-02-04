@@ -4,7 +4,7 @@ try{ arango = require('arango') } catch (e){ arango = require('..') }
 
 function check( done, f ) {
     try {
-        f()
+        if(f) f()
         done()
     } catch( e ) {
         console.log(e);
@@ -31,7 +31,9 @@ describe("import",function(){
     describe("importFunctions",function(){
 
         beforeEach(function(done){
-            db.collection.create("collection", function(err,ret){done();});
+            db.collection.create("collection", function(err,ret){
+                done();
+            });
         })
 
         afterEach(function(done){
@@ -51,6 +53,7 @@ describe("import",function(){
 
 
             db.import.importJSONData("collection", data, options, function(err,ret, message){
+                console.log("err(%s):", err, JSON.stringify(ret));
                 check( done, function () {
                     ret.error.should.equal(false);
                     ret.created.should.equal(3);
