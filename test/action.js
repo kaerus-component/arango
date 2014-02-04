@@ -40,7 +40,7 @@ describe("action",function(){
         db.action.define(
             {
                 name: 'someAction',
-                url: 'http://127.0.0.1:8530/test',
+                url: 'http://127.0.0.1:8529/test',
                 method: 'post',
                 result: function(res){return res; },
                 error: function(err){ return err; }
@@ -76,7 +76,7 @@ describe("action",function(){
         db.action.define(
             {
                 name: 'someAction',
-                url: 'http://127.0.0.1:8530/alreadyExistingRoute',
+                url: 'http://127.0.0.1:8529/alreadyExistingRoute',
                 method: 'GET',
                 result: function(res){return res;},
                 error: function(err){ return err; }

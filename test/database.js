@@ -38,7 +38,7 @@ describe("database",function(){
             db.database.create(databaseName, users, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(false);
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -49,14 +49,14 @@ describe("database",function(){
             db.database.create(databaseName, users, function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(false);
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
         it('list databases',function(done){
             db.database.list(function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
@@ -66,28 +66,28 @@ describe("database",function(){
                     ret.result.should.have.property("name");
                     ret.result.should.have.property("id");
                     ret.result.should.have.property("path");
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
         it('get all databases the current user can access',function(done){
             db.database.user(function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
         it('delete a databases',function(done){
             db.database.delete("newDatabase2", function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(200);
+                    message.status.should.equal(200);
                 } );
             });
         })
         it('delete a databases which does not exist and expect a 404',function(done){
             db.database.delete("newDatabase2", function(err,ret, message){
                 check( done, function () {
-                    message.statusCode.should.equal(404);
+                    message.status.should.equal(404);
                 } );
             });
         })
