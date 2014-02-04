@@ -27,7 +27,10 @@ test-nodejs: node_modules
 	
 test-browser: components component
 	@echo "Running tests for browser"
-	@./node_modules/mocha-phantomjs/bin/mocha-phantomjs test/runner.html
+	@./node_modules/mocha-phantomjs/bin/mocha-phantomjs \
+		-s localToRemoteUrlAccessEnabled=true \
+		-s webSecurityEnabled=false \
+		test/runner.html
 
 distclean:
 	@echo "Cleaning up build files"
