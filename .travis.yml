@@ -8,6 +8,7 @@ before_script:
     - npm install -g karma
     - npm install -g karma-mocha
     - npm install -g karma-chai
+    - export DISPLAY=:99.0
     - sh -e /etc/init.d/xvfb start
 
 script: make test
