@@ -79,5 +79,3 @@ Firefox)
 	;;
 esac
 
-R=tools/python/requirements.txt
-pip install -r $R --use-mirrors || pip install -r $R
