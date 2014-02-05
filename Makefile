@@ -27,7 +27,7 @@ test-nodejs: node_modules
 	
 test-browser: components component
 	@echo "Running tests for browser"
-	@karma run --browsers Firefox test/karma/karma.conf.js
+	@karma start --browsers Firefox test/karma/karma.conf.js
 
 distclean:
 	@echo "Cleaning up build files"
