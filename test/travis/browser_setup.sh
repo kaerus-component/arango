@@ -13,14 +13,6 @@ cat /etc/lsb-release
 
 sudo apt-get update --fix-missing
 
-# Install python-imaging from the environment rather then build it.
-# If the below fails, pip will build it via the requirements.txt
-sudo apt-get install python-imaging
-VIRTUAL_ENV_site_packages=$(echo $VIRTUAL_ENV/lib/*/site-packages)
-VIRTUAL_ENV_python_version=$(echo $VIRTUAL_ENV_site_packages | sed -e's@.*/\(.*\)/site-packages@\1@')
-ln -s /usr/lib/$VIRTUAL_ENV_python_version/dist-packages/PIL.pth $VIRTUAL_ENV_site_packages/PIL.pth
-ln -s /usr/lib/$VIRTUAL_ENV_python_version/dist-packages/PIL $VIRTUAL_ENV_site_packages/PIL
-
 export VERSION=$(echo $BROWSER | sed -e's/[^-]*-//')
 export BROWSER=$(echo $BROWSER | sed -e's/-.*//')
 
