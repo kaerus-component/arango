@@ -30,6 +30,9 @@ before_script:
     - chmod 777 ./test/travis/browser_setup.sh
     - ./test/travis/setup_arangodb.sh
     - ./test/travis/browser_setup.sh
+    - npm install -g karma
+    - npm install -g karma-mocha
+    - npm install -g karma-chai
 
 script: make test
 
