@@ -28,6 +28,8 @@ test-nodejs: node_modules
 test-browser: components component
 	@echo "Running tests for browser"
 	@karma start --browsers Firefox test/karma/karma.conf.js
+    @karma start --browsers Chrome test/karma/karma.conf.js
+
 
 distclean:
 	@echo "Cleaning up build files"
