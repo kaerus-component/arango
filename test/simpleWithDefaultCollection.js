@@ -76,6 +76,7 @@ describe("simpleWithDefaultCollection",function(){
     describe("simple Queries",function(){
 
         it('list all documents',function(done){
+            this.timeout(30000);
             db.simple.skip(1).limit(2).list(function(err,ret, message){
                 check( done, function () {
                     ret.error.should.equal(false);
