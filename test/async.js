@@ -34,6 +34,7 @@ describe("async",function(){
     describe("async Functions",function(){
 
 		it('lets create a collection in normal mode ....we expect a result',function(done){
+            this.timeout(20000);
             db.collection.create("newCollection", function(err,ret,message){
 				check( done, function () {
                     ret.status.should.equal(3);
