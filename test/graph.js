@@ -12,13 +12,14 @@ function check( done, f ) {
     }
 }
 
-
 describe("graph",function(){
 
 
     before(function(done){
         this.timeout(30000);
-        db = arango.Connection("http://127.0.0.1:8529");
+        vertices = [];
+        edges = [];
+        db = arango.Connection("http://127.0.0.1:8529/_system");
         db.database.delete("newDatabase",function(err, ret){
             db.database.create("newDatabase",function(err, ret){
                 db = arango.Connection({_name:"newDatabase",_server:{hostname:"localhost"}});

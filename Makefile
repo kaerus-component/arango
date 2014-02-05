@@ -19,7 +19,7 @@ components:
 	@echo "Installing component dependencies"
 	$(COMPONENT) install -v
 
-test: test-nodejs
+test: test-browser
 	
 test-nodejs: node_modules
 	@echo "Running tests for nodejs"
@@ -27,7 +27,8 @@ test-nodejs: node_modules
 	
 test-browser: components component
 	@echo "Running tests for browser"
-	@karma start test/karma/karma.conf.js
+	@karma start --browsers Firefox test/karma/karma.conf.js
+	@karma start --browsers Chrome test/karma/karma.conf.js
 
 distclean:
 	@echo "Cleaning up build files"

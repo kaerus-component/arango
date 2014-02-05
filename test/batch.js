@@ -32,6 +32,9 @@ describe("batch",function(){
 
         batch.batch.exec(function(err,ret, message){
             check( done, function () {
+                console.log(err);
+                console.log(message);
+                console.log(ret);
                 message.status.should.equal(200);
             } );
         });

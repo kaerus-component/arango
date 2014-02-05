@@ -16,27 +16,27 @@ module.exports = function(karma) {
     // list of files / patterns to load in the browser
     files: [
       'build/build.js',
-        //'test/action.js',
-        //'test/admin.js',
-        //'test/aqlfunction.js',
-        //'test/async.js',
+        'test/action.js',
+        'test/admin.js',
+        'test/aqlfunction.js',
+        'test/async.js',
         //'test/batch.js',
-        //'test/collection.js',
-        //'test/connection.js',
-        //'test/cursor.js',
-        //'test/database.js',
+        'test/collection.js',
+        'test/connection.js',
+        'test/cursor.js',
+        'test/database.js',
         'test/document.js',
         'test/edge.js',
-        //'test/endpoint.js',
-        //'test/graph.js',
-        //'test/import.js',
-        //'test/index.js',
-        //'test/indexWithDefaultCollection.js',
-        //'test/simple.js',
-        //'test/simpleWithDefaultCollection.js',
-        //'test/transaction.js',
-        //'test/traversal.js',
-        //'test/user.js'
+        'test/endpoint.js',
+        'test/graph.js',
+        'test/import.js',
+        'test/index.js',
+        'test/indexWithDefaultCollection.js',
+        'test/simple.js',
+        'test/simpleWithDefaultCollection.js',
+        'test/transaction.js',
+        'test/traversal.js',
+        'test/user.js'
     ],
 
 
@@ -77,7 +77,7 @@ module.exports = function(karma) {
     // - Safari (only Mac)
     // - PhantomJS
     // - IE (only Windows)
-    browsers: [ "Firefox"],
+    browsers: [ "Firefox" ],
 
     // If browser does not capture in given timeout [ms], kill it
     captureTimeout: 60000,

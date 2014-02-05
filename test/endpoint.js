@@ -12,13 +12,14 @@ function check( done, f ) {
     }
 }
 
+var db;
 
 describe("endpoint",function(){
 
-    db = arango.Connection("http://127.0.0.1:8529");
 
     before(function(done){
         this.timeout(20000);
+        db = arango.Connection("http://127.0.0.1:8529/_system");
         db.database.delete("newDatabase3",function(err, ret){
             db.database.create("newDatabase3",function(err, ret){
                 db.database.delete("newDatabase4",function(err, ret){
