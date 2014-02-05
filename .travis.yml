@@ -31,5 +31,5 @@ before_script:
     - ./test/travis/setup_arangodb.sh
     - ./test/travis/browser_setup.sh
 
-script: make test-nodejs
+script: make test
 
