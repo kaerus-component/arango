@@ -2,14 +2,25 @@ language: node_js
 node_js:
   - 0.10
 
+
+before_install:
+  - export DISPLAY=:99.0
+  - sh -e /etc/init.d/xvfb start
+
+
+install:
+  -"wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -"
+  -"sudo sh -c 'echo 'deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'"
+  - "sudo apt-get update"
+  - "sudo apt-get install google-chrome-stable"
+
 before_script:
     - chmod 777 ./test/travis/setup_arangodb.sh
     - ./test/travis/setup_arangodb.sh
     - npm install -g karma
     - npm install -g karma-mocha
     - npm install -g karma-chai
-    - export DISPLAY=:99.0
-    - sh -e /etc/init.d/xvfb start
+
 
 script: make test
 
