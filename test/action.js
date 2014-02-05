@@ -12,6 +12,8 @@ function check( done, f ) {
     }
 }
 
+var db, actions;
+
 describe("action",function(){
 
     before(function(done){
@@ -21,7 +23,7 @@ describe("action",function(){
                 // write a new route directly into arango
                 var route = {action : {"callback":"function (req,res){\n \n res.status = 200;\n; res.contentType = \"text/html\";\n res.body = \"Already existing route!\";\n }"}}
                 route.url = {"match":"/alreadyExistingRoute","methods":["GET"]};
-                db.use(":_routing").document.create(route)
+                db.use(":_routing").document.create(route, {waitForSync : true})
                     .then(db.admin.routesReload)
                     .then(function(r){
                         return db.action.define({name:"hello",url:"/hello"},function(req,res){
@@ -98,6 +100,14 @@ describe("action",function(){
 
     })
 
+    it('lets get the list of all documents of collection', function(done){
+        db.document.list("_routing", function(err,ret, message){
+            check( done, function () {
+                message.status.should.equal(200);
+            } );
+        });
+    })
+
     it('call the action defined in setup action and expect the route to be found',function(done){
         db.action.submit("hello", function(err, ret, message){
             check( done, function () {
@@ -110,6 +120,14 @@ describe("action",function(){
 
     })
 
+    it('lets get the list of all documents of collection', function(done){
+        db.document.list("_routing", function(err,ret, message){
+            check( done, function () {
+                message.status.should.equal(200);
+            } );
+        });
+    })
+
     it('delete the action "hello".....',function(done){
         db.action.undefine("hello");
         check( done, function () {
@@ -117,6 +135,23 @@ describe("action",function(){
             Object.keys(db.action.getActions()).length.should.eql(1);
         } );
     })
+
+    it('lets get the list of all documents of collection', function(done){
+        db.document.list("_routing", function(err,ret, message){
+            check( done, function () {
+                message.status.should.equal(200);
+            } );
+        });
+    })
+
+    it('lets get the list of all documents of collection', function(done){
+        db.document.list("_routing", function(err,ret, message){
+            check( done, function () {
+                message.status.should.equal(200);
+            } );
+        });
+    })
+
     it('...and check that route has been deleted to',function(done){
         db.document.get(actions.hello.route, function(err,ret, message){
             check( done, function () {

@@ -18,7 +18,7 @@ describe("user",function(){
 
     before(function(done){
         this.timeout(20000);
-        db = arango.Connection("http://127.0.0.1:8529");
+        db = arango.Connection("http://127.0.0.1:8529/_system");
         db.database.delete("newDatabase",function(err, ret){
             db.database.create("newDatabase",function(err, ret){
                 db = arango.Connection({_name:"newDatabase",_server:{hostname:"localhost"}});

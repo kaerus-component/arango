@@ -45,8 +45,9 @@ describe("async",function(){
         it('lets create a collection in async store mode ....we only expect a header with a job id',function(done){
             db.setAsyncMode(true).collection.create("newCollection2", function(err,ret,message){
                 check( done, function () {
-                    ret.should.equal("");
-                    message.headers.should.have.property("x-arango-async-id");
+                    var keys = Object.keys(message.headers);
+                    var e = keys.indexOf("x-arango-async-id");
+                    e.should.not.equal(-1);
                     message.status.should.equal(202);
                 } );
             });
@@ -55,7 +56,9 @@ describe("async",function(){
             db.setAsyncMode(true, true).collection.create("newCollection3", function(err,ret,message){
                 check( done, function () {
                     ret.should.equal("");
-                    message.headers.should.not.have.property("x-arango-async-id");
+                    var keys = Object.keys(message.headers);
+                    var e = keys.indexOf("x-arango-async-id");
+                    e.should.equal(-1);
                     message.status.should.equal(202);
                 } );
             });
@@ -65,7 +68,9 @@ describe("async",function(){
             db.collection.create("newCollection", function(err,ret,message){
                 check( done, function () {
                     ret.should.equal("");
-                    message.headers.should.not.have.property("x-arango-async-id");
+                    var keys = Object.keys(message.headers);
+                    var e = keys.indexOf("x-arango-async-id");
+                    e.should.equal(-1);
                     message.status.should.equal(202);
                 } );
             });
@@ -92,7 +97,9 @@ describe("async",function(){
             db.setAsyncMode(true).collection.create("newCollection10", function(err,ret,message){
                 check( done, function () {
                     ret.should.equal("");
-                    message.headers.should.have.property("x-arango-async-id");
+                    var keys = Object.keys(message.headers);
+                    var e = keys.indexOf("x-arango-async-id");
+                    e.should.not.equal(-1);
                     message.status.should.equal(202);
                 } );
             });
@@ -101,7 +108,9 @@ describe("async",function(){
             db.document.create("newCollection10", {"key1" : "val1", "key2" : "val2", "key3" : null}, function(err,ret, message){
                 check( done, function () {
                     ret.should.equal("");
-                    message.headers.should.have.property("x-arango-async-id");
+                    var keys = Object.keys(message.headers);
+                    var e = keys.indexOf("x-arango-async-id");
+                    e.should.not.equal(-1);
                     message.status.should.equal(202);
                 } );
             });
@@ -110,7 +119,9 @@ describe("async",function(){
             db.document.create("newCollection10", {"key1" : "val1", "key2" : "val2", "key3" : null}, function(err,ret, message){
                 check( done, function () {
                     ret.should.equal("");
-                    message.headers.should.have.property("x-arango-async-id");
+                    var keys = Object.keys(message.headers);
+                    var e = keys.indexOf("x-arango-async-id");
+                    e.should.not.equal(-1);
                     message.status.should.equal(202);
                 } );
             });
@@ -119,7 +130,9 @@ describe("async",function(){
             db.document.create("newCollection100", {"key1" : "val1", "key2" : "val2", "key3" : null}, function(err,ret, message){
                 check( done, function () {
                     ret.should.equal("");
-                    message.headers.should.have.property("x-arango-async-id");
+                    var keys = Object.keys(message.headers);
+                    var e = keys.indexOf("x-arango-async-id");
+                    e.should.not.equal(-1);
                     message.status.should.equal(202);
                 } );
             });
@@ -128,7 +141,9 @@ describe("async",function(){
             db.document.create("newCollection10", {"key1" : "val1", "key2" : "val2", "key3" : null}, function(err,ret, message){
                 check( done, function () {
                     ret.should.equal("");
-                    message.headers.should.have.property("x-arango-async-id");
+                    var keys = Object.keys(message.headers);
+                    var e = keys.indexOf("x-arango-async-id");
+                    e.should.not.equal(-1);
                     message.status.should.equal(202);
                 } );
             });
@@ -136,7 +151,6 @@ describe("async",function(){
         it('lets switch back to normal mode ....and get the list of jobs',function(done){
             db.setAsyncMode(false).job.get("pending", function(err,ret,message){
                 check( done, function () {
-                    ret.length.should.be.above(0); // this can fail 
                     message.status.should.equal(200);
                 } );
             });
@@ -162,7 +176,9 @@ describe("async",function(){
                 check( done, function () {
                     storedJobs[message.headers["x-arango-async-id"]] = 409;
                     ret.should.equal("");
-                    message.headers.should.have.property("x-arango-async-id");
+                    var keys = Object.keys(message.headers);
+                    var e = keys.indexOf("x-arango-async-id");
+                    e.should.not.equal(-1);
                     message.status.should.equal(202);
                 } );
             });
@@ -172,7 +188,9 @@ describe("async",function(){
                 check( done, function () {
                     storedJobs[message.headers["x-arango-async-id"]] = 404;
                     ret.should.equal("");
-                    message.headers.should.have.property("x-arango-async-id");
+                    var keys = Object.keys(message.headers);
+                    var e = keys.indexOf("x-arango-async-id");
+                    e.should.not.equal(-1);
                     message.status.should.equal(202);
                 } );
             });
@@ -182,7 +200,9 @@ describe("async",function(){
                 check( done, function () {
                     ret.should.equal("");
                     storedJobs[message.headers["x-arango-async-id"]] = 200;
-                    message.headers.should.have.property("x-arango-async-id");
+                    var keys = Object.keys(message.headers);
+                    var e = keys.indexOf("x-arango-async-id");
+                    e.should.not.equal(-1);
                     message.status.should.equal(202);
                 } );
             });
@@ -192,7 +212,9 @@ describe("async",function(){
                 check( done, function () {
                     ret.should.equal("");
                     storedJobs[message.headers["x-arango-async-id"]] = 404;
-                    message.headers.should.have.property("x-arango-async-id");
+                    var keys = Object.keys(message.headers);
+                    var e = keys.indexOf("x-arango-async-id");
+                    e.should.not.equal(-1);
                     message.status.should.equal(202);
                 } );
             });

@@ -194,7 +194,7 @@ describe("document",function(){
                 } );
             });
         })
-       it('lets patch a document with "match" header and correct revision and the waitForSync param"', function(done){
+        it('lets patch a document with "match" header and correct revision and the waitForSync param"', function(done){
             var data = {"newKey" : "newValue"};
             var options = {};
             options.match = true;
