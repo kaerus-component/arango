@@ -19,7 +19,7 @@ components:
 	@echo "Installing component dependencies"
 	$(COMPONENT) install -v
 
-test: test-nodejs test-browser
+test: test-nodejs
 	
 test-nodejs: node_modules
 	@echo "Running tests for nodejs"
@@ -27,10 +27,7 @@ test-nodejs: node_modules
 	
 test-browser: components component
 	@echo "Running tests for browser"
-	@./node_modules/mocha-phantomjs/bin/mocha-phantomjs \
-		-s localToRemoteUrlAccessEnabled=true \
-		-s webSecurityEnabled=false \
-		test/runner.html
+	@karma start test/karma/karma.conf.js
 
 distclean:
 	@echo "Cleaning up build files"
