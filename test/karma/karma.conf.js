@@ -19,7 +19,7 @@ module.exports = function(karma) {
         'test/action.js',
         'test/admin.js',
         'test/aqlfunction.js',
-        'test/async.js',
+        //'test/async.js',
         //'test/batch.js',
         'test/collection.js',
         'test/connection.js',
