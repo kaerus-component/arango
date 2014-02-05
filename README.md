@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/kaerus-component/arango.png)](https://travis-ci.org/kaerus-component/arango)
+[![Build Status](https://travis-ci.org/triAGENS/ArangoDB-NodeJS.png)](https://travis-ci.org/triAGENS/ArangoDB-NodeJS)
 
 ArangoDB client
 ===============
@@ -13,7 +13,7 @@ Since arango-client is written as a commonJS module you can just require it in y
 Install
 -------
 ```
-From source: `git clone git://github.com/kaerus-component/arango`
+From source: `git clone git://github.com/triAGENS/ArangoDB-JavaScript`
 web component: `component install kaerus-component/arango`
 nodejs module: `npm install arango` 
 
@@ -32,9 +32,8 @@ Test
 ```
 make test
 ```
-Runs the test suite sequentially under nodejs and phantomjs.
+Runs the test suite sequentially under nodejs and karma (supporting PhantomJSm Firefox and Chrome).
 Feel free to chip in by writing tests if you want a more stable package.
-The old test suite can be found [here](https://github.com/kaerus/arango-client/tree/master/test).
 
 
 Quick start
@@ -130,7 +129,6 @@ The following API:s are (more or less) supported, check out the ArangoDB [docume
   * [batch](http://www.arangodb.org/manuals/current/HttpBatch.html)
   * [edge](http://www.arangodb.org/manuals/current/RestEdge.html)
   * [user](http://www.arangodb.org/manuals/current/HttpUser.html)
-  * [key](http://www.arangodb.org/manuals/current/) 
 
 
 The API methods return a [promise](https://github.com/kaerus-component/uP) but you may also pass a callback function as last argument which then gets called with the result.
