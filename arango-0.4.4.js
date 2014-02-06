@@ -1493,9 +1493,6 @@ require.register("arango/lib/request.js", function(exports, require, module){
 var utils = require('./utils'),
     xhr = require('./xhr');
 
-var header;
-
-
 function request(method, path, data, options, callback) {
     var result;
 
@@ -1541,8 +1538,6 @@ module.exports = request;
 
 });
 require.register("arango/lib/utils.js", function(exports, require, module){
-"use strict";
-
 function extend() {
     var deep = false,
         source, target,
@@ -1571,21 +1566,6 @@ function extend() {
     return target;
 }
 
-/* mixin object properties */
-function mix() {
-    var key, obj = {}, i = 0,
-        l = arguments.length;
-    do {
-        for (key in arguments[i]) {
-            if (arguments[i].hasOwnProperty(key)) {
-                obj[key] = arguments[i][key];
-            }
-        }
-    } while (i++ < l);
-
-    return obj;
-}
-
 /* Prototypal inheritance (from nodejs) */
 function inherit(self, parent) {
     self.super_ = parent;
@@ -1602,8 +1582,7 @@ function inherit(self, parent) {
 
 module.exports = {
     extend: extend,
-    inherit: inherit,
-    mix: mix
+    inherit: inherit
 };
 
 });
@@ -2093,10 +2072,11 @@ module.exports = Arango.api('database', DatabaseAPI);
 });
 require.register("arango/lib/api/document.js", function(exports, require, module){
 var Arango = require('../arango'),
-    url = require('../url'),
-    path = "/_api/document";
+    url = require('../url');
 
 function DocumentAPI(db) {
+    var path = "/_api/document";
+    
     return {
         /**
          * creates a a document in a given collection.
