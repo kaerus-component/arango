@@ -1,39 +1,45 @@
 var arango, db, checksum;
 
-try{ arango = require('arango') } catch (e){ arango = require('..') }
+try {
+    arango = require('arango')
+} catch (e) {
+    arango = require('..')
+}
 
-function check( done, f ) {
+function check(done, f) {
     try {
         f()
         done()
-    } catch( e ) {
+    } catch (e) {
         console.log(e);
-        done( e )
+        done(e)
     }
 }
 
-describe("collections",function(){
+describe("collections", function() {
     var db = arango.Connection("http://127.0.0.1:8529");
 
-    describe("create",function(){
-        var collection = "test1", 
-        options = {
-            journalSize: 12345678,
-            waitForSync: true,
-            keyOptions: { 
-                type: "autoincrement",
-                offset: 0, 
-                increment: 5, 
-                allowUserKeys: true 
-            }
-        };
+    describe("create", function() {
+        var collection = "test1",
+            options = {
+                journalSize: 12345678,
+                waitForSync: true,
+                keyOptions: {
+                    type: "autoincrement",
+                    offset: 0,
+                    increment: 5,
+                    allowUserKeys: true
+                }
+            };
 
-        beforeEach(function(done){
-            db.collection.delete(collection,function(){ done() });
+        beforeEach(function(done) {
+            db.collection.delete(collection, function() {
+                done()
+            });
         })
 
-        it('should be able to create a collection by name',function(done){
-            db.collection.create(collection,function(err,ret){
+        it('should be able to create a collection by name', function(done) {
+            db.collection.create(collection, function(err, ret) {
                 ret.isSystem.should.eql(false);
                 ret.status.should.eql(3);
                 ret.type.should.eql(2);
@@ -43,12 +49,12 @@ describe("collections",function(){
             });
         })
 
-        it('should be able to pass options and getProperties',function(done){
-            db.collection.create(collection,options,function(err,ret){
+        it('should be able to pass options and getProperties', function(done) {
+            db.collection.create(collection, options, function(err, ret) {
                 ret.waitForSync.should.eql(options.waitForSync);
-                db.collection.getProperties(ret.id,function(err,prop){
-                    /* note: rounded to KB */ 
-                    (prop.journalSize >> 10).should.equal(options.journalSize >> 10); 
+                db.collection.getProperties(ret.id, function(err, prop) {
+                    /* note: rounded to KB */
+                    (prop.journalSize >> 10).should.equal(options.journalSize >> 10);
                     prop.keyOptions.should.eql(options.keyOptions);
                     done();
                 })
@@ -56,24 +62,29 @@ describe("collections",function(){
         })
     })
 
-    describe("collection",function(){
+    describe("collection", function() {
 
         db = new arango.Connection("http://127.0.0.1:8529");
 
-        before(function(done){
+        before(function(done) {
             this.timeout(20000);
-            db.database.delete("newDatabase",function(err, ret){
-                db.database.create("newDatabase",function(err, ret){
-                    db = new arango.Connection({_name:"newDatabase",_server:{hostname:"localhost"}});
+            db.database.delete("newDatabase", function(err, ret) {
+                db.database.create("newDatabase", function(err, ret) {
+                    db = new arango.Connection({
+                        _name: "newDatabase",
+                        _server: {
+                            hostname: "localhost"
+                        }
+                    });
                     done();
                 });
             });
 
         })
 
-        describe("collection Functions",function(){
+        describe("collection Functions", function() {
 
-            it('should be able to create a collection by name',function(done){
+            it('should be able to create a collection by name', function(done) {
                 var options = {
                     journalSize: 12345678,
                     waitForSync: true,
@@ -84,287 +95,294 @@ describe("collections",function(){
                         allowUserKeys: true
                     }
                 };
-                db.collection.create("newCollection", options, function(err,ret,message){
-                    check( done, function () {
+                db.collection.create("newCollection", options, function(err, ret, message) {
+                    check(done, function() {
                         ret.isSystem.should.equal(false);
                         ret.status.should.equal(3);
                         ret.type.should.equal(2);
                         ret.isVolatile.should.equal(false);
                         ret.error.should.equal(false);
                         message.status.should.equal(200);
-                    } );
+                    });
                 });
             })
-            it('should be able to create another collection by name',function(done){
-                db.collection.create("newCollection2", function(err,ret,message){
-                    check( done, function () {
+            it('should be able to create another collection by name', function(done) {
+                db.collection.create("newCollection2", function(err, ret, message) {
+                    check(done, function() {
                         ret.isSystem.should.equal(false);
                         ret.status.should.equal(3);
                         ret.type.should.equal(2);
                         ret.isVolatile.should.equal(false);
                         ret.error.should.equal(false);
                         message.status.should.equal(200);
-                    } );
+                    });
                 });
             })
 
-            it('list all collections including system',function(done){
-                db.collection.list(function(err,ret,message){
-                    check( done, function () {
+            it('list all collections including system', function(done) {
+                db.collection.list(function(err, ret, message) {
+                    check(done, function() {
                         ret.error.should.equal(false);
                         message.status.should.equal(200);
-                    } );
+                    });
                 });
             })
-            it('list all collections excluding system',function(done){
-                db.collection.list(true, function(err,ret,message){
-                    check( done, function () {
+            it('list all collections excluding system', function(done) {
+                db.collection.list(true, function(err, ret, message) {
+                    check(done, function() {
                         ret.error.should.equal(false);
                         ret.collections.length.should.equal(2);
                         message.status.should.equal(200);
-                    } );
+                    });
                 });
             })
 
-            it('get collection',function(done){
-                db.collection.get("newCollection2", function(err,ret,message){
-                    check( done, function () {
+            it('get collection', function(done) {
+                db.collection.get("newCollection2", function(err, ret, message) {
+                    check(done, function() {
                         ret.error.should.equal(false);
                         ret.type.should.equal(2);
                         message.status.should.equal(200);
-                    } );
+                    });
                 });
             })
-            it('get non existing collection',function(done){
-                db.collection.get("ndddewCollection2", function(err,ret,message){
-                    check( done, function () {
+            it('get non existing collection', function(done) {
+                db.collection.get("ndddewCollection2", function(err, ret, message) {
+                    check(done, function() {
                         ret.error.should.equal(true);
                         message.status.should.equal(404);
-                    } );
+                    });
                 });
             })
-            it('delete collection',function(done){
-                db.collection.delete("newCollection2", function(err,ret,message){
-                    check( done, function () {
+            it('delete collection', function(done) {
+                db.collection.delete("newCollection2", function(err, ret, message) {
+                    check(done, function() {
                         ret.error.should.equal(false);
                         message.status.should.equal(200);
-                    } );
+                    });
                 });
             })
-            it('delete non existing collection',function(done){
-                db.collection.delete("ndddewCollection2", function(err,ret,message){
-                    check( done, function () {
+            it('delete non existing collection', function(done) {
+                db.collection.delete("ndddewCollection2", function(err, ret, message) {
+                    check(done, function() {
                         ret.error.should.equal(true);
                         message.status.should.equal(404);
-                    } );
+                    });
                 });
             })
 
-            it('truncate collection',function(done){
-                db.collection.truncate("newCollection", function(err,ret,message){
-                    check( done, function () {
+            it('truncate collection', function(done) {
+                db.collection.truncate("newCollection", function(err, ret, message) {
+                    check(done, function() {
                         ret.error.should.equal(false);
                         message.status.should.equal(200);
-                    } );
+                    });
                 });
             })
-            it('truncate non existing collection',function(done){
-                db.collection.truncate("ndddewCollection2", function(err,ret,message){
-                    check( done, function () {
+            it('truncate non existing collection', function(done) {
+                db.collection.truncate("ndddewCollection2", function(err, ret, message) {
+                    check(done, function() {
                         ret.error.should.equal(true);
                         message.status.should.equal(404);
-                    } );
+                    });
                 });
             })
 
-            it('count documents in collection',function(done){
-                db.collection.count("newCollection", function(err,ret,message){
-                    check( done, function () {
+            it('count documents in collection', function(done) {
+                db.collection.count("newCollection", function(err, ret, message) {
+                    check(done, function() {
                         ret.error.should.equal(false);
                         ret.count.should.equal(0);
                         message.status.should.equal(200);
-                    } );
+                    });
                 });
             })
-            it('count documents in non existing collection',function(done){
-                db.collection.count("ndddewCollection2", function(err,ret,message){
-                    check( done, function () {
+            it('count documents in non existing collection', function(done) {
+                db.collection.count("ndddewCollection2", function(err, ret, message) {
+                    check(done, function() {
                         ret.error.should.equal(true);
                         message.status.should.equal(404);
-                    } );
+                    });
                 });
             })
 
-            it('get figures of collection',function(done){
-                db.collection.figures("newCollection", function(err,ret,message){
-                    check( done, function () {
+            it('get figures of collection', function(done) {
+                db.collection.figures("newCollection", function(err, ret, message) {
+                    check(done, function() {
                         ret.count.should.equal(0);
                         ret.should.have.property("figures");
                         ret.error.should.equal(false);
                         message.status.should.equal(200);
-                    } );
+                    });
                 });
             })
-            it('get figures of non existing collection',function(done){
-                db.collection.figures("ndddewCollection2", function(err,ret,message){
-                    check( done, function () {
+            it('get figures of non existing collection', function(done) {
+                db.collection.figures("ndddewCollection2", function(err, ret, message) {
+                    check(done, function() {
                         ret.error.should.equal(true);
                         message.status.should.equal(404);
-                    } );
+                    });
                 });
             })
 
-            it('load collection',function(done){
-                db.collection.load("newCollection", function(err,ret,message){
-                    check( done, function () {
+            it('load collection', function(done) {
+                db.collection.load("newCollection", function(err, ret, message) {
+                    check(done, function() {
                         ret.error.should.equal(false);
                         ret.should.have.property("count");
                         message.status.should.equal(200);
-                    } );
+                    });
                 });
             })
-            it('load collection with count = false',function(done){
-                db.collection.load("newCollection", false, function(err,ret,message){
-                    check( done, function () {
+            it('load collection with count = false', function(done) {
+                db.collection.load("newCollection", false, function(err, ret, message) {
+                    check(done, function() {
                         ret.error.should.equal(false);
                         ret.should.not.have.property("count");
                         message.status.should.equal(200);
-                    } );
+                    });
                 });
             })
-            it('load non existing collection',function(done){
-                db.collection.load("ndddewCollection2", function(err,ret,message){
-                    check( done, function () {
+            it('load non existing collection', function(done) {
+                db.collection.load("ndddewCollection2", function(err, ret, message) {
+                    check(done, function() {
                         ret.error.should.equal(true);
                         message.status.should.equal(404);
-                    } );
+                    });
                 });
             })
 
-            it('unload collection',function(done){
-                db.collection.unload("newCollection", function(err,ret,message){
-                    check( done, function () {
+            it('unload collection', function(done) {
+                db.collection.unload("newCollection", function(err, ret, message) {
+                    check(done, function() {
                         ret.error.should.equal(false);
                         message.status.should.equal(200);
-                    } );
+                    });
                 });
             })
-            it('unload non existing collection',function(done){
-                db.collection.unload("ndddewCollection2", function(err,ret,message){
-                    check( done, function () {
+            it('unload non existing collection', function(done) {
+                db.collection.unload("ndddewCollection2", function(err, ret, message) {
+                    check(done, function() {
                         ret.error.should.equal(true);
                         message.status.should.equal(404);
-                    } );
+                    });
                 });
             })
 
-            it('rename of collection',function(done){
-                db.collection.rename("newCollection", "newCollectionName", function(err,ret,message){
-                    check( done, function () {
+            it('rename of collection', function(done) {
+                db.collection.rename("newCollection", "newCollectionName", function(err, ret, message) {
+                    check(done, function() {
                         ret.error.should.equal(false);
                         message.status.should.equal(200);
-                    } );
+                    });
                 });
             })
-            it('rename of non existing collection',function(done){
-                db.collection.rename("ndddewCollection2", "newCollectionName", function(err,ret,message){
-                    check( done, function () {
+            it('rename of non existing collection', function(done) {
+                db.collection.rename("ndddewCollection2", "newCollectionName", function(err, ret, message) {
+                    check(done, function() {
                         ret.error.should.equal(true);
                         message.status.should.equal(404);
-                    } );
+                    });
                 });
             })
 
 
-            it('getProperties of collection',function(done){
-                db.collection.getProperties("newCollectionName", function(err,ret,message){
-                    check( done, function () {
+            it('getProperties of collection', function(done) {
+                db.collection.getProperties("newCollectionName", function(err, ret, message) {
+                    check(done, function() {
                         ret.error.should.equal(false);
                         ret.keyOptions.type.should.equal("autoincrement");
                         ret.keyOptions.offset.should.equal(0);
                         ret.keyOptions.increment.should.equal(5);
                         ret.keyOptions.allowUserKeys.should.equal(true);
                         message.status.should.equal(200);
-                    } );
+                    });
                 });
             })
-            it('getProperties of non existing collection',function(done){
-                db.collection.getProperties("ndddewCollection2", function(err,ret,message){
-                    check( done, function () {
+            it('getProperties of non existing collection', function(done) {
+                db.collection.getProperties("ndddewCollection2", function(err, ret, message) {
+                    check(done, function() {
                         ret.error.should.equal(true);
                         message.status.should.equal(404);
-                    } );
+                    });
                 });
             })
-            it('setProperties of collection',function(done){
-                db.collection.setProperties("newCollectionName", {}, function(err,ret,message){
-                    check( done, function () {
+            it('setProperties of collection', function(done) {
+                db.collection.setProperties("newCollectionName", {}, function(err, ret, message) {
+                    check(done, function() {
                         ret.error.should.equal(false);
                         message.status.should.equal(200);
-                    } );
+                    });
                 });
             })
-            it('setProperties of non existing collection',function(done){
-                db.collection.setProperties("ndddewCollection2", {}, function(err,ret,message){
-                    check( done, function () {
+            it('setProperties of non existing collection', function(done) {
+                db.collection.setProperties("ndddewCollection2", {}, function(err, ret, message) {
+                    check(done, function() {
                         ret.error.should.equal(true);
                         message.status.should.equal(404);
-                    } );
+                    });
                 });
             })
-            it('revision of collection',function(done){
-                db.collection.revision("newCollectionName", function(err,ret,message){
-                    check( done, function () {
+            it('revision of collection', function(done) {
+                db.collection.revision("newCollectionName", function(err, ret, message) {
+                    check(done, function() {
                         ret.should.have.property("revision");
                         ret.error.should.equal(false);
                         message.status.should.equal(200);
-                    } );
+                    });
                 });
             })
-            it('revision of non existing collection',function(done){
-                db.collection.revision("ndddewCollection2", function(err,ret,message){
-                    check( done, function () {
+            it('revision of non existing collection', function(done) {
+                db.collection.revision("ndddewCollection2", function(err, ret, message) {
+                    check(done, function() {
                         ret.error.should.equal(true);
                         message.status.should.equal(404);
-                    } );
+                    });
                 });
             })
 
-            it('create a document so we have a proper checksum',function(done){
-                db.document.create("newCollectionName", {"key1" : "val1", "key2" : "val2", "key3" : null}, null, function(err,ret, message){
-                    check( done, function () {
+            it('create a document so we have a proper checksum', function(done) {
+                db.document.create("newCollectionName", {
+                    "key1": "val1",
+                    "key2": "val2",
+                    "key3": null
+                }, null, function(err, ret, message) {
+                    check(done, function() {
                         ret.error.should.equal(false);
                         message.status.should.equal(201);
-                    } );
+                    });
                 });
             })
 
-            it('checksum of collection',function(done){
-                db.collection.checksum("newCollectionName", function(err,ret,message){
-                    check( done, function () {
+            it('checksum of collection', function(done) {
+                db.collection.checksum("newCollectionName", function(err, ret, message) {
+                    check(done, function() {
                         ret.should.have.property("checksum");
                         checksum = ret.checksum;
                         ret.error.should.equal(false);
                         message.status.should.equal(200);
-                    } );
+                    });
                 });
             })
-            it('checksum of collection with data and revision used for calculation',function(done){
-                db.collection.checksum("newCollectionName", {withRevisions : true, withData : true},  function(err,ret,message){
-                    check( done, function () {
+            it('checksum of collection with data and revision used for calculation', function(done) {
+                db.collection.checksum("newCollectionName", {
+                    withRevisions: true,
+                    withData: true
+                }, function(err, ret, message) {
+                    check(done, function() {
                         ret.should.have.property("checksum");
                         ret.checksum.should.not.equal(checksum);
                         ret.error.should.equal(false);
                         message.status.should.equal(200);
-                    } );
+                    });
                 });
             })
-            it('checksum of non existing collection',function(done){
-                db.collection.checksum("ndddewCollection2", function(err,ret,message){
-                    check( done, function () {
+            it('checksum of non existing collection', function(done) {
+                db.collection.checksum("ndddewCollection2", function(err, ret, message) {
+                    check(done, function() {
                         ret.error.should.equal(true);
                         message.status.should.equal(404);
-                    } );
+                    });
                 });
             })
         })
@@ -372,5 +390,3 @@ describe("collections",function(){
     })
 
 })
-
-

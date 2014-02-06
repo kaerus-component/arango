@@ -1,7 +1,12 @@
 NAME = arango
 COMPONENT = @./node_modules/.bin/component
+BEAUTIFY = @./node_modules/.bin/js-beautify --config ./code.json
 KARMA = @./node_modules/.bin/karma
 MOCHA = @./node_modules/.bin/mocha
+
+LIB=$(wildcard lib/*.js)
+API=$(wildcard lib/api/*.js)
+TEST=$(wildcard test/*.js)
 
 build: dependencies component
 
@@ -38,6 +43,9 @@ distclean:
 	@rm -rf ./components
 	@rm -rf ./build
 
+
+beautify: $(TEST) $(API) $(LIB)
+	$(BEAUTIFY) -r $^ 
 
 .PHONY: build
 	

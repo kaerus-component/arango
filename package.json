@@ -28,7 +28,8 @@
     "component":"*",
     "karma":"*",
     "karma-mocha":"*",
-    "karma-chai":"*"
+    "karma-chai":"*",
+    "js-beautify":"*"
   },
   "engine": "node >= 0.8.0",
   "bugs": {
