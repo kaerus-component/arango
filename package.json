@@ -29,7 +29,8 @@
     "karma":"*",
     "karma-mocha":"*",
     "karma-chai":"*",
-    "js-beautify":"*"
+    "js-beautify":"*",
+    "uglify-js":"*"
   },
   "engine": "node >= 0.8.0",
   "bugs": {

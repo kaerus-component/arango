@@ -1,6 +1,9 @@
 NAME = arango
+PKG_VER = `cat package.json | grep version | grep -o '[0-9]\.[0-9]\.[0-9]\+'`
+COM_VER = `cat component.json | grep version | grep -o '[0-9]\.[0-9]\.[0-9]\+'`
 COMPONENT = @./node_modules/.bin/component
 BEAUTIFY = @./node_modules/.bin/js-beautify --config ./code.json
+UGLIFYJS = @./node_modules/.bin/uglifyjs
 KARMA = @./node_modules/.bin/karma
 MOCHA = @./node_modules/.bin/mocha
 
@@ -19,11 +22,11 @@ component:
 dependencies: node_modules components
 
 node_modules:
-	@echo "Installing node dependencies"
+	@echo "Installing v$(PKG_VER) node dependencies"
 	@npm i -d
 
 components:
-	@echo "Installing component dependencies"
+	@echo "Installing v$(COM_VER) component dependencies"
 	$(COMPONENT) install -v
 
 test: test-browser test-nodejs
@@ -43,9 +46,14 @@ distclean:
 	@rm -rf ./components
 	@rm -rf ./build
 
-
 beautify: $(TEST) $(API) $(LIB)
 	$(BEAUTIFY) -r $^ 
+
+uglify: component
+	$(UGLIFYJS) ./build/arango.js > arango-$(COM_VER)-min.js
+
+release: component uglify
+	@cp ./build/arango.js arango-$(COM_VER).js
 
 .PHONY: build
 	
