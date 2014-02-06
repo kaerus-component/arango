@@ -100,6 +100,7 @@ describe("admin",function(){
         options.sort = "desc";
         db.admin.log(options, function(err,ret){
             check( done, function () {
+                console.log(ret);
                 ret.should.have.property('totalAmount');
                 ret.should.have.property('timestamp');
                 ret.should.have.property('text');

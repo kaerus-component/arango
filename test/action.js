@@ -108,6 +108,23 @@ describe("action",function(){
         });
     })
 
+    it('lets wait until action is reachable',function(done){
+
+        function callDb(done) {
+            db.action.submit("hello", function(err, ret, message){
+                check( done, function () {
+                    if (message.status !== 200) {
+                        callDb(done);
+                        return;
+                    }
+                    done();
+                } );
+            });
+        }
+        callDb(done);
+
+    })
+
     it('call the action defined in setup action and expect the route to be found',function(done){
         db.action.submit("hello", function(err, ret, message){
             check( done, function () {
