@@ -18,11 +18,11 @@ describe("action",function(){
 
     before(function(done){
         db = arango.Connection("http://127.0.0.1:8529");
-        db.use(":_routing").simple.removeByExample({"url" : {"match":"/alreadyExistingRoute","methods":["GET"]}}, function(err,ret, message){
+        db.use(":_routing").simple.removeByExample({"url" : {"match":"/alreadyExistingRoute","methods":["POST"]}}, function(err,ret, message){
             db.use(":_routing").simple.removeByExample({"url" : {"match":"/hello","methods":["GET"]}}, function(err,ret, message){
                 // write a new route directly into arango
-                var route = {action : {"callback":"function (req,res){\n \n res.status = 200;\n; res.contentType = \"text/html\";\n res.body = \"Already existing route!\";\n }"}}
-                route.url = {"match":"/alreadyExistingRoute","methods":["GET"]};
+                var route = {action : {"callback":"function (req,res){\n \n res.status = 200;\n; res.contentType = \"text/html\";\n var data = JSON.parse(req.requestBody);\n res.body = data.firstname + ' ' + data.lastname;\n }"}}
+                route.url = {"match":"/alreadyExistingRoute","methods":["POST"]};
                 db.use(":_routing").document.create(route, {waitForSync : true})
                     .then(db.admin.routesReload)
                     .then(function(r){
@@ -79,7 +79,7 @@ describe("action",function(){
             {
                 name: 'someAction',
                 url: 'http://127.0.0.1:8529/alreadyExistingRoute',
-                method: 'GET',
+                method: 'POST',
                 result: function(res){return res;},
                 error: function(err){ return err; }
             }
@@ -91,9 +91,9 @@ describe("action",function(){
     })
 
     it('call this action and expect the route to be found',function(done){
-        db.action.submit("someAction",  function(err, ret, message){
+        db.action.submit("someAction", {firstname : "heinz",  lastname : "hoenig"},  function(err, ret, message){
             check( done, function () {
-                ret.should.eql("Already existing route!");
+                ret.should.eql("heinz hoenig");
                 message.status.should.eql(200);
             } );
         });
@@ -176,6 +176,5 @@ describe("action",function(){
             } );
         });
     })
-
 
 })
