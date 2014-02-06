@@ -50,10 +50,15 @@ beautify: $(TEST) $(API) $(LIB)
 	$(BEAUTIFY) -r $^ 
 
 uglify: component
-	$(UGLIFYJS) ./build/arango.js > arango-$(COM_VER)-min.js
+	$(UGLIFYJS) ./build/$(NAME).js > $(NAME)-$(COM_VER)-min.js
 
 release: component uglify
-	@cp ./build/arango.js arango-$(COM_VER).js
+	@cp ./build/$(NAME).js $(NAME)-$(COM_VER).js
+	@git tag -a $(PKG_VER) -m "v$(PKG_VER)" -f
+	@echo "You may now push this release with: git push --tags"
+
+publish:
+	@npm publish
 
 .PHONY: build
 	
