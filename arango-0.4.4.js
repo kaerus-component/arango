@@ -1268,23 +1268,7 @@ module.exports = require('./lib/arango');
 
 });
 require.register("arango/lib/arango.js", function(exports, require, module){
-/* 
- * Copyright (c) 2012 Kaerus (kaerus.com), Anders Elo <anders @ kaerus com>.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-"use strict"
+"use strict";
 
 var url = require('./url'),
     base64 = require('base64'),
@@ -1506,10 +1490,6 @@ module.exports = Arango;
 
 });
 require.register("arango/lib/request.js", function(exports, require, module){
-/* 
- * Copyright (c) 2012-2013 Kaerus (kaerus.com), Anders Elo <anders @ kaerus com>.
- */
-
 var utils = require('./utils'),
     xhr = require('./xhr');
 
@@ -1561,11 +1541,7 @@ module.exports = request;
 
 });
 require.register("arango/lib/utils.js", function(exports, require, module){
-/* 
- * Copyright (c) 2012-2013 Kaerus (kaerus.com), Anders Elo <anders @ kaerus com>.
- */
-
-"use strict"
+"use strict";
 
 function extend() {
     var deep = false,
@@ -1745,16 +1721,54 @@ function path2db(path) {
     return o;
 }
 
+// build url options from object
+function options(o) {
+    if (typeof o !== 'object') return '';
+
+    return Object.keys(o).reduce(function(a, b, c) {
+        c = b + '=' + o[b];
+        return !a ? '?' + c : a + '&' + c;
+    }, '');
+}
+
+// set if-match / if-none-match headers when options.match
+function ifMatch(id, options) {
+    var headers, rev;
+
+    if (options.match !== undefined) {
+        rev = JSON.stringify(options.rev || id);
+
+        if (options.match) headers = {
+            headers: {
+                "if-match": rev
+            }
+        };
+        else headers = {
+            headers: {
+                "if-none-match": rev
+            }
+        };
+        // these options are not needed anymore
+        delete options.match;
+        delete options.rev;
+    }
+
+    return headers;
+}
+
 module.exports = {
-    path2db: path2db
+    path2db: path2db,
+    options: options,
+    ifMatch: ifMatch
 };
 
 });
 require.register("arango/lib/api/transaction.js", function(exports, require, module){
-var Arango = require('../arango'),
-    path = "/_api/transaction/";
+var Arango = require('../arango');
 
 function TransactionAPI(db) {
+    var path = "/_api/transaction/";
+    
     return {
         /**
          *
@@ -1797,18 +1811,11 @@ module.exports = Arango.api('transaction', TransactionAPI);
 });
 require.register("arango/lib/api/collection.js", function(exports, require, module){
 var Arango = require('../arango'),
-    path = "/_api/collection/";
-
-function optionsToUrl(o) {
-    if (typeof o !== 'object') return '';
-
-    return Object.keys(o).reduce(function(a, b, c) {
-        c = b + '=' + o[b];
-        return !a ? '?' + c : a + '&' + c;
-    }, '');
-}
+    url = require('../url');
 
 function CollectionAPI(db) {
+    var path = "/_api/collection/";
+
     return {
         /**
          * Creates a collection
@@ -2024,7 +2031,7 @@ function CollectionAPI(db) {
 
             options = options ? options : {};
 
-            return db.get(path + id + '/checksum' + optionsToUrl(options), callback);
+            return db.get(path + id + '/checksum' + url.options(options), callback);
         },
         /**
          * Rotates the journal of a collection. The current journal of the collection will be closed and made a read-only
@@ -2039,16 +2046,18 @@ function CollectionAPI(db) {
             return db.put(path + id + '/rotate', null, null, callback);
         }
     }
-};
+}
+
 
 module.exports = Arango.api('collection', CollectionAPI);
 
 });
 require.register("arango/lib/api/database.js", function(exports, require, module){
-var Arango = require('../arango'),
-    path = "/_api/database/";
+var Arango = require('../arango');
 
 function DatabaseAPI(db) {
+    var path = "/_api/database/";
+    
     return {
         "create": function(name, users, callback) {
             var options = {
@@ -2084,42 +2093,8 @@ module.exports = Arango.api('database', DatabaseAPI);
 });
 require.register("arango/lib/api/document.js", function(exports, require, module){
 var Arango = require('../arango'),
+    url = require('../url'),
     path = "/_api/document";
-
-
-function optionsToUrl(o) {
-    if (typeof o !== 'object') return '';
-
-    return Object.keys(o).reduce(function(a, b, c) {
-        c = b + '=' + o[b];
-        return !a ? '?' + c : a + '&' + c;
-    }, '');
-}
-
-// set if-match / if-none-match headers when options.match
-function ifMatch(id, options) {
-    var headers, rev;
-
-    if (options.match !== undefined) {
-        rev = JSON.stringify(options.rev || id);
-
-        if (options.match) headers = {
-            headers: {
-                "if-match": rev
-            }
-        };
-        else headers = {
-            headers: {
-                "if-none-match": rev
-            }
-        };
-        // these options are not needed anymore
-        delete options.match;
-        delete options.rev;
-    }
-
-    return headers;
-}
 
 function DocumentAPI(db) {
     return {
@@ -2135,12 +2110,14 @@ function DocumentAPI(db) {
          * @returns {*}
          */
         "create": function(collection, data, options, callback) {
+
             if (typeof collection !== 'string') {
                 callback = options;
                 options = data;
                 data = collection;
                 collection = db._collection;
             }
+            
             if (typeof options === 'function') {
                 callback = options;
                 options = null;
@@ -2150,7 +2127,7 @@ function DocumentAPI(db) {
 
             options.collection = collection;
 
-            return db.post(path + optionsToUrl(options), data, callback);
+            return db.post(path + url.options(options), data, callback);
         },
         /**
          * retrieves a document from the database
@@ -2169,9 +2146,9 @@ function DocumentAPI(db) {
                 callback = options;
                 options = {};
             } else if (options) {
-                headers = ifMatch(id, options);
+                headers = url.ifMatch(id, options);
             }
-            return db.get(path + '/' + id + optionsToUrl(options), headers, callback);
+            return db.get(path + '/' + id + url.options(options), headers, callback);
         },
         /**
          * replaces a document with the data given in data.
@@ -2194,14 +2171,14 @@ function DocumentAPI(db) {
                 callback = options;
                 options = null;
             } else if (options) {
-                headers = ifMatch(id, options);
+                headers = url.ifMatch(id, options);
             }
             if (options.forceUpdate !== undefined) {
                 options.policy = (options.forceUpdate === true) ? "last" : "error";
                 delete options.forceUpdate;
             }
 
-            return db.put(path + '/' + id + optionsToUrl(options), data, headers, callback);
+            return db.put(path + '/' + id + url.options(options), data, headers, callback);
         },
         /**
          * patches a document with the data given in data
@@ -2223,14 +2200,14 @@ function DocumentAPI(db) {
                 callback = options;
                 options = null;
             } else if (options) {
-                headers = ifMatch(id, options);
+                headers = url.ifMatch(id, options);
             }
             options = options ? options : {};
             if (options.forceUpdate !== undefined) {
                 options.policy = (options.forceUpdate === true) ? "last" : "error";
                 delete options.forceUpdate;
             }
-            return db.patch(path + '/' + id + optionsToUrl(options), data, headers, callback);
+            return db.patch(path + '/' + id + url.options(options), data, headers, callback);
         },
         /**
          * Deletes a document
@@ -2251,14 +2228,14 @@ function DocumentAPI(db) {
                 callback = options;
                 options = null;
             } else if (options) {
-                headers = ifMatch(id, options);
+                headers = url.ifMatch(id, options);
             }
             options = options ? options : {};
             if (options.forceUpdate !== undefined) {
                 options.policy = (options.forceUpdate === true) ? "last" : "error";
                 delete options.forceUpdate;
             }
-            return db.delete(path + '/' + id + optionsToUrl(options), headers, callback);
+            return db.delete(path + '/' + id + url.options(options), headers, callback);
         },
         /**
          * same as get but only returns the header
@@ -2277,14 +2254,14 @@ function DocumentAPI(db) {
                 callback = options;
                 options = null;
             } else if (options) {
-                headers = ifMatch(id, options);
+                headers = url.ifMatch(id, options);
             }
             options = options ? options : {};
             if (options.forceUpdate !== undefined) {
                 options.policy = (options.forceUpdate === true) ? "last" : "error";
                 delete options.forceUpdate;
             }
-            return db.head(path + '/' + id + optionsToUrl(options), headers, callback);
+            return db.head(path + '/' + id + url.options(options), headers, callback);
         },
         "list": function(collection, callback) {
             return db.get(path + "?collection=" + collection, callback);
@@ -2292,12 +2269,13 @@ function DocumentAPI(db) {
     }
 }
 
+
 module.exports = Arango.api('document', DocumentAPI);
 
 });
 require.register("arango/lib/api/action.js", function(exports, require, module){
 var Arango = require('../arango'),
-    url = require('urlparser'),
+    urlparser = require('urlparser'),
     utils = require('../utils');
 
 /* pull in dependencies */
@@ -2342,7 +2320,7 @@ function ActionAPI(db) {
                 };
 
                 route.url = {
-                    match: o.match || '/' + url.parse(o.url).path.base,
+                    match: o.match || '/' + urlparser.parse(o.url).path.base,
                     methods: [method.toUpperCase()]
                 };
 
@@ -2427,12 +2405,11 @@ module.exports = Arango.api('action', ActionAPI);
 
 });
 require.register("arango/lib/api/cursor.js", function(exports, require, module){
-var Arango = require('../arango'),
-    path = "/_api/cursor/";
-
-var path = "/_api/cursor/";
+var Arango = require('../arango');
 
 function CursorAPI(db) {
+    var path = "/_api/cursor/";
+
     return {
         /**
          *
@@ -2441,6 +2418,7 @@ function CursorAPI(db) {
          * @returns {*}
          */
         "get": function(id, callback) {
+            
             return db.put(path + id, {}, callback);
         },
         /**
@@ -2464,6 +2442,7 @@ function CursorAPI(db) {
          * @returns {*}
          */
         "create": function(data, callback) {
+
             return db.post(path, data, callback);
         },
         /**
@@ -2487,6 +2466,7 @@ function CursorAPI(db) {
          * @returns {*}
          */
         "query": function(data, callback) {
+
             return db.post("/_api/query", data, callback);
         },
         /**
@@ -2511,47 +2491,27 @@ function CursorAPI(db) {
          */
         "explain": function(data, callback) {
             var queryData = {};
+
             queryData.query = data;
+            
             return db.post("/_api/explain", data, callback);
         },
         "delete": function(id, callback) {
+
             return db.delete(path + id, callback);
         }
     }
-};
+}
 
 module.exports = Arango.api('cursor', CursorAPI);
 
 });
 require.register("arango/lib/api/simple.js", function(exports, require, module){
-var Arango = require('../arango'),
-    path = "/_api/simple/";
-
-function applyOptions(o, data, attributes) {
-    if (typeof attributes === 'object') {
-        Object.keys(attributes).forEach(function(option) {
-            switch (option) {
-                case 'from':
-                    data.left = attributes[option];
-                    data.closed = true;
-                    break;
-                case 'to':
-                    data.right = attributes[option];
-                    data.closed = true;
-                    break;
-                default:
-                    data[option] = attributes[option];
-                    break;
-            }
-        });
-    }
-    if (o._skip && data.skip === undefined) data.skip = o._skip;
-    if (o._limit && data.limit === undefined) data.limit = o._limit;
-
-    return data;
-}
+var Arango = require('../arango');
 
 function SimpleAPI(db) {
+    var path = "/_api/simple/";
+    
     return {
         /**
          * Returns all documents of a collections. The call expects a JSON object as body with the following attributes:
@@ -3040,16 +3000,41 @@ function SimpleAPI(db) {
     }
 }
 
+function applyOptions(o, data, attributes) {
+    if (typeof attributes === 'object') {
+        Object.keys(attributes).forEach(function(option) {
+            switch (option) {
+                case 'from':
+                    data.left = attributes[option];
+                    data.closed = true;
+                    break;
+                case 'to':
+                    data.right = attributes[option];
+                    data.closed = true;
+                    break;
+                default:
+                    data[option] = attributes[option];
+                    break;
+            }
+        });
+    }
+    if (o._skip && data.skip === undefined) data.skip = o._skip;
+    if (o._limit && data.limit === undefined) data.limit = o._limit;
+
+    return data;
+}
+
 module.exports = Arango.api('simple', SimpleAPI);
 
 });
 require.register("arango/lib/api/index.js", function(exports, require, module){
-var Arango = require('../arango'),
-    path = "/_api/index/",
-    xpath = "/_api/index?collection=";
+var Arango = require('../arango');
 
 
 function IndexAPI(db) {
+    var path = "/_api/index/",
+        xpath = "/_api/index?collection=";
+        
     return {
         /**
          * Creates a Cap Index for the collection
@@ -3280,15 +3265,11 @@ module.exports = Arango.api('index', IndexAPI);
 
 });
 require.register("arango/lib/api/admin.js", function(exports, require, module){
-/*
- * Copyright (c) 2012-2013 Kaerus (kaerus.com), Anders Elo <anders @ kaerus com>.
- */
-
 var Arango = require('../arango');
 
-var path = "/_admin/";
-
 function AdminAPI(db) {
+    var path = "/_admin/";
+    
     return {
         "version": function(details, callback) {
             return db.get(path + "version?details=" + !! details, callback);
@@ -3344,21 +3325,17 @@ function AdminAPI(db) {
             return db.request(method, path + 'echo' + htmloptions, data, headers, callback);
         }
     }
-};
+}
 
 module.exports = Arango.api('admin', AdminAPI);
 
 });
 require.register("arango/lib/api/aqlfunction.js", function(exports, require, module){
-/* 
- * Copyright (c) 2012-2013 Kaerus (kaerus.com), Anders Elo <anders @ kaerus com>.
- */
-
 var Arango = require('../arango');
 
-var path = "/_api/aqlfunction/";
-
 function AqlfunctionAPI(db) {
+    var path = "/_api/aqlfunction/";
+    
     return {
         /**
          * String name  - name of the function
@@ -3393,21 +3370,17 @@ function AqlfunctionAPI(db) {
             return db.get(path + params, callback);
         }
     }
-};
+}
 
 module.exports = Arango.api('aqlfunction', AqlfunctionAPI);
 
 });
 require.register("arango/lib/api/traversal.js", function(exports, require, module){
-/* 
- * Copyright (c) 2012-2013 Kaerus (kaerus.com), Anders Elo <anders @ kaerus com>.
- */
-
 var Arango = require('../arango');
 
-var path = "/_api/traversal/";
-
 function TraversalAPI(db) {
+    var path = "/_api/traversal/";
+
     return {
         /**
          *
@@ -3469,14 +3442,11 @@ module.exports = Arango.api('traversal', TraversalAPI);
 
 });
 require.register("arango/lib/api/endpoint.js", function(exports, require, module){
-/* 
- * Copyright (c) 2012-2013 Kaerus (kaerus.com), Anders Elo <anders @ kaerus com>.
- */
 var Arango = require('../arango');
 
-var path = "/_api/endpoint";
-
 function EndpointAPI(db) {
+    var  path = "/_api/endpoint";
+    
     return {
         /**
          *
@@ -3515,30 +3485,20 @@ function EndpointAPI(db) {
             return db.delete(path + "/" + encodeURIComponent(endpoint), callback);
         }
     }
-};
+}
 
 
 module.exports = Arango.api('endpoint', EndpointAPI);
 
 });
 require.register("arango/lib/api/import.js", function(exports, require, module){
-/* 
- * Copyright (c) 2012-2013 Kaerus (kaerus.com), Anders Elo <anders @ kaerus com>.
- */
-var Arango = require('../arango');
+var Arango = require('../arango'),
+    url = require('../url');
 
-var path = "/_api/import";
-
-function optionsToUrl(o) {
-    if (typeof o !== 'object') return '';
-
-    return Object.keys(o).reduce(function(a, b, c) {
-        c = b + '=' + o[b];
-        return !a ? '?' + c : a + '&' + c;
-    }, '');
-}
 
 function ImportAPI(db) {
+    var path = "/_api/import";
+
     return {
 
         /**
@@ -3576,7 +3536,7 @@ function ImportAPI(db) {
             }
             options.type = "auto";
             options.collection = collection;
-            return db.post(path + optionsToUrl(options), documents, callback);
+            return db.post(path + url.options(options), documents, callback);
         },
         /**
          *
@@ -3615,7 +3575,8 @@ function ImportAPI(db) {
             }
 
             options.collection = collection;
-            return db.post(path + optionsToUrl(options), documents, {
+
+            return db.post(path + url.options(options), documents, {
                 "NoStringify": true
             }, callback);
         }
@@ -3806,515 +3767,487 @@ module.exports = Arango.api('query', QueryAPI);
 
 });
 require.register("arango/lib/api/graph.js", function(exports, require, module){
-    /*
-     * Copyright (c) 2012-2013 Kaerus (kaerus.com), Anders Elo <anders @ kaerus com>.
-     */
-    var Arango = require('../arango');
+var Arango = require('../arango'),
+    utils = require('../utils'),
+    url = require('../url');
 
-    var utils = require('../utils');
-
+function GraphAPI(db) {
     var path = "/_api/graph";
 
-    function optionsToUrl(o, data, useKeep) {
-        if (typeof data !== 'object') return '';
+    return {
 
-        if (o._waitForSync && typeof data.waitForSync !== "boolean") data.waitForSync = o._waitForSync;
-        if (useKeep && !o._keepNull && data.keepNull === undefined) data.keepNull = o._keepNull;
-
-        return Object.keys(data).reduce(function(a, b, c) {
-            c = b + '=' + data[b];
-            return !a ? '?' + c : a + '&' + c;
-        }, '');
-    }
-    // set if-match / if-none-match headers when options.match
-    function ifMatch(id, options) {
-        var headers, rev;
-
-        if (options.match !== undefined) {
-            rev = JSON.stringify(options.rev || id);
-
-            if (options.match) headers = {
-                headers: {
-                    "if-match": rev
-                }
+        /**
+         *
+         * @param graph - the name of the graph
+         * @param vertices - the vertices collection
+         * @param edges - the edge collection
+         * @param waitForSync - boolean , wait until document has been sync to disk.
+         * @param callback
+         * @returns {*}
+         */
+        "create": function(graph, vertices, edges, waitForSync, callback) {
+            var data = {
+                _key: graph,
+                vertices: vertices,
+                edges: edges
             };
-            else headers = {
-                headers: {
-                    "if-none-match": rev
-                }
-            };
-            // these options are not needed anymore
-            delete options.match;
-            delete options.rev;
-        }
 
-        return headers;
-    }
-
-
-    function GraphAPI(db) {
-        return {
-
-            /**
-             *
-             * @param graph - the name of the graph
-             * @param vertices - the vertices collection
-             * @param edges - the edge collection
-             * @param waitForSync - boolean , wait until document has been sync to disk.
-             * @param callback
-             * @returns {*}
-             */
-            "create": function(graph, vertices, edges, waitForSync, callback) {
-                var data = {
-                    _key: graph,
-                    vertices: vertices,
-                    edges: edges
-                };
-
-                var options = {};
-                if (typeof waitForSync === "function") {
-                    callback = waitForSync;
-                } else if (typeof waitForSync === "boolean") {
-                    options.waitForSync = waitForSync;
-                }
-                return db.post(path + optionsToUrl(this, options), data, callback);
-            },
-            /**
-             * retrieves a graph from the database
-             *
-             * @param graph - the graph-handle
-             * @param callback
-             * @returns {*}
-             */
-            "get": function(graph, callback) {
-                return db.get(path + '/' + graph, null, callback);
-            },
-            /**
-             * retrieves a list of graphs from the database
-             *
-             * @param callback
-             * @returns {*}
-             */
-            "list": function(callback) {
-                return db.get(path, callback);
-            },
-            /**
-             * Deletes a graph
-             *
-             * @param graph       - the graph-handle
-             * @param waitForSync - boolean , wait until document has been sync to disk.
-             * @param callback
-             * @returns {*}
-             */
-            "delete": function(graph, waitForSync, callback) {
-
-                var options = {};
-                if (typeof waitForSync === "function") {
-                    callback = waitForSync;
-                } else if (typeof waitForSync === "boolean") {
-                    options.waitForSync = waitForSync;
-                }
-                return db.delete(path + '/' + graph + optionsToUrl(this, options), null, callback);
-            },
-            "vertex": {
-                /**
-                 *
-                 * @param graph - The graph-handle
-                 * @param vertexData - the vertex object as JSON. It is possible to set the vertex key by providing the _key attribute.
-                 * @param waitForSync - boolean , wait until document has been sync to disk.
-                 * @param callback
-                 * @returns {*}
-                 */
-                "create": function(graph, vertexData, waitForSync, callback) {
-                    var options = {};
-                    if (typeof waitForSync === "function") {
-                        callback = waitForSync;
-                    } else if (typeof waitForSync === "boolean") {
-                        options.waitForSync = waitForSync;
-                    }
-                    return db.post(path + '/' + graph + '/vertex' + optionsToUrl(this, options), vertexData, callback);
-                },
-
-                /**
-                 * retrieves a vertex  from a graph
-                 *
-                 * @param graph     - the graph-handle
-                 * @param id        - the vertex-handle
-                 * @param options   - an object with 2 possible attributes:
-                 *                      - "match": boolean defining if the given revision should match the found document or not.
-                 *                      - "rev":   String the revision, used by the "match" attribute.
-                 * @param callback
-                 * @returns {*}
-                 */
-                "get": function(graph, id, options, callback) {
-                    var headers;
-
-                    if (typeof options == 'function') {
-                        callback = options;
-                        options = {};
-                    } else if (options) {
-                        headers = ifMatch(id, options);
-                    }
-                    return db.get(path + '/' + graph + '/vertex/' + id + optionsToUrl(this, options), headers, callback);
-                },
-                /**
-                 * replaces a vertex with the data given in data.
-                 *
-                 * @param graph     - the graph-handle
-                 * @param id        - the vertex-handle
-                 * @param data      - a JSON Object containing the new attributes for the document handle
-                 * @param options   - an object with 4 possible attributes:
-                 *                      - "match": - boolean defining if the given revision should match the found vertex or not.
-                 *                      - "rev":  - String the revision, used by the "match" attribute.
-                 *                      - "forceUpdate": - Boolean, if set an update is performed even when the given revision does not match.
-                 *                      - "waitForSync": -  Boolean, wait until document has been synced to disk.
-                 * @param callback
-                 * @returns {*}
-                 */
-                "put": function(graph, id, data, options, callback) {
-                    var headers;
-
-                    if (typeof options == 'function') {
-                        callback = options;
-                        options = {};
-                    } else if (options) {
-                        headers = ifMatch(id, options);
-                    }
-                    if (options.forceUpdate !== undefined) {
-                        options.policy = (options.forceUpdate === true) ? "last" : "error";
-                        delete options.forceUpdate;
-                    }
-                    return db.put(path + '/' + graph + '/vertex/' + id + optionsToUrl(this, options), data, headers, callback);
-                },
-                /**
-                 * patches a vertex with the data given in data
-                 *
-                 * @param graph     - the graph-handle
-                 * @param id        - the vertex-handle
-                 * @param data      - a JSON Object containing the new attributes for the vertex handle
-                 * @param options   - an object with 5 possible attributes:
-                 *                      - "match": - boolean defining if the given revision should match the found vertex or not.
-                 *                      - "rev":  - String the revision, used by the "match" attribute.
-                 *                      - "forceUpdate": - Boolean, if set an update is performed even when the given revision does not match.
-                 *                      - "waitForSync": -  Boolean, wait until document has been synced to disk.
-                 *                      - "keepNull": -  Boolean, default is true, if set to false a patch request will delete
-                 *                                          every null value attributes.
-                 * @param callback
-                 * @returns {*}
-                 */
-                "patch": function(graph, id, data, options, callback) {
-                    var headers;
-
-                    if (typeof options == 'function') {
-                        callback = options;
-                        options = {};
-                    } else if (options) {
-                        headers = ifMatch(id, options);
-                    }
-                    if (options.forceUpdate !== undefined) {
-                        options.policy = (options.forceUpdate === true) ? "last" : "error";
-                        delete options.forceUpdate;
-                    }
-
-                    return db.patch(path + '/' + graph + '/vertex/' + id + optionsToUrl(this, options, true), data, headers, callback);
-                },
-                /**
-                 * Deletes a vertex
-                 *
-                 * @param graph     - the graph-handle
-                 * @param id        - the vertex-handle
-                 * @param options   - an object with 4 possible attributes:
-                 *                      - "match": - boolean defining if the given revision should match the found vertex or not.
-                 *                      - "rev":  - String the revision, used by the "match" attribute.
-                 *                      - "waitForSync": -  Boolean, wait until document has been synced to disk.
-                 * @param callback
-                 * @returns {*}
-                 */
-                "delete": function(graph, id, options, callback) {
-                    var headers;
-
-                    if (typeof options == 'function') {
-                        callback = options;
-                        options = {};
-                    } else if (options) {
-                        headers = ifMatch(id, options);
-                    }
-
-                    return db.delete(path + '/' + graph + '/vertex/' + id + optionsToUrl(this, options), headers, callback);
-                }
-            },
-
-            "edge": {
-                /**
-                 *
-                 * @param graph     - the graph handle
-                 * @param edgeData  - the vertex object as JSON. It is possible to set the vertex key by providing the _key attribute.
-                 * @param from      - the start vertex of this edge
-                 * @param to        - the end vertex of this edge
-                 * @param label     - the edges label
-                 * @param waitForSync - boolean , wait until document has been sync to disk.
-                 * @param callback
-                 * @returns {*}
-                 */
-                "create": function(graph, edgeData, from, to, label, waitForSync, callback) {
-
-                    if (typeof label === 'function') {
-                        callback = label;
-                        label = null;
-                    }
-
-                    var data = utils.extend({
-                        _from: from,
-                        _to: to
-                    }, edgeData);
-                    if (label) {
-                        data = utils.extend({
-                            $label: label
-                        }, data);
-                    }
-                    var options = {};
-                    if (typeof waitForSync === "function") {
-                        callback = waitForSync;
-                    } else if (typeof waitForSync === "boolean") {
-                        options.waitForSync = waitForSync;
-                    }
-                    return db.post(path + '/' + graph + '/edge' + optionsToUrl(this, options), data, callback);
-                },
-                /**
-                 * retrieves an edge  from a graph
-                 *
-                 * @param id        - the edge-handle
-                 * @param options   - an object with 2 possible attributes:
-                 *                      - "match": boolean defining if the given revision should match the found document or not.
-                 *                      - "rev":   String the revision, used by the "match" attribute.
-                 * @param callback
-                 * @returns {*}
-                 */
-                "get": function(graph, id, options, callback) {
-                    var headers;
-
-                    if (typeof options == 'function') {
-                        callback = options;
-                        options = {};
-                    } else if (options) {
-                        headers = ifMatch(id, options);
-                    }
-                    return db.get(path + '/' + graph + '/edge/' + id + optionsToUrl(this, options), headers, callback);
-                },
-                /**
-                 * replaces an edge with the data given in data.
-                 *
-                 * @param graph     - the graph-handle
-                 * @param id        - the vertex-handle
-                 * @param data      - a JSON Object containing the new attributes for the document handle
-                 * @param options   - an object with 4 possible attributes:
-                 *                      - "match": - boolean defining if the given revision should match the found vertex or not.
-                 *                      - "forceUpdate": - Boolean, if set an update is performed even when the given revision does not match.
-                 *                      - "rev":  - String the revision, used by the "match" attribute.
-                 *                      - "waitForSync": -  Boolean, wait until vertex has been synced to disk.
-                 * @param callback
-                 * @returns {*}
-                 */
-                "put": function(graph, id, data, options, callback) {
-                    var headers;
-
-                    if (typeof options == 'function') {
-                        callback = options;
-                        options = {};
-                    } else if (options) {
-                        headers = ifMatch(id, options);
-                    }
-                    if (options.forceUpdate !== undefined) {
-                        options.policy = (options.forceUpdate === true) ? "last" : "error";
-                        delete options.forceUpdate;
-                    }
-
-                    return db.put(path + '/' + graph + '/edge/' + id + optionsToUrl(this, options), data, headers, callback);
-                },
-                /**
-                 * patches an edge with the data given in data
-                 *
-                 * @param graph     - the graph-handle
-                 * @param id        - the edge-handle
-                 * @param data      - a JSON Object containing the new attributes for the edge handle
-                 * @param options   - an object with 4 possible attributes:
-                 *                      - "match": - boolean defining if the given revision should match the found edge or not.
-                 *                      - "rev":  - String the revision, used by the "match" attribute.
-                 *                      - "forceUpdate": - Boolean, if set an update is performed even when the given revision does not match.
-                 *                      - "waitForSync": -  Boolean, wait until edge has been synced to disk.
-                 *                      - "keepNull": -  Boolean, default is true, if set to false a patch request will delete
-                 *                                          every null value attributes.
-                 * @param callback
-                 * @returns {*}
-                 */
-                "patch": function(graph, id, data, options, callback) {
-                    var headers;
-
-                    if (typeof options == 'function') {
-                        callback = options;
-                        options = {};
-                    } else if (options) {
-                        headers = ifMatch(id, options);
-                    }
-                    if (options.forceUpdate !== undefined) {
-                        options.policy = (options.forceUpdate === true) ? "last" : "error";
-                        delete options.forceUpdate;
-                    }
-                    return db.patch(path + '/' + graph + '/edge/' + id + optionsToUrl(this, options, true), data, headers, callback);
-                },
-                /**
-                 * Deletes an edge
-                 *
-                 * @param graph     - the graph-handle
-                 * @param id        - the edge-handle
-                 * @param options   - an object with 4 possible attributes:
-                 *                      - "match": - boolean defining if the given revision should match the found edge or not.
-                 *                      - "rev":  - String the revision, used by the "match" attribute.
-                 *                      - "forceUpdate": - Boolean, if set a deletion is performed even when the given revision
-                 *                                          does not match.
-                 *                      - "waitForSync": -  Boolean, wait until document has been synced to disk.
-                 * @param callback
-                 * @returns {*}
-                 */
-                "delete": function(graph, id, options, callback) {
-                    var headers;
-
-                    if (typeof options == 'function') {
-                        callback = options;
-                        options = {};
-                    } else if (options) {
-                        headers = ifMatch(id, options);
-                    }
-
-                    return db.delete(path + '/' + graph + '/edge/' + id + optionsToUrl(this, options), headers, callback);
-                }
-            },
-            /**
-             * returns all neighbouring vertices of the given vertex .
-             *
-             * @param graph - the graph handle
-             * @param vertex - the vertex
-             * @param options   - the following optional parameters are allowed:
-             *                  -batchSize:  the batch size of the returned cursor
-             *                  -limit:      limit the result size
-             *                  -count:      return the total number of results (default "false")
-             *                  -filter:     a optional filter, The attributes of filter:
-             *                      -direction:     filter for inbound (value "in") or outbound (value "out") neighbors. Default value is "any". -
-             *                      -labels:        filter by an array of edge labels (empty array means no restriction)
-             *                      -properties:    filter neighbors by an array of edge properties, The attributes of a property filter:
-             *                              -key: filter the result vertices by a key value pair
-             *                              -value: the value of the key
-             *                              -compare: a compare operator
-             * @param callback
-             * @returns {*}
-             */
-
-            "getNeighbourVertices": function(graph, vertex, options, callback) {
-                return db.post(path + "/" + graph + '/vertices/' + vertex, options, callback);
-            },
-            /**
-             * returns all neighbouring edges of the given vertex .
-             *
-             * @param graph - the graph handle
-             * @param vertex - the vertex
-             * @param options   - the following optional parameters are allowed:
-             *                  -batchSize:  the batch size of the returned cursor
-             *                  -limit:      limit the result size
-             *                  -count:      return the total number of results (default "false")
-             *                  -filter:     a optional filter, The attributes of filter:
-             *                      -direction:     filter for inbound (value "in") or outbound (value "out") neighbors. Default value is "any". -
-             *                      -labels:        filter by an array of edge labels (empty array means no restriction)
-             *                      -properties:    filter neighbors by an array of edge properties, The attributes of a property filter:
-             *                              -key: filter the result vertices by a key value pair
-             *                              -value: the value of the key
-             *                              -compare: a compare operator
-             * @param callback
-             * @returns {*}
-             */
-            "getEdgesForVertex": function(graph, vertex, options, callback) {
-                return db.post(path + "/" + graph + '/edges/' + vertex, options, callback);
-            },
-            /**
-             * returns all vertices of a graph.
-             *
-             * @param graph - the graph handle
-             * @param options   - the following optional parameters are allowed:
-             *                  -batchSize:  the batch size of the returned cursor
-             *                  -limit:      limit the result size
-             *                  -count:      return the total number of results (default "false")
-             *                  -filter:     a optional filter, The attributes of filter:
-             *                      -properties:    filter neighbors by an array of edge properties, The attributes of a property filter:
-             *                              -key: filter the result vertices by a key value pair
-             *                              -value: the value of the key
-             *                              -compare: a compare operator
-             * @param callback
-             * @returns {*}
-             */
-
-            "vertices": function(graph, options, callback) {
-                return db.post(path + "/" + graph + '/vertices/', options, callback);
-            },
-            /**
-             * returns all edges of a graph.
-             *
-             * @param graph - the graph handle
-             * @param options   - the following optional parameters are allowed:
-             *                  -batchSize:  the batch size of the returned cursor
-             *                  -limit:      limit the result size
-             *                  -count:      return the total number of results (default "false")
-             *                  -filter:     a optional filter, The attributes of filter:
-             *                      -labels:        filter by an array of edge labels (empty array means no restriction)
-             *                      -properties:    filter neighbors by an array of edge properties, The attributes of a property filter:
-             *                              -key: filter the result vertices by a key value pair
-             *                              -value: the value of the key
-             *                              -compare: a compare operator
-             * @param callback
-             * @returns {*}
-             */
-            "edges": function(graph, options, callback) {
-                return db.post(path + "/" + graph + '/edges/', options, callback);
-            },
-            "keepNull": function(val) {
-                this._keepNull = !! val;
-                this.vertex._keepNull = !! val;
-                this.edge._keepNull = !! val;
-
-
-                return this;
-            },
-            "waitForSync": function(val) {
-                this._waitForSync = !! val;
-                this.vertex._waitForSync = !! val;
-                this.edge._waitForSync = !! val;
-
-                return this;
+            var options = {};
+            if (typeof waitForSync === "function") {
+                callback = waitForSync;
+            } else if (typeof waitForSync === "boolean") {
+                options.waitForSync = waitForSync;
             }
+            return db.post(path + optionsToUrl(this, options), data, callback);
+        },
+        /**
+         * retrieves a graph from the database
+         *
+         * @param graph - the graph-handle
+         * @param callback
+         * @returns {*}
+         */
+        "get": function(graph, callback) {
+            return db.get(path + '/' + graph, null, callback);
+        },
+        /**
+         * retrieves a list of graphs from the database
+         *
+         * @param callback
+         * @returns {*}
+         */
+        "list": function(callback) {
+            return db.get(path, callback);
+        },
+        /**
+         * Deletes a graph
+         *
+         * @param graph       - the graph-handle
+         * @param waitForSync - boolean , wait until document has been sync to disk.
+         * @param callback
+         * @returns {*}
+         */
+        "delete": function(graph, waitForSync, callback) {
+
+            var options = {};
+            if (typeof waitForSync === "function") {
+                callback = waitForSync;
+            } else if (typeof waitForSync === "boolean") {
+                options.waitForSync = waitForSync;
+            }
+            return db.delete(path + '/' + graph + optionsToUrl(this, options), null, callback);
+        },
+        "vertex": {
+            /**
+             *
+             * @param graph - The graph-handle
+             * @param vertexData - the vertex object as JSON. It is possible to set the vertex key by providing the _key attribute.
+             * @param waitForSync - boolean , wait until document has been sync to disk.
+             * @param callback
+             * @returns {*}
+             */
+            "create": function(graph, vertexData, waitForSync, callback) {
+                var options = {};
+                if (typeof waitForSync === "function") {
+                    callback = waitForSync;
+                } else if (typeof waitForSync === "boolean") {
+                    options.waitForSync = waitForSync;
+                }
+                return db.post(path + '/' + graph + '/vertex' + optionsToUrl(this, options), vertexData, callback);
+            },
+
+            /**
+             * retrieves a vertex  from a graph
+             *
+             * @param graph     - the graph-handle
+             * @param id        - the vertex-handle
+             * @param options   - an object with 2 possible attributes:
+             *                      - "match": boolean defining if the given revision should match the found document or not.
+             *                      - "rev":   String the revision, used by the "match" attribute.
+             * @param callback
+             * @returns {*}
+             */
+            "get": function(graph, id, options, callback) {
+                var headers;
+
+                if (typeof options == 'function') {
+                    callback = options;
+                    options = {};
+                } else if (options) {
+                    headers = url.ifMatch(id, options);
+                }
+                return db.get(path + '/' + graph + '/vertex/' + id + optionsToUrl(this, options), headers, callback);
+            },
+            /**
+             * replaces a vertex with the data given in data.
+             *
+             * @param graph     - the graph-handle
+             * @param id        - the vertex-handle
+             * @param data      - a JSON Object containing the new attributes for the document handle
+             * @param options   - an object with 4 possible attributes:
+             *                      - "match": - boolean defining if the given revision should match the found vertex or not.
+             *                      - "rev":  - String the revision, used by the "match" attribute.
+             *                      - "forceUpdate": - Boolean, if set an update is performed even when the given revision does not match.
+             *                      - "waitForSync": -  Boolean, wait until document has been synced to disk.
+             * @param callback
+             * @returns {*}
+             */
+            "put": function(graph, id, data, options, callback) {
+                var headers;
+
+                if (typeof options == 'function') {
+                    callback = options;
+                    options = {};
+                } else if (options) {
+                    headers = url.ifMatch(id, options);
+                }
+                if (options.forceUpdate !== undefined) {
+                    options.policy = (options.forceUpdate === true) ? "last" : "error";
+                    delete options.forceUpdate;
+                }
+                return db.put(path + '/' + graph + '/vertex/' + id + optionsToUrl(this, options), data, headers, callback);
+            },
+            /**
+             * patches a vertex with the data given in data
+             *
+             * @param graph     - the graph-handle
+             * @param id        - the vertex-handle
+             * @param data      - a JSON Object containing the new attributes for the vertex handle
+             * @param options   - an object with 5 possible attributes:
+             *                      - "match": - boolean defining if the given revision should match the found vertex or not.
+             *                      - "rev":  - String the revision, used by the "match" attribute.
+             *                      - "forceUpdate": - Boolean, if set an update is performed even when the given revision does not match.
+             *                      - "waitForSync": -  Boolean, wait until document has been synced to disk.
+             *                      - "keepNull": -  Boolean, default is true, if set to false a patch request will delete
+             *                                          every null value attributes.
+             * @param callback
+             * @returns {*}
+             */
+            "patch": function(graph, id, data, options, callback) {
+                var headers;
+
+                if (typeof options == 'function') {
+                    callback = options;
+                    options = {};
+                } else if (options) {
+                    headers = url.ifMatch(id, options);
+                }
+                if (options.forceUpdate !== undefined) {
+                    options.policy = (options.forceUpdate === true) ? "last" : "error";
+                    delete options.forceUpdate;
+                }
+
+                return db.patch(path + '/' + graph + '/vertex/' + id + optionsToUrl(this, options, true), data, headers, callback);
+            },
+            /**
+             * Deletes a vertex
+             *
+             * @param graph     - the graph-handle
+             * @param id        - the vertex-handle
+             * @param options   - an object with 4 possible attributes:
+             *                      - "match": - boolean defining if the given revision should match the found vertex or not.
+             *                      - "rev":  - String the revision, used by the "match" attribute.
+             *                      - "waitForSync": -  Boolean, wait until document has been synced to disk.
+             * @param callback
+             * @returns {*}
+             */
+            "delete": function(graph, id, options, callback) {
+                var headers;
+
+                if (typeof options == 'function') {
+                    callback = options;
+                    options = {};
+                } else if (options) {
+                    headers = url.ifMatch(id, options);
+                }
+
+                return db.delete(path + '/' + graph + '/vertex/' + id + optionsToUrl(this, options), headers, callback);
+            }
+        },
+
+        "edge": {
+            /**
+             *
+             * @param graph     - the graph handle
+             * @param edgeData  - the vertex object as JSON. It is possible to set the vertex key by providing the _key attribute.
+             * @param from      - the start vertex of this edge
+             * @param to        - the end vertex of this edge
+             * @param label     - the edges label
+             * @param waitForSync - boolean , wait until document has been sync to disk.
+             * @param callback
+             * @returns {*}
+             */
+            "create": function(graph, edgeData, from, to, label, waitForSync, callback) {
+
+                if (typeof label === 'function') {
+                    callback = label;
+                    label = null;
+                }
+
+                var data = utils.extend({
+                    _from: from,
+                    _to: to
+                }, edgeData);
+                if (label) {
+                    data = utils.extend({
+                        $label: label
+                    }, data);
+                }
+                var options = {};
+                if (typeof waitForSync === "function") {
+                    callback = waitForSync;
+                } else if (typeof waitForSync === "boolean") {
+                    options.waitForSync = waitForSync;
+                }
+                return db.post(path + '/' + graph + '/edge' + optionsToUrl(this, options), data, callback);
+            },
+            /**
+             * retrieves an edge  from a graph
+             *
+             * @param id        - the edge-handle
+             * @param options   - an object with 2 possible attributes:
+             *                      - "match": boolean defining if the given revision should match the found document or not.
+             *                      - "rev":   String the revision, used by the "match" attribute.
+             * @param callback
+             * @returns {*}
+             */
+            "get": function(graph, id, options, callback) {
+                var headers;
+
+                if (typeof options == 'function') {
+                    callback = options;
+                    options = {};
+                } else if (options) {
+                    headers = url.ifMatch(id, options);
+                }
+                return db.get(path + '/' + graph + '/edge/' + id + optionsToUrl(this, options), headers, callback);
+            },
+            /**
+             * replaces an edge with the data given in data.
+             *
+             * @param graph     - the graph-handle
+             * @param id        - the vertex-handle
+             * @param data      - a JSON Object containing the new attributes for the document handle
+             * @param options   - an object with 4 possible attributes:
+             *                      - "match": - boolean defining if the given revision should match the found vertex or not.
+             *                      - "forceUpdate": - Boolean, if set an update is performed even when the given revision does not match.
+             *                      - "rev":  - String the revision, used by the "match" attribute.
+             *                      - "waitForSync": -  Boolean, wait until vertex has been synced to disk.
+             * @param callback
+             * @returns {*}
+             */
+            "put": function(graph, id, data, options, callback) {
+                var headers;
+
+                if (typeof options == 'function') {
+                    callback = options;
+                    options = {};
+                } else if (options) {
+                    headers = url.ifMatch(id, options);
+                }
+                if (options.forceUpdate !== undefined) {
+                    options.policy = (options.forceUpdate === true) ? "last" : "error";
+                    delete options.forceUpdate;
+                }
+
+                return db.put(path + '/' + graph + '/edge/' + id + optionsToUrl(this, options), data, headers, callback);
+            },
+            /**
+             * patches an edge with the data given in data
+             *
+             * @param graph     - the graph-handle
+             * @param id        - the edge-handle
+             * @param data      - a JSON Object containing the new attributes for the edge handle
+             * @param options   - an object with 4 possible attributes:
+             *                      - "match": - boolean defining if the given revision should match the found edge or not.
+             *                      - "rev":  - String the revision, used by the "match" attribute.
+             *                      - "forceUpdate": - Boolean, if set an update is performed even when the given revision does not match.
+             *                      - "waitForSync": -  Boolean, wait until edge has been synced to disk.
+             *                      - "keepNull": -  Boolean, default is true, if set to false a patch request will delete
+             *                                          every null value attributes.
+             * @param callback
+             * @returns {*}
+             */
+            "patch": function(graph, id, data, options, callback) {
+                var headers;
+
+                if (typeof options == 'function') {
+                    callback = options;
+                    options = {};
+                } else if (options) {
+                    headers = url.ifMatch(id, options);
+                }
+                if (options.forceUpdate !== undefined) {
+                    options.policy = (options.forceUpdate === true) ? "last" : "error";
+                    delete options.forceUpdate;
+                }
+                return db.patch(path + '/' + graph + '/edge/' + id + optionsToUrl(this, options, true), data, headers, callback);
+            },
+            /**
+             * Deletes an edge
+             *
+             * @param graph     - the graph-handle
+             * @param id        - the edge-handle
+             * @param options   - an object with 4 possible attributes:
+             *                      - "match": - boolean defining if the given revision should match the found edge or not.
+             *                      - "rev":  - String the revision, used by the "match" attribute.
+             *                      - "forceUpdate": - Boolean, if set a deletion is performed even when the given revision
+             *                                          does not match.
+             *                      - "waitForSync": -  Boolean, wait until document has been synced to disk.
+             * @param callback
+             * @returns {*}
+             */
+            "delete": function(graph, id, options, callback) {
+                var headers;
+
+                if (typeof options == 'function') {
+                    callback = options;
+                    options = {};
+                } else if (options) {
+                    headers = url.ifMatch(id, options);
+                }
+
+                return db.delete(path + '/' + graph + '/edge/' + id + optionsToUrl(this, options), headers, callback);
+            }
+        },
+        /**
+         * returns all neighbouring vertices of the given vertex .
+         *
+         * @param graph - the graph handle
+         * @param vertex - the vertex
+         * @param options   - the following optional parameters are allowed:
+         *                  -batchSize:  the batch size of the returned cursor
+         *                  -limit:      limit the result size
+         *                  -count:      return the total number of results (default "false")
+         *                  -filter:     a optional filter, The attributes of filter:
+         *                      -direction:     filter for inbound (value "in") or outbound (value "out") neighbors. Default value is "any". -
+         *                      -labels:        filter by an array of edge labels (empty array means no restriction)
+         *                      -properties:    filter neighbors by an array of edge properties, The attributes of a property filter:
+         *                              -key: filter the result vertices by a key value pair
+         *                              -value: the value of the key
+         *                              -compare: a compare operator
+         * @param callback
+         * @returns {*}
+         */
+
+        "getNeighbourVertices": function(graph, vertex, options, callback) {
+            return db.post(path + "/" + graph + '/vertices/' + vertex, options, callback);
+        },
+        /**
+         * returns all neighbouring edges of the given vertex .
+         *
+         * @param graph - the graph handle
+         * @param vertex - the vertex
+         * @param options   - the following optional parameters are allowed:
+         *                  -batchSize:  the batch size of the returned cursor
+         *                  -limit:      limit the result size
+         *                  -count:      return the total number of results (default "false")
+         *                  -filter:     a optional filter, The attributes of filter:
+         *                      -direction:     filter for inbound (value "in") or outbound (value "out") neighbors. Default value is "any". -
+         *                      -labels:        filter by an array of edge labels (empty array means no restriction)
+         *                      -properties:    filter neighbors by an array of edge properties, The attributes of a property filter:
+         *                              -key: filter the result vertices by a key value pair
+         *                              -value: the value of the key
+         *                              -compare: a compare operator
+         * @param callback
+         * @returns {*}
+         */
+        "getEdgesForVertex": function(graph, vertex, options, callback) {
+            return db.post(path + "/" + graph + '/edges/' + vertex, options, callback);
+        },
+        /**
+         * returns all vertices of a graph.
+         *
+         * @param graph - the graph handle
+         * @param options   - the following optional parameters are allowed:
+         *                  -batchSize:  the batch size of the returned cursor
+         *                  -limit:      limit the result size
+         *                  -count:      return the total number of results (default "false")
+         *                  -filter:     a optional filter, The attributes of filter:
+         *                      -properties:    filter neighbors by an array of edge properties, The attributes of a property filter:
+         *                              -key: filter the result vertices by a key value pair
+         *                              -value: the value of the key
+         *                              -compare: a compare operator
+         * @param callback
+         * @returns {*}
+         */
+
+        "vertices": function(graph, options, callback) {
+            return db.post(path + "/" + graph + '/vertices/', options, callback);
+        },
+        /**
+         * returns all edges of a graph.
+         *
+         * @param graph - the graph handle
+         * @param options   - the following optional parameters are allowed:
+         *                  -batchSize:  the batch size of the returned cursor
+         *                  -limit:      limit the result size
+         *                  -count:      return the total number of results (default "false")
+         *                  -filter:     a optional filter, The attributes of filter:
+         *                      -labels:        filter by an array of edge labels (empty array means no restriction)
+         *                      -properties:    filter neighbors by an array of edge properties, The attributes of a property filter:
+         *                              -key: filter the result vertices by a key value pair
+         *                              -value: the value of the key
+         *                              -compare: a compare operator
+         * @param callback
+         * @returns {*}
+         */
+        "edges": function(graph, options, callback) {
+            return db.post(path + "/" + graph + '/edges/', options, callback);
+        },
+        "keepNull": function(val) {
+            this._keepNull = !! val;
+            this.vertex._keepNull = !! val;
+            this.edge._keepNull = !! val;
+
+
+            return this;
+        },
+        "waitForSync": function(val) {
+            this._waitForSync = !! val;
+            this.vertex._waitForSync = !! val;
+            this.edge._waitForSync = !! val;
+
+            return this;
         }
     }
+}
 
-    module.exports = Arango.api('graph', GraphAPI);
-    /*
-module.exports = Arango.api(["graph" , "vertex"],GraphAPI.vertex);
-module.exports = Arango.api(["graph" , "edges"],GraphAPI.edge);
-*/
+/* consider refactoring */
+function optionsToUrl(o, data, useKeep) {
+    if (typeof data !== 'object') return '';
+
+    if (o._waitForSync && typeof data.waitForSync !== "boolean") data.waitForSync = o._waitForSync;
+    if (useKeep && !o._keepNull && data.keepNull === undefined) data.keepNull = o._keepNull;
+
+    return Object.keys(data).reduce(function(a, b, c) {
+        c = b + '=' + data[b];
+        return !a ? '?' + c : a + '&' + c;
+    }, '');
+}
+
+module.exports = Arango.api('graph', GraphAPI);
+
 
 });
 require.register("arango/lib/api/batch.js", function(exports, require, module){
 var Arango = require('../arango'),
     utils = require('../utils'),
-    path = "/_api/batch",
     batchPart = "Content-Type: application/x-arango-batchpart",
     defaultBoundary = "batch{id}",
-    id = 0;
+    batch_sequence = 0;
 
 function BatchAPI(db) {
-    var request = db.request,
+    var path = "/_api/batch",
+        request = db.request,
         jobs = [],
         boundary;
 
     return {
-        "start": function() {
-            boundary = defaultBoundary.replace(/{(.*)}/, ++id);
+        "start": function(user_boundary) {
+            ++batch_sequence;
+
+            boundary = user_boundary ? user_boundary + batch_sequence : defaultBoundary.replace(/{(.*)}/, batch_sequence);
 
             /* start capturing requests */
             db.request = function() {
@@ -4492,43 +4425,12 @@ module.exports = Arango.api('batch', BatchAPI);
 });
 require.register("arango/lib/api/edge.js", function(exports, require, module){
 var Arango = require('../arango'),
-    path = "/_api/edge",
-    ypath = "/_api/edges/";
-
-function optionsToUrl(o) {
-    if (typeof o !== 'object') return '';
-
-    return Object.keys(o).reduce(function(a, b, c) {
-        c = b + '=' + o[b];
-        return !a ? '?' + c : a + '&' + c;
-    }, '');
-}
-// set if-match / if-none-match headers when options.match
-function ifMatch(id, options) {
-    var headers, rev;
-
-    if (options.match !== undefined) {
-        rev = JSON.stringify(options.rev || id);
-
-        if (options.match) headers = {
-            headers: {
-                "if-match": rev
-            }
-        };
-        else headers = {
-            headers: {
-                "if-none-match": rev
-            }
-        };
-        // these options are not needed anymore
-        delete options.match;
-        delete options.rev;
-    }
-
-    return headers;
-}
+    url = require('../url');
 
 function EdgeAPI(db) {
+    var path = "/_api/edge",
+        ypath = "/_api/edges/";
+
     return {
         /**
          * creates an edge in a given collection.
@@ -4563,7 +4465,7 @@ function EdgeAPI(db) {
             options.collection = collection;
             options.from = from;
             options.to = to;
-            return db.post(path + optionsToUrl(options), data, callback);
+            return db.post(path + url.options(options), data, callback);
         },
         /**
          * retrieves an edge from the database
@@ -4582,12 +4484,12 @@ function EdgeAPI(db) {
                 callback = options;
                 options = null;
             } else if (options) {
-                headers = ifMatch(id, options);
+                headers = url.ifMatch(id, options);
             }
 
             options = options ? options : {};
 
-            return db.get(path + '/' + id + optionsToUrl(options), headers, callback);
+            return db.get(path + '/' + id + url.options(options), headers, callback);
         },
         /**
          * replaces an edge with the data given in data.
@@ -4609,7 +4511,7 @@ function EdgeAPI(db) {
                 callback = options;
                 options = null;
             } else if (options) {
-                headers = ifMatch(id, options);
+                headers = url.ifMatch(id, options);
             }
 
             options = options ? options : {};
@@ -4619,7 +4521,7 @@ function EdgeAPI(db) {
                 delete options.forceUpdate;
             }
 
-            return db.put(path + '/' + id + optionsToUrl(options), data, headers, callback);
+            return db.put(path + '/' + id + url.options(options), data, headers, callback);
         },
         /**
          * patches an edge with the data given in data
@@ -4642,7 +4544,7 @@ function EdgeAPI(db) {
                 callback = options;
                 options = null;
             } else if (options) {
-                headers = ifMatch(id, options);
+                headers = url.ifMatch(id, options);
             }
 
             options = options ? options : {};
@@ -4652,7 +4554,7 @@ function EdgeAPI(db) {
                 delete options.forceUpdate;
             }
 
-            return db.patch(path + '/' + id + optionsToUrl(options), data, headers, callback);
+            return db.patch(path + '/' + id + url.options(options), data, headers, callback);
         },
         /**
          * Deletes an edge
@@ -4674,12 +4576,12 @@ function EdgeAPI(db) {
                 callback = options;
                 options = null;
             } else if (options) {
-                headers = ifMatch(id, options);
+                headers = url.ifMatch(id, options);
             }
 
             options = options ? options : {};
 
-            return db.delete(path + '/' + id + optionsToUrl(options), headers, callback);
+            return db.delete(path + '/' + id + url.options(options), headers, callback);
         },
         /**
          * same as get but only returns the header
@@ -4698,10 +4600,10 @@ function EdgeAPI(db) {
                 callback = options;
                 options = null;
             } else if (options) {
-                headers = ifMatch(id, options);
+                headers = url.ifMatch(id, options);
             }
             options = options ? options : {};
-            return db.head(path + '/' + id + optionsToUrl(options), headers, callback);
+            return db.head(path + '/' + id + url.options(options), headers, callback);
         },
         /**
          * Returns the list of edges starting or ending in the vertex identified by vertex-handle.
@@ -4742,15 +4644,15 @@ function EdgeAPI(db) {
     }
 }
 
-
 module.exports = Arango.api('edge', EdgeAPI);
 
 });
 require.register("arango/lib/api/user.js", function(exports, require, module){
-var Arango = require('../arango'),
-    path = "/_api/user/";
+var Arango = require('../arango');
 
 function UserAPI(db) {
+    var path = "/_api/user/";
+    
     return {
 
         /**
@@ -4857,15 +4759,11 @@ module.exports = Arango.api('user', UserAPI);
 
 });
 require.register("arango/lib/api/job.js", function(exports, require, module){
-/* 
- * Copyright (c) 2012-2013 Kaerus (kaerus.com), Anders Elo <anders @ kaerus com>.
- */
 var Arango = require('../arango');
 
-var path = "/_api/job";
-
 function JobAPI(db) {
-
+    var path = "/_api/job";
+    
     return {
         /**
          *
