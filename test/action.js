@@ -112,13 +112,12 @@ describe("action",function(){
 
         function callDb(done) {
             db.action.submit("hello", function(err, ret, message){
-                check( done, function () {
-                    if (message.status !== 200) {
-                        callDb(done);
-                        return;
-                    }
-                    done();
-                } );
+                if (message.status !== 200) {
+                    callDb(done);
+                    return;
+                }
+                done();
+
             });
         }
         callDb(done);
