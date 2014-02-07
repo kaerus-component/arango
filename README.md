@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/triAGENS/ArangoDB-JavaScript.png)](https://travis-ci.org/triAGENS/ArangoDB-JavaScript)
+[![Build Status](https://travis-ci.org/triAGENS/ArangoDB-JavaScript.png)](https://travis-ci.org/triAGENS/ArangoDB-JavaScript )
 
 ArangoDB client
 ===============
@@ -26,6 +26,13 @@ make build
 ```
 Creates a single build.js component in the ```./build``` directory.
 A standalone is built separately and named arango.js.
+
+Documentation
+--------
+```
+make docs
+```
+Generates the documentation in the documentation folder.
 
 Test
 ----

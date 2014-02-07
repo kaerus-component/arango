@@ -30,11 +30,17 @@ test-browser: components component
 	@karma start --browsers Firefox test/karma/karma.conf.js
 	@karma start --browsers Chrome test/karma/karma.conf.js
 
+docs: components component
+	@echo "Generating docs"
+	@npm install yuidocjs
+	@yuidoc -o ./documentation lib/
+
 distclean:
 	@echo "Cleaning up build files"
 	@rm -rf ./node_modules
 	@rm -rf ./components
 	@rm -rf ./build
+	@rm -rf ./documentation
 
 
 .PHONY: build

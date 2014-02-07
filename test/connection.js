@@ -132,7 +132,7 @@ describe("Connection()",function(){
             port:8520
         })
         db._collection.should.eql('');
-        db = db.use("/databaseName");
+        db = db.useDatabase("databaseName");
         db._server.should.eql({
             protocol:'http',
             hostname:'test.host',
@@ -148,7 +148,7 @@ describe("Connection()",function(){
         })
         db._name.should.eql('databaseName');
         db._collection.should.eql('collectionName');
-        db = db.use(":anotherCollectionName");
+        db = db.useCollection("anotherCollectionName");
         db._server.should.eql({
             protocol:'http',
             hostname:'test.host',

@@ -21,7 +21,8 @@ describe("action",function(){
         db.use(":_routing").simple.removeByExample({"url" : {"match":"/alreadyExistingRoute","methods":["POST"]}}, function(err,ret, message){
             db.use(":_routing").simple.removeByExample({"url" : {"match":"/hello","methods":["GET"]}}, function(err,ret, message){
                 // write a new route directly into arango
-                var route = {action : {"callback":"function (req,res){\n \n res.status = 200;\n; res.contentType = \"text/html\";\n var data = JSON.parse(req.requestBody);\n res.body = data.firstname + ' ' + data.lastname;\n }"}}
+                var route = {action : {"callback":"function (req,res){\n \n res.status = 200;\n; res.contentType" +
+                    " = \"text/html\";\n var data = JSON.parse(req.requestBody);\n res.body = data.firstname + ' ' + data.lastname;\n }"}}
                 route.url = {"match":"/alreadyExistingRoute","methods":["POST"]};
                 db.use(":_routing").document.create(route, {waitForSync : true})
                     .then(db.admin.routesReload)
