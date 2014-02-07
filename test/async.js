@@ -1,14 +1,19 @@
-var arango, db, jobs = [], storedJobs = {};
+var arango, db, jobs = [],
+    storedJobs = {};
 
-try{ arango = require('arango') } catch (e){ arango = require('..') }
+try {
+    arango = require('arango')
+} catch (e) {
+    arango = require('..')
+}
 
-function check( done, f ) {
+function check(done, f) {
     try {
         f()
         done()
-    } catch( e ) {
+    } catch (e) {
         console.log(e);
-        done( e )
+        done(e)
     }
 }
 
@@ -16,213 +21,246 @@ function setJobs() {
 
 }
 
-describe("async",function(){
+describe("async", function() {
 
     db = arango.Connection("http://127.0.0.1:8529");
 
-    before(function(done){
+    before(function(done) {
         this.timeout(20000);
-        db.database.delete("newDatabase",function(err, ret){
-            db.database.create("newDatabase",function(err, ret){
-                db = arango.Connection({_name:"newDatabase",_server:{hostname:"localhost"}});
+        db.database.delete("newDatabase", function(err, ret) {
+            db.database.create("newDatabase", function(err, ret) {
+                db = arango.Connection({
+                    _name: "newDatabase",
+                    _server: {
+                        hostname: "localhost"
+                    }
+                });
                 done();
             });
         });
 
     })
 
-    describe("async Functions",function(){
+    describe("async Functions", function() {
 
-		it('lets create a collection in normal mode ....we expect a result',function(done){
-            db.collection.create("newCollection", function(err,ret,message){
-				check( done, function () {
+        it('lets create a collection in normal mode ....we expect a result', function(done) {
+            db.collection.create("newCollection", function(err, ret, message) {
+                check(done, function() {
                     ret.status.should.equal(3);
                     ret.error.should.equal(false);
                     message.status.should.equal(200);
-                } );
-			});
+                });
+            });
         })
-        it('lets create a collection in async store mode ....we only expect a header with a job id',function(done){
-            db.setAsyncMode(true).collection.create("newCollection2", function(err,ret,message){
-                check( done, function () {
+        it('lets create a collection in async store mode ....we only expect a header with a job id', function(done) {
+            db.setAsyncMode(true).collection.create("newCollection2", function(err, ret, message) {
+                check(done, function() {
                     var keys = Object.keys(message.headers);
                     var e = keys.indexOf("x-arango-async-id");
                     e.should.not.equal(-1);
                     message.status.should.equal(202);
-                } );
+                });
             });
         })
-        it('lets create a collection in async fire and forget mode ....we only expect a header without a job id',function(done){
-            db.setAsyncMode(true, true).collection.create("newCollection3", function(err,ret,message){
-                check( done, function () {
+        it('lets create a collection in async fire and forget mode ....we only expect a header without a job id', function(done) {
+            db.setAsyncMode(true, true).collection.create("newCollection3", function(err, ret, message) {
+                check(done, function() {
                     ret.should.equal("");
                     var keys = Object.keys(message.headers);
                     var e = keys.indexOf("x-arango-async-id");
                     e.should.equal(-1);
                     message.status.should.equal(202);
-                } );
+                });
             });
         })
 
-        it('Ok, we switched to fire and forget, lets check if db is still configuredthat way.',function(done){
-            db.collection.create("newCollection", function(err,ret,message){
-                check( done, function () {
+        it('Ok, we switched to fire and forget, lets check if db is still configuredthat way.', function(done) {
+            db.collection.create("newCollection", function(err, ret, message) {
+                check(done, function() {
                     ret.should.equal("");
                     var keys = Object.keys(message.headers);
                     var e = keys.indexOf("x-arango-async-id");
                     e.should.equal(-1);
                     message.status.should.equal(202);
-                } );
+                });
             });
         })
-        it('lets switch back to normal mode ....we expect a result',function(done){
-            db.setAsyncMode(false).collection.create("newCollection6", function(err,ret,message){
-                check( done, function () {
+        it('lets switch back to normal mode ....we expect a result', function(done) {
+            db.setAsyncMode(false).collection.create("newCollection6", function(err, ret, message) {
+                check(done, function() {
                     ret.status.should.equal(3);
                     ret.error.should.equal(false);
                     message.status.should.equal(200);
-                } );
+                });
             });
         })
-        it('lets create a collection in normal mode ....we expect a result',function(done){
-            db.collection.create("newCollection7", function(err,ret,message){
-                check( done, function () {
+        it('lets create a collection in normal mode ....we expect a result', function(done) {
+            db.collection.create("newCollection7", function(err, ret, message) {
+                check(done, function() {
                     ret.status.should.equal(3);
                     ret.error.should.equal(false);
                     message.status.should.equal(200);
-                } );
+                });
             });
         })
-        it('lets switch back to async store mode ....and create some jobs',function(done){
-            db.setAsyncMode(true).collection.create("newCollection10", function(err,ret,message){
-                check( done, function () {
+        it('lets switch back to async store mode ....and create some jobs', function(done) {
+            db.setAsyncMode(true).collection.create("newCollection10", function(err, ret, message) {
+                check(done, function() {
                     ret.should.equal("");
                     var keys = Object.keys(message.headers);
                     var e = keys.indexOf("x-arango-async-id");
                     e.should.not.equal(-1);
                     message.status.should.equal(202);
-                } );
+                });
             });
         })
-        it('create a document',function(done){
-            db.document.create("newCollection10", {"key1" : "val1", "key2" : "val2", "key3" : null}, function(err,ret, message){
-                check( done, function () {
+        it('create a document', function(done) {
+            db.document.create("newCollection10", {
+                "key1": "val1",
+                "key2": "val2",
+                "key3": null
+            }, function(err, ret, message) {
+                check(done, function() {
                     ret.should.equal("");
                     var keys = Object.keys(message.headers);
                     var e = keys.indexOf("x-arango-async-id");
                     e.should.not.equal(-1);
                     message.status.should.equal(202);
-                } );
+                });
             });
         })
-        it('create a document',function(done){
-            db.document.create("newCollection10", {"key1" : "val1", "key2" : "val2", "key3" : null}, function(err,ret, message){
-                check( done, function () {
+        it('create a document', function(done) {
+            db.document.create("newCollection10", {
+                "key1": "val1",
+                "key2": "val2",
+                "key3": null
+            }, function(err, ret, message) {
+                check(done, function() {
                     ret.should.equal("");
                     var keys = Object.keys(message.headers);
                     var e = keys.indexOf("x-arango-async-id");
                     e.should.not.equal(-1);
                     message.status.should.equal(202);
-                } );
+                });
             });
         })
-        it('create a document',function(done){
-            db.document.create("newCollection100", {"key1" : "val1", "key2" : "val2", "key3" : null}, function(err,ret, message){
-                check( done, function () {
+        it('create a document', function(done) {
+            db.document.create("newCollection100", {
+                "key1": "val1",
+                "key2": "val2",
+                "key3": null
+            }, function(err, ret, message) {
+                check(done, function() {
                     ret.should.equal("");
                     var keys = Object.keys(message.headers);
                     var e = keys.indexOf("x-arango-async-id");
                     e.should.not.equal(-1);
                     message.status.should.equal(202);
-                } );
+                });
             });
         })
-        it('create a document',function(done){
-            db.document.create("newCollection10", {"key1" : "val1", "key2" : "val2", "key3" : null}, function(err,ret, message){
-                check( done, function () {
+        it('create a document', function(done) {
+            db.document.create("newCollection10", {
+                "key1": "val1",
+                "key2": "val2",
+                "key3": null
+            }, function(err, ret, message) {
+                check(done, function() {
                     ret.should.equal("");
                     var keys = Object.keys(message.headers);
                     var e = keys.indexOf("x-arango-async-id");
                     e.should.not.equal(-1);
                     message.status.should.equal(202);
-                } );
+                });
             });
         })
-        it('lets switch back to normal mode ....and get the list of jobs',function(done){
-            db.setAsyncMode(false).job.get("pending", function(err,ret,message){
-                check( done, function () {
+        it('lets switch back to normal mode ....and get the list of jobs', function(done) {
+            db.setAsyncMode(false).job.get("pending", function(err, ret, message) {
+                check(done, function() {
                     message.status.should.equal(200);
-                } );
+                });
             });
         })
-        it('lets delete the job queue',function(done){
-            db.job.delete("all", function(err,ret,message){
-                check( done, function () {
+        it('lets delete the job queue', function(done) {
+            db.job.delete("all", function(err, ret, message) {
+                check(done, function() {
                     ret.result.should.equal(true);
                     message.status.should.equal(200);
-                } );
+                });
             });
         })
-        it('lets get the list of jobs',function(done){
-            db.job.get("done", function(err,ret,message){
-                check( done, function () {
+        it('lets get the list of jobs', function(done) {
+            db.job.get("done", function(err, ret, message) {
+                check(done, function() {
                     ret.length.should.equal(0);
                     message.status.should.equal(200);
-                } );
+                });
             });
         })
-        it('lets switch back to async store mode ....and create failing jobs',function(done){
-            db.setAsyncMode(true).collection.create("newCollection10", function(err,ret,message){
-                check( done, function () {
+        it('lets switch back to async store mode ....and create failing jobs', function(done) {
+            db.setAsyncMode(true).collection.create("newCollection10", function(err, ret, message) {
+                check(done, function() {
                     storedJobs[message.headers["x-arango-async-id"]] = 409;
                     ret.should.equal("");
                     var keys = Object.keys(message.headers);
                     var e = keys.indexOf("x-arango-async-id");
                     e.should.not.equal(-1);
                     message.status.should.equal(202);
-                } );
+                });
             });
         })
-        it('create a failing document',function(done){
-            db.document.create("newCollection100", {"key1" : "val1", "key2" : "val2", "key3" : null}, function(err,ret, message){
-                check( done, function () {
+        it('create a failing document', function(done) {
+            db.document.create("newCollection100", {
+                "key1": "val1",
+                "key2": "val2",
+                "key3": null
+            }, function(err, ret, message) {
+                check(done, function() {
                     storedJobs[message.headers["x-arango-async-id"]] = 404;
                     ret.should.equal("");
                     var keys = Object.keys(message.headers);
                     var e = keys.indexOf("x-arango-async-id");
                     e.should.not.equal(-1);
                     message.status.should.equal(202);
-                } );
+                });
             });
         })
-        it('create a document',function(done){
-            db.document.create("newCollection10", {"key1" : "val1", "key2" : "val2", "key3" : null}, function(err,ret, message){
-                check( done, function () {
+        it('create a document', function(done) {
+            db.document.create("newCollection10", {
+                "key1": "val1",
+                "key2": "val2",
+                "key3": null
+            }, function(err, ret, message) {
+                check(done, function() {
                     ret.should.equal("");
                     storedJobs[message.headers["x-arango-async-id"]] = 200;
                     var keys = Object.keys(message.headers);
                     var e = keys.indexOf("x-arango-async-id");
                     e.should.not.equal(-1);
                     message.status.should.equal(202);
-                } );
+                });
             });
         })
-        it('create a failing document',function(done){
-            db.document.create("newCollection100", {"key1" : "val1", "key2" : "val2", "key3" : null}, function(err,ret, message){
-                check( done, function () {
+        it('create a failing document', function(done) {
+            db.document.create("newCollection100", {
+                "key1": "val1",
+                "key2": "val2",
+                "key3": null
+            }, function(err, ret, message) {
+                check(done, function() {
                     ret.should.equal("");
                     storedJobs[message.headers["x-arango-async-id"]] = 404;
                     var keys = Object.keys(message.headers);
                     var e = keys.indexOf("x-arango-async-id");
                     e.should.not.equal(-1);
                     message.status.should.equal(202);
-                } );
+                });
             });
         })
-        it('lets switch back to normal mode ....and get the job result',function(done){
+        it('lets switch back to normal mode ....and get the job result', function(done) {
 
             function callDb(done) {
-                db.setAsyncMode(false).job.get("done", function(err,ret,message){
+                db.setAsyncMode(false).job.get("done", function(err, ret, message) {
                     var jobs = ret;
                     if (jobs.length != 4) {
                         callDb(done);
@@ -234,12 +272,12 @@ describe("async",function(){
             callDb(done);
 
         })
-        it('lets get the job results',function(done){
+        it('lets get the job results', function(done) {
             Object.keys(storedJobs).forEach(function(key) {
-                db.job.put(key, function(err,ret,message){
+                db.job.put(key, function(err, ret, message) {
                     ret.code.should.equal(storedJobs[key]);
                 });
-            } )
+            })
             done();
 
         })
@@ -247,5 +285,3 @@ describe("async",function(){
     })
 
 })
-
-

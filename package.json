@@ -22,23 +22,27 @@
     "urlparser": "git://github.com/kaerus-component/urlparser.git#0.3.9"
   },
   "devDependencies": {
-    "mocha": "*",
-    "chai": "*",
-    "should": "*",
-    "component":"*",
-    "mocha-phantomjs":"*"
-  },
-  "engine": "node >= 0.8.0",
-  "bugs": {
-    "url": "https://github.com/kaerus-component/arango/issues"
-  },
-  "scripts": {
-    "test":"make test"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/kaerus-component/arango.git"
-  },
-  "main": "index.js",
-  "license": "APACHE2_0"
+        "mocha": "*",
+        "chai": "*",
+        "should": "*",
+        "component":"*",
+        "karma":"*",
+        "karma-mocha":"*",
+        "karma-chai":"*",
+        "js-beautify":"*",
+        "uglify-js":"*"
+    },
+    "engine": "node >= 0.8.0",
+    "bugs": {
+        "url": "https://github.com/kaerus-component/arango/issues"
+    },
+    "scripts": {
+        "test":"make test"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/kaerus-component/arango.git"
+    },
+    "main": "index.js",
+    "license": "APACHE2_0"
 }

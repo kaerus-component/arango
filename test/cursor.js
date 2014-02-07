@@ -1,32 +1,53 @@
 var arango, db;
 
-try{ arango = require('arango') } catch (e){ arango = require('..') }
+try {
+    arango = require('arango')
+} catch (e) {
+    arango = require('..')
+}
 
-function check( done, f ) {
+function check(done, f) {
     try {
         f()
         done()
-    } catch( e ) {
+    } catch (e) {
         //console.log(e);
-        done( e )
+        done(e)
     }
 }
 
-describe("cursor",function(){
+describe("cursor", function() {
     db = arango.Connection("http://127.0.0.1:8529");
 
-    before(function(done){
+    before(function(done) {
         this.timeout(30000);
-        db.database.delete("newDatabase",function(err, ret){
-            db.database.create("newDatabase",function(err, ret){
-                db = arango.Connection({_name:"newDatabase",_server:{hostname:"localhost"}});
-                db.collection.create("newCollection", function(err,ret){
+        db.database.delete("newDatabase", function(err, ret) {
+            db.database.create("newDatabase", function(err, ret) {
+                db = arango.Connection({
+                    _name: "newDatabase",
+                    _server: {
+                        hostname: "localhost"
+                    }
+                });
+                db.collection.create("newCollection", function(err, ret) {
                     var collection = ret;
-                    db.document.create(collection.id, {"key1" : "val2", "key2" : "val3", "key3" : "val4"}, null, function(err,ret, message){
+                    db.document.create(collection.id, {
+                        "key1": "val2",
+                        "key2": "val3",
+                        "key3": "val4"
+                    }, null, function(err, ret, message) {
                         ret.error.should.equal(false);
-                        db.document.create(collection.id, {"key1" : "val2", "key5" : "val3", "key6" : "val4"}, null, function(err,ret, message){
+                        db.document.create(collection.id, {
+                            "key1": "val2",
+                            "key5": "val3",
+                            "key6": "val4"
+                        }, null, function(err, ret, message) {
                             ret.error.should.equal(false);
-                            db.document.create(collection.id, {"key1" : "val2", "key5" : "val3", "key6" : "val4"}, null, function(err,ret, message){
+                            db.document.create(collection.id, {
+                                "key1": "val2",
+                                "key5": "val3",
+                                "key6": "val4"
+                            }, null, function(err, ret, message) {
                                 ret.error.should.equal(false);
                                 done()
                             });
@@ -38,184 +59,208 @@ describe("cursor",function(){
 
     })
 
-    it('should be able to validate a query',function(done){
-        db.cursor.query({"query" : "FOR p IN products FILTER p.name == @name LIMIT 2 RETURN p.n"}, function(err,ret, message){
-            check( done, function () {
+    it('should be able to validate a query', function(done) {
+        db.cursor.query({
+            "query": "FOR p IN products FILTER p.name == @name LIMIT 2 RETURN p.n"
+        }, function(err, ret, message) {
+            check(done, function() {
                 ret.error.should.equal(false);
                 message.status.should.equal(200);
-            } );
+            });
         });
     })
-    it('should deny an invalid query',function(done){
-        db.cursor.query({"query" : "FOR p INE products FILTER p.name == @name LIMIT 2 RETURN p.n"}, function(err,ret, message){
-            check( done, function () {
+    it('should deny an invalid query', function(done) {
+        db.cursor.query({
+            "query": "FOR p INE products FILTER p.name == @name LIMIT 2 RETURN p.n"
+        }, function(err, ret, message) {
+            check(done, function() {
                 ret.error.should.equal(true);
                 message.status.should.equal(400);
-            } );
+            });
         });
     })
-    it('should deny a valid query as the collection does not exists',function(done){
-        db.cursor.explain({"query" : "FOR p IN products FILTER p.name == 'ee' LIMIT 2 RETURN p.n"}, function(err,ret, message){
-            check( done, function () {
+    it('should deny a valid query as the collection does not exists', function(done) {
+        db.cursor.explain({
+            "query": "FOR p IN products FILTER p.name == 'ee' LIMIT 2 RETURN p.n"
+        }, function(err, ret, message) {
+            check(done, function() {
                 ret.error.should.equal(true);
                 message.status.should.equal(404);
-            } );
+            });
         });
     })
-    it('should deny an invalid query',function(done){
-        db.cursor.explain({"query" : "FOR p INE products FILTER p.name == @name LIMIT 2 RETURN p.n"}, function(err,ret, message){
-            check( done, function () {
+    it('should deny an invalid query', function(done) {
+        db.cursor.explain({
+            "query": "FOR p INE products FILTER p.name == @name LIMIT 2 RETURN p.n"
+        }, function(err, ret, message) {
+            check(done, function() {
                 ret.error.should.equal(true);
                 message.status.should.equal(400);
-            } );
+            });
         });
     })
-    it('should be able to validate a query',function(done){
-        db.cursor.explain({"query" : "FOR p IN newCollection FILTER LIKE(p.abcde , 'eee') RETURN p._id"}, function(err,ret, message){
-            check( done, function () {
+    it('should be able to validate a query', function(done) {
+        db.cursor.explain({
+            "query": "FOR p IN newCollection FILTER LIKE(p.abcde , 'eee') RETURN p._id"
+        }, function(err, ret, message) {
+            check(done, function() {
                 ret.error.should.equal(false);
                 message.status.should.equal(200);
-            } );
+            });
         });
     })
 
 
-    it('creating a cursor with a bad query',function(done){
+    it('creating a cursor with a bad query', function(done) {
         var cursorData = {};
         cursorData.query = "FOR p IN products FILTER LIKE(p.abcde ,@name) RETURN p._id "
         cursorData.count = true;
         cursorData.bindVars = {};
         cursorData.bindVars.name = "%eee%";
-        db.cursor.create(cursorData, function(err,ret, message){
-            check( done, function () {
+        db.cursor.create(cursorData, function(err, ret, message) {
+            check(done, function() {
                 ret.error.should.equal(true);
                 message.status.should.equal(404);
-            } );
+            });
         });
     })
-    it('creating a cursor with an empty query',function(done){
+    it('creating a cursor with an empty query', function(done) {
         var cursorData = {};
         cursorData.count = true;
         cursorData.bindVars = {};
         cursorData.bindVars.name = "%eee%";
-        db.cursor.create(cursorData, function(err,ret, message){
-            check( done, function () {
+        db.cursor.create(cursorData, function(err, ret, message) {
+            check(done, function() {
                 ret.error.should.equal(true);
                 message.status.should.equal(400);
-            } );
+            });
         });
     })
-    it('creating a valid cursor using limit',function(done){
+    it('creating a valid cursor using limit', function(done) {
         var cursorData = {};
         cursorData.query = "FOR p IN newCollection FiLTER LIKE(p.key1 ,@name) LIMIT 1 RETURN p._id"
         cursorData.count = true;
-        cursorData.options = {"fullCount" : true};
+        cursorData.options = {
+            "fullCount": true
+        };
         cursorData.bindVars = {};
         cursorData.bindVars.name = "%val2%";
-        db.cursor.create(cursorData, function(err,ret, message){
-            check( done, function () {
+        db.cursor.create(cursorData, function(err, ret, message) {
+            check(done, function() {
                 ret.error.should.equal(false);
                 ret.hasMore.should.equal(false);
                 ret.count.should.equal(1);
                 ret.extra.fullCount.should.equal(3);
                 message.status.should.equal(201);
-            } );
+            });
         });
     })
 
-    it('creating a valid cursor with more results',function(done){
+    it('creating a valid cursor with more results', function(done) {
         var cursorData = {};
         cursorData.query = "FOR p IN newCollection FiLTER LIKE(p.key1 ,@name) RETURN p._id"
         cursorData.count = true;
         cursorData.bindVars = {};
         cursorData.batchSize = 1;
         cursorData.bindVars.name = "%val2%";
-        db.cursor.create(cursorData, function(err,ret, message){
-            check( done, function () {
+        db.cursor.create(cursorData, function(err, ret, message) {
+            check(done, function() {
                 cursor = ret;
                 ret.error.should.equal(false);
                 ret.hasMore.should.equal(true);
                 message.status.should.equal(201);
-            } );
+            });
         });
     })
 
-    it('using the current cursor we fetch more results',function(done){
-        db.cursor.get(cursor.id, function(err,ret, message){
-            check( done, function () {
+    it('using the current cursor we fetch more results', function(done) {
+        db.cursor.get(cursor.id, function(err, ret, message) {
+            check(done, function() {
                 ret.error.should.equal(false);
                 ret.hasMore.should.equal(true);
                 ret.count.should.equal(3);
                 message.status.should.equal(200);
-            } );
+            });
         });
     })
 
-    it('deleting the current cursor',function(done){
-        db.cursor.delete(cursor.id, function(err,ret, message){
-            check( done, function () {
+    it('deleting the current cursor', function(done) {
+        db.cursor.delete(cursor.id, function(err, ret, message) {
+            check(done, function() {
                 ret.error.should.equal(false);
                 message.status.should.equal(202);
-            } );
+            });
         });
     })
-    it('deleting the no longer existing cursor',function(done){
-        db.cursor.delete(cursor.id, function(err,ret, message){
-            check( done, function () {
+    it('deleting the no longer existing cursor', function(done) {
+        db.cursor.delete(cursor.id, function(err, ret, message) {
+            check(done, function() {
                 ret.error.should.equal(true);
                 message.status.should.equal(404);
-            } );
+            });
         });
     })
 
-    it('using the no longer existing cursor to fetch more results',function(done){
-        db.cursor.get(cursor.id, function(err,ret, message){
-            check( done, function () {
+    it('using the no longer existing cursor to fetch more results', function(done) {
+        db.cursor.get(cursor.id, function(err, ret, message) {
+            check(done, function() {
                 ret.error.should.equal(true);
                 message.status.should.equal(404);
-            } );
+            });
         });
     })
 
-    it('using query module',function(done){
-        var query = db.query.for('u').in('@@collection').return('u');
-        query.exec({'@collection':'newCollection'}, function(err,ret){
-            check( done, function () {
+    it('using query module', function(done) {
+        var query = db.query.
+        for ('u'). in ('@@collection').
+        return ('u');
+        query.exec({
+            '@collection': 'newCollection'
+        }, function(err, ret) {
+            check(done, function() {
                 ret.error.should.equal(false);
                 ret.code.should.equal(201);
-            } );
+            });
         });
 
     })
 
-    it('using query module with plain query',function(done){
-        db.query.exec("for u in newCollection return u", function(err,ret){
-            check( done, function () {
+    it('using query module with plain query', function(done) {
+        db.query.exec("for u in newCollection return u", function(err, ret) {
+            check(done, function() {
                 ret.error.should.equal(false);
                 ret.code.should.equal(201);
-            } );
+            });
         });
 
     })
 
-    it('using query module explain',function(done){
-        var query = db.query.for('u').in('@@collection').return('u');
-        query.explain({'@collection':'newCollection'}, function(err,ret){
-            check( done, function () {
+    it('using query module explain', function(done) {
+        var query = db.query.
+        for ('u'). in ('@@collection').
+        return ('u');
+        query.explain({
+            '@collection': 'newCollection'
+        }, function(err, ret) {
+            check(done, function() {
                 ret.error.should.equal(false);
                 ret.code.should.equal(200);
-            } );
+            });
         });
 
     })
 
-    it('using query module test',function(done){
-        var query = db.query.for('u').in('@@collection').return('u');
-        query.test({'@collection':'newCollection'}, function(err,ret){
-            check( done, function () {
+    it('using query module test', function(done) {
+        var query = db.query.
+        for ('u'). in ('@@collection').
+        return ('u');
+        query.test({
+            '@collection': 'newCollection'
+        }, function(err, ret) {
+            check(done, function() {
                 ret.error.should.equal(false);
                 ret.code.should.equal(200);
-            } );
+            });
         });
 
     })

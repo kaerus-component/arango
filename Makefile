@@ -1,5 +1,12 @@
 NAME = arango
 COMPONENT = @./node_modules/.bin/component
+BEAUTIFY = @./node_modules/.bin/js-beautify --config ./code.json
+KARMA = @./node_modules/.bin/karma
+MOCHA = @./node_modules/.bin/mocha
+
+LIB=$(wildcard lib/*.js)
+API=$(wildcard lib/api/*.js)
+TEST=$(wildcard test/*.js)
 
 build: dependencies component
 
@@ -34,6 +41,9 @@ docs: components component
 	@echo "Generating docs"
 	@npm install yuidocjs
 	@yuidoc -o ./documentation lib/
+
+beautify: $(TEST) $(API) $(LIB)
+	$(BEAUTIFY) -r $^
 
 distclean:
 	@echo "Cleaning up build files"
