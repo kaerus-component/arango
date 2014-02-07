@@ -35,8 +35,9 @@ describe("batch", function() {
         batch.admin.log(options);
 
         batch.batch.exec(function(err, ret, message) {
+            var status = message.status;
             check(done, function() {
-                message.status.should.equal(200);
+                status.should.equal(200);
             });
         });
     })

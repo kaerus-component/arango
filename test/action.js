@@ -157,7 +157,6 @@ describe("action", function() {
         callDb(done);
 
     })
-
     it('call the action defined in setup action and expect the route to be found', function(done) {
         db.action.submit("hello", function(err, ret, message) {
             check(done, function() {

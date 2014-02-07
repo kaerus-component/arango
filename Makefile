@@ -1,6 +1,9 @@
 NAME = arango
+PKG_VER = `cat package.json | grep version | grep -o '[0-9]\.[0-9]\.[0-9]\+'`
+COM_VER = `cat component.json | grep version | grep -o '[0-9]\.[0-9]\.[0-9]\+'`
 COMPONENT = @./node_modules/.bin/component
 BEAUTIFY = @./node_modules/.bin/js-beautify --config ./code.json
+UGLIFYJS = @./node_modules/.bin/uglifyjs
 KARMA = @./node_modules/.bin/karma
 MOCHA = @./node_modules/.bin/mocha
 
@@ -19,31 +22,28 @@ component:
 dependencies: node_modules components
 
 node_modules:
-	@echo "Installing node dependencies"
+	@echo "Installing v$(PKG_VER) node dependencies"
 	@npm i -d
 
 components:
-	@echo "Installing component dependencies"
+	@echo "Installing v$(COM_VER) component dependencies"
 	$(COMPONENT) install -v
 
 test: test-browser test-nodejs
 
 test-nodejs: node_modules
 	@echo "Running tests for nodejs"
-	@./node_modules/.bin/mocha --require should --reporter spec
+	$(MOCHA) --require should --reporter spec
 
 test-browser: components component
 	@echo "Running tests for browser"
-	@karma start --browsers Firefox test/karma/karma.conf.js
-	@karma start --browsers Chrome test/karma/karma.conf.js
+	$(KARMA) start --browsers Firefox test/karma/karma.conf.js
+	$(KARMA) start --browsers Chrome test/karma/karma.conf.js
 
 docs: components component
 	@echo "Generating docs"
 	@npm install yuidocjs
 	@yuidoc -o ./documentation lib/
-
-beautify: $(TEST) $(API) $(LIB)
-	$(BEAUTIFY) -r $^
 
 distclean:
 	@echo "Cleaning up build files"
@@ -52,6 +52,19 @@ distclean:
 	@rm -rf ./build
 	@rm -rf ./documentation
 
+beautify: $(TEST) $(API) $(LIB)
+	$(BEAUTIFY) -r $^ 
+
+uglify: component
+	$(UGLIFYJS) ./build/$(NAME).js > $(NAME)-$(COM_VER)-min.js
+
+release: component uglify
+	@cp ./build/$(NAME).js $(NAME)-$(COM_VER).js
+	@git tag -a $(PKG_VER) -m "v$(PKG_VER)" -f
+	@echo "You may now push this release with: git push --tags"
+
+publish:
+	@npm publish
 
 .PHONY: build
 	
