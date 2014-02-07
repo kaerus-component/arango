@@ -25,7 +25,7 @@ describe("action", function() {
         db.use(":_routing").simple.removeByExample({
             "url": {
                 "match": "/alreadyExistingRoute",
-                "methods": ["GET"]
+                "methods": ["POST"]
             }
         }, function(err, ret, message) {
             db.use(":_routing").simple.removeByExample({
@@ -37,12 +37,13 @@ describe("action", function() {
                 // write a new route directly into arango
                 var route = {
                     action: {
-                        "callback": "function (req,res){\n \n res.status = 200;\n; res.contentType = \"text/html\";\n res.body = \"Already existing route!\";\n }"
+                        "callback": "function (req,res){\n \n res.status = 200;\n; res.contentType" +
+                            " = \"text/html\";\n var data = JSON.parse(req.requestBody);\n res.body = data.firstname + ' ' + data.lastname;\n }"
                     }
                 }
                 route.url = {
                     "match": "/alreadyExistingRoute",
-                    "methods": ["GET"]
+                    "methods": ["POST"]
                 };
                 db.use(":_routing").document.create(route, {
                     waitForSync: true
@@ -106,7 +107,7 @@ describe("action", function() {
         db.action.define({
             name: 'someAction',
             url: 'http://127.0.0.1:8529/alreadyExistingRoute',
-            method: 'GET',
+            method: 'POST',
             result: function(res) {
                 return res;
             },
@@ -121,9 +122,12 @@ describe("action", function() {
     })
 
     it('call this action and expect the route to be found', function(done) {
-        db.action.submit("someAction", function(err, ret, message) {
+        db.action.submit("someAction", {
+            firstname: "heinz",
+            lastname: "hoenig"
+        }, function(err, ret, message) {
             check(done, function() {
-                ret.should.eql("Already existing route!");
+                ret.should.eql("heinz hoenig");
                 message.status.should.eql(200);
             });
         });
@@ -138,6 +142,21 @@ describe("action", function() {
         });
     })
 
+    it('lets wait until action is reachable', function(done) {
+
+        function callDb(done) {
+            db.action.submit("hello", function(err, ret, message) {
+                if (message.status !== 200) {
+                    callDb(done);
+                    return;
+                }
+                done();
+
+            });
+        }
+        callDb(done);
+
+    })
     it('call the action defined in setup action and expect the route to be found', function(done) {
         db.action.submit("hello", function(err, ret, message) {
             check(done, function() {
@@ -190,6 +209,5 @@ describe("action", function() {
             });
         });
     })
-
 
 })
