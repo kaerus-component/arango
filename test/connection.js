@@ -184,10 +184,11 @@ describe("Connection()", function() {
         })
         db._name.should.eql('databaseName');
         db._collection.should.eql('anotherCollectionName');
+        delete db;
     })
 })
 
-describe('use()', function() {
+describe('use', function() {
     it('should have a use method', function() {
         var db = arango.Connection();
 

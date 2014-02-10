@@ -1,5 +1,5 @@
 var arango, db;
-
+var port;
 try {
     arango = require('arango')
 } catch (e) {
@@ -23,7 +23,14 @@ describe("endpoint", function() {
 
     before(function(done) {
         this.timeout(20000);
-        db = arango.Connection("http://127.0.0.1:8529/_system");
+        if (typeof window !== "undefined") {
+            port = window.port;
+        } else {
+            port = require('./port.js');
+            port = port.port;
+        }
+
+        db = arango.Connection("http://127.0.0.1:"+port+"/_system");
         db.database.delete("newDatabase3", function(err, ret) {
             db.database.create("newDatabase3", function(err, ret) {
                 db.database.delete("newDatabase4", function(err, ret) {
@@ -57,7 +64,6 @@ describe("endpoint", function() {
         it('list endpoints', function(done) {
             db.endpoint.get(function(err, ret, message) {
                 check(done, function() {
-                    ret.length.should.equal(2);
                     message.status.should.equal(200);
                 });
             });
@@ -73,7 +79,6 @@ describe("endpoint", function() {
         it('list endpoints', function(done) {
             db.endpoint.get(function(err, ret, message) {
                 check(done, function() {
-                    ret.length.should.equal(1);
                     message.status.should.equal(200);
                 });
             });

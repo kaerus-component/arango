@@ -1,5 +1,5 @@
 var arango, db;
-
+var port;
 try {
     arango = require('arango')
 } catch (e) {
@@ -17,7 +17,14 @@ function check(done, f) {
 }
 
 describe("aqlfunction", function() {
-    db = arango.Connection("http://127.0.0.1:8529");
+    if (typeof window !== "undefined") {
+        port = window.port;
+    } else {
+        port = require('./port.js');
+        port = port.port;
+    }
+
+    db = arango.Connection("http://127.0.0.1:"+port);
 
 
     it('should be able to create an aql function', function(done) {

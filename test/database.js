@@ -1,5 +1,5 @@
 var arango;
-
+var port;
 try {
     arango = require('arango')
 } catch (e) {
@@ -26,7 +26,14 @@ beforeEach(function(done){
 */
 
 describe("database", function() {
-    var db = arango.Connection("http://127.0.0.1:8529");
+    if (typeof window !== "undefined") {
+        port = window.port;
+    } else {
+        port = require('./port.js');
+        port = port.port;
+    }
+
+    var db = arango.Connection("http://127.0.0.1:"+port);
     before(function(done) {
         db.database.delete("newDatabase", function() {
             done()

@@ -1,5 +1,5 @@
 var arango, db, actions;
-
+var port;
 try {
     arango = require('arango')
 } catch (e) {
@@ -21,7 +21,13 @@ var db, actions;
 describe("action", function() {
 
     before(function(done) {
-        db = arango.Connection("http://127.0.0.1:8529");
+        if (typeof window !== "undefined") {
+            port = window.port;
+        } else {
+            port = require('./port.js');
+            port = port.port;
+        }
+        db = arango.Connection("http://127.0.0.1:"+port);
         db.use(":_routing").simple.removeByExample({
             "url": {
                 "match": "/alreadyExistingRoute",
@@ -68,7 +74,7 @@ describe("action", function() {
 
         db.action.define({
             name: 'someAction',
-            url: 'http://127.0.0.1:8529/test',
+            url: 'http://127.0.0.1:'+port+'/test',
             method: 'post',
             result: function(res) {
                 return res;
@@ -106,7 +112,7 @@ describe("action", function() {
 
         db.action.define({
             name: 'someAction',
-            url: 'http://127.0.0.1:8529/alreadyExistingRoute',
+            url: 'http://127.0.0.1:'+port+'/alreadyExistingRoute',
             method: 'POST',
             result: function(res) {
                 return res;
@@ -121,6 +127,32 @@ describe("action", function() {
 
     })
 
+    it('lets get the list of all documents of collection', function(done) {
+        db.document.list("_routing", function(err, ret, message) {
+            check(done, function() {
+                message.status.should.equal(200);
+            });
+        });
+    })
+
+
+    it('lets wait until action is reachable', function(done) {
+        this.timeout(30000);
+        function callDb(done) {
+            db.action.submit("someAction",{
+                firstname: "heinz",
+                lastname: "hoenig"
+            },  function(err, ret, message) {
+                if (message.status !== 200) {
+                    callDb(done);
+                    return;
+                }
+                done();
+
+            });
+        }
+        callDb(done);
+    })
     it('call this action and expect the route to be found', function(done) {
         db.action.submit("someAction", {
             firstname: "heinz",
@@ -143,7 +175,7 @@ describe("action", function() {
     })
 
     it('lets wait until action is reachable', function(done) {
-
+        this.timeout(30000);
         function callDb(done) {
             db.action.submit("hello", function(err, ret, message) {
                 if (message.status !== 200) {

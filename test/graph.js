@@ -1,6 +1,6 @@
 var arango, db, verticescollection, edgecollection, vertices = [],
     edges = [];
-
+var port;
 try {
     arango = require('arango')
 } catch (e) {
@@ -21,18 +21,20 @@ describe("graph", function() {
 
 
     before(function(done) {
+        if (typeof window !== "undefined") {
+            port = window.port;
+        } else {
+            port = require('./port.js');
+            port = port.port;
+        }
+
         this.timeout(30000);
         vertices = [];
         edges = [];
-        db = arango.Connection("http://127.0.0.1:8529/_system");
+        db = arango.Connection("http://127.0.0.1:"+port+"/_system");
         db.database.delete("newDatabase", function(err, ret) {
             db.database.create("newDatabase", function(err, ret) {
-                db = arango.Connection({
-                    _name: "newDatabase",
-                    _server: {
-                        hostname: "localhost"
-                    }
-                });
+                db = db.use('/newDatabase');
                 db.collection.create("edgeCollection", {
                     "type": 3
                 }, function(err, ret) {

@@ -1,5 +1,5 @@
 var arango;
-
+var port;
 try {
     arango = require('arango')
 } catch (e) {
@@ -20,7 +20,14 @@ describe("batch", function() {
 
     // now we end bacth mode and execute
     it('should exec bacth mode', function(done) {
-        var db = arango.Connection("http://127.0.0.1:8529");
+        if (typeof window !== "undefined") {
+            port = window.port;
+        } else {
+            port = require('./port.js');
+            port = port.port;
+        }
+
+        var db = arango.Connection("http://127.0.0.1:"+port);
         this.timeout(5000);
         // init batch mode
         var batch = db.batch.start();

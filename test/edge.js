@@ -1,5 +1,5 @@
 var arango, db, verticescollection, edgecollection, edge, vertices = [];
-
+var port;
 try {
     arango = require('arango')
 } catch (e) {
@@ -20,18 +20,19 @@ var db;
 
 describe("edge", function() {
 
-
     before(function(done) {
         this.timeout(20000);
-        db = arango.Connection("http://127.0.0.1:8529/_system");
+        if (typeof window !== "undefined") {
+            port = window.port;
+        } else {
+            port = require('./port.js');
+            port = port.port;
+        }
+
+        db = arango.Connection("http://127.0.0.1:"+port+"/_system");
         db.database.delete("newDatabase", function(err, ret) {
             db.database.create("newDatabase", function(err, ret) {
-                db = arango.Connection({
-                    _name: "newDatabase",
-                    _server: {
-                        hostname: "localhost"
-                    }
-                });
+                db = db.use('/newDatabase');
                 db.collection.create("edgeCollection", {
                     "type": 3
                 }, function(err, ret) {
@@ -243,13 +244,7 @@ describe("edge", function() {
             });
         })
         it('lets get the list again with default collection', function(done) {
-            db = arango.Connection({
-                _name: "newDatabase",
-                _server: {
-                    hostname: "localhost"
-                },
-                _collection: edgecollection.id
-            });
+            db = db.use('/newDatabase:' + edgecollection.id);
             db.edge.list(vertices[1]._id, "any", function(err, ret, message) {
                 check(done, function() {
                     ret.edges.length.should.equal(2);
@@ -268,12 +263,7 @@ describe("edge", function() {
 
 
         it('lets patch a non existing edge"', function(done) {
-            db = arango.Connection({
-                _name: "newDatabase",
-                _server: {
-                    hostname: "localhost"
-                }
-            });
+            db = db.use('/newDatabase');
             var data = {
                 "newKey": "newValue"
             };

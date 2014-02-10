@@ -1,6 +1,6 @@
 var arango, db, jobs = [],
     storedJobs = {};
-
+var port;
 try {
     arango = require('arango')
 } catch (e) {
@@ -22,19 +22,21 @@ function setJobs() {
 }
 
 describe("async", function() {
+    if (typeof window !== "undefined") {
+        port = window.port;
+    } else {
+        port = require('./port.js');
+        port = port.port;
+    }
 
-    db = arango.Connection("http://127.0.0.1:8529");
+
 
     before(function(done) {
         this.timeout(20000);
+        db = arango.Connection("http://127.0.0.1:"+port);
         db.database.delete("newDatabase", function(err, ret) {
             db.database.create("newDatabase", function(err, ret) {
-                db = arango.Connection({
-                    _name: "newDatabase",
-                    _server: {
-                        hostname: "localhost"
-                    }
-                });
+                db = db.use('/newDatabase');
                 done();
             });
         });
@@ -105,6 +107,7 @@ describe("async", function() {
             });
         })
         it('lets switch back to async store mode ....and create some jobs', function(done) {
+            this.timeout(20000);
             db.setAsyncMode(true).collection.create("newCollection10", function(err, ret, message) {
                 check(done, function() {
                     ret.should.equal("");

@@ -1,5 +1,5 @@
 var arango, db;
-
+var port;
 try {
     arango = require('arango')
 } catch (e) {
@@ -20,16 +20,18 @@ describe("import", function() {
 
 
     before(function(done) {
+        if (typeof window !== "undefined") {
+            port = window.port;
+        } else {
+            port = require('./port.js');
+            port = port.port;
+        }
+
         this.timeout(20000);
-        db = arango.Connection("http://127.0.0.1:8529/_system");
+        db = arango.Connection("http://127.0.0.1:"+port+"/_system");
         db.database.delete("newDatabase", function(err, ret) {
             db.database.create("newDatabase", function(err, ret) {
-                db = arango.Connection({
-                    _name: "newDatabase",
-                    _server: {
-                        hostname: "localhost"
-                    }
-                });
+                db = db.use('/newDatabase');
                 db.collection.create("collection", function(err, ret) {
                     done();
                 });
@@ -192,14 +194,7 @@ describe("import", function() {
                     "short": "short name"
                 }
             }];
-
-            db = arango.Connection({
-                _name: "newDatabase",
-                _server: {
-                    hostname: "localhost"
-                },
-                _collection: "collection"
-            });
+            db = db.use('/newDatabase:collection');
             db.import.importJSONData(data, function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(false);
@@ -262,12 +257,7 @@ describe("import", function() {
                     "short": "short name"
                 }
             }];
-            db = arango.Connection({
-                _name: "newDatabase",
-                _server: {
-                    hostname: "localhost"
-                }
-            });
+            db = db.use('/newDatabase');
 
             db.import.importJSONData("collection", data, options, function(err, ret, message) {
                 check(done, function() {
@@ -373,14 +363,7 @@ describe("import", function() {
 
 
             var data = '[ "_key", "value1", "value2" ]\n\n\n[ "abczz", 25, "test" ]\n[ "aabcdww", 253, "stest" ]'
-
-            db = arango.Connection({
-                _name: "newDatabase",
-                _server: {
-                    hostname: "localhost"
-                },
-                _collection: "collection"
-            });
+            db = db.use('/newDatabase:collection');
             db.import.importValueList(data, function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(false);

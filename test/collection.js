@@ -1,5 +1,5 @@
 var arango, db, checksum;
-
+var port;
 try {
     arango = require('arango')
 } catch (e) {
@@ -17,7 +17,14 @@ function check(done, f) {
 }
 
 describe("collections", function() {
-    var db = arango.Connection("http://127.0.0.1:8529");
+    if (typeof window !== "undefined") {
+        port = window.port;
+    } else {
+        port = require('./port.js');
+        port = port.port;
+    }
+
+    var db = arango.Connection("http://127.0.0.1:"+port);
 
     describe("create", function() {
         var collection = "test1",
@@ -64,18 +71,13 @@ describe("collections", function() {
 
     describe("collection", function() {
 
-        db = new arango.Connection("http://127.0.0.1:8529");
+        db = new arango.Connection("http://127.0.0.1:"+port);
 
         before(function(done) {
             this.timeout(20000);
             db.database.delete("newDatabase", function(err, ret) {
                 db.database.create("newDatabase", function(err, ret) {
-                    db = new arango.Connection({
-                        _name: "newDatabase",
-                        _server: {
-                            hostname: "localhost"
-                        }
-                    });
+                    db = db.use('/newDatabase');
                     done();
                 });
             });
