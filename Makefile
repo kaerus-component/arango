@@ -46,6 +46,9 @@ test-nodejs: node_modules
 .PHONY: test-browser
 test-browser: components component
 	@echo "Running tests for browser"
+	@npm i karma
+	@npm i karma-chai
+	@npm i karma-mocha
 	@echo "(function () {if (window) {window.port = $(ARANGOPORT);} else {exports.port = $(ARANGOPORT);}}());"  > test/port.js
 	$(KARMA) start --browsers Firefox test/karma/karma.conf.js
 	$(KARMA) start --browsers Chrome test/karma/karma.conf.js
