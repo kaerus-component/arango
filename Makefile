@@ -40,7 +40,7 @@ test-nodejs: node_modules
 	@echo "(function () {if (typeof window !== 'undefined') {window.port = $(ARANGOPORT);} else {exports.port = $(ARANGOPORT);}}());"  > test/port.js
 	@echo "Running tests for nodejs"
 	$(MOCHA) --require should --reporter spec
-	@echo rm test/port.js
+	@rm test/port.js
 
 
 .PHONY: test-browser
@@ -52,7 +52,7 @@ test-browser: components component
 	@echo "(function () {if (window) {window.port = $(ARANGOPORT);} else {exports.port = $(ARANGOPORT);}}());"  > test/port.js
 	$(KARMA) start --browsers Firefox test/karma/karma.conf.js
 	$(KARMA) start --browsers Chrome test/karma/karma.conf.js
-	@echo rm test/port.js
+	@rm test/port.js
 
 
 docs: components component

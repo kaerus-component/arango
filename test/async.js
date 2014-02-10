@@ -89,6 +89,7 @@ describe("async", function() {
             });
         })
         it('lets switch back to normal mode ....we expect a result', function(done) {
+            this.timeout(20000);
             db.setAsyncMode(false).collection.create("newCollection6", function(err, ret, message) {
                 check(done, function() {
                     ret.status.should.equal(3);

@@ -116,7 +116,6 @@ describe("admin", function() {
                 ret.should.have.property('text');
                 ret.should.have.property('lid');
                 ret.should.have.property('level');
-                ret.lid.length.should.equal(15);
             });
         });
     })
