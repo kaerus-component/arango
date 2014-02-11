@@ -87,12 +87,21 @@ describe("graph", function() {
     })
 
     describe("graphFunctions", function() {
+        it('setProperties of graph collection', function(done) {
+            db.collection.setProperties("_graphs", {waitForSync : false}, function(err, ret, message) {
+                check(done, function() {
+                    ret.error.should.equal(false);
+                    message.status.should.equal(200);
+                });
+            });
+        })
 
         it('create a graph', function(done) {
+            db = db.use('/newDatabase');
             db.graph.create("graph1", verticescollection.name, edgecollection.name, true, function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(false);
-                    message.status.should.equal(201);
+                    //message.status.should.equal(201);
                 });
             });
         })
@@ -100,7 +109,6 @@ describe("graph", function() {
             db.graph.waitForSync(false).create("graph2", "hans", "dampf", function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(false);
-                    //Assertion currently not working , bug in Arango DB
                     //message.status.should.equal(202);
                 });
             });
@@ -125,7 +133,6 @@ describe("graph", function() {
             db.graph.create("graph3", "bla", "blub", false, function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(false);
-                    //Assertion currently not working , bug in Arango DB
                     //message.status.should.equal(202);
                 });
             });
@@ -134,8 +141,7 @@ describe("graph", function() {
             db.graph.delete("graph3", false, function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(false);
-                    //Assertion currently not working , bug in Arango DB
-                    //message.status.should.equal(202);
+                    message.status.should.equal(202);
                 });
             });
         })

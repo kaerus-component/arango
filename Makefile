@@ -57,7 +57,6 @@ test-browser: components component
 
 docs: components component
 	@echo "Generating docs"
-	@npm install yuidocjs
 	@yuidoc -o ./documentation lib/
 
 distclean:

@@ -1,6 +1,6 @@
 {
-  "name": "arango",
-  "version": "0.4.4",
+  "name": "arangojs",
+  "version": "1.0.0",
   "description": "ArangoDB javascript client",
   "keywords": [
     "arangodb",
@@ -8,9 +8,9 @@
     "nosql"
   ],
   "author": { 
-    "name": "Kaerus",
-    "email": "contact@kaerus.com",
-    "web": "http://kaerus.com"
+    "name": "Florian Bartels",
+    "email": "f.bartels@ŧriagens.de",
+    "web": "https://www.arangodb.org"
   },
   "contributors": [
     "anders elo <anders@kaerus.com>",
@@ -34,14 +34,14 @@
   },
   "engine": "node >= 0.8.0",
   "bugs": {
-    "url": "https://github.com/kaerus-component/arango/issues"
+    "url": "https://github.com/triAGENS/ArangoDB-JavaScript/issues"
   },
   "scripts": {
     "test":"make test"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/kaerus-component/arango.git"
+    "url": "git://github.com/triAGENS/ArangoDB-JavaScript.git"
   },
   "main": "index.js",
   "license": "APACHE2_0"

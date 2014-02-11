@@ -14,8 +14,8 @@ Install
 -------
 ```
 From source: `git clone git://github.com/triAGENS/ArangoDB-JavaScript`
-web component: `component install kaerus-component/arango`
-nodejs module: `npm install arango` 
+web component: `component install triAGENS/ArangoDB-JavaScript`
+nodejs module: `npm install arangojs`
 
 ```
 
@@ -32,14 +32,14 @@ Documentation
 ```
 make docs
 ```
-Generates the documentation in the documentation folder.
+Generates the documentation in the documentation folder. An installation of yuidocjs is required (npm i -g yuidocjs).
 
 Test
 ----
 ```
 make test
 ```
-Runs the test suite sequentially under nodejs and karma (supporting PhantomJSm Firefox and Chrome).
+Runs the test suite sequentially under nodejs and karma (supporting Firefox and Chrome).
 Feel free to chip in by writing tests if you want a more stable package.
 
 
