@@ -1,7 +1,7 @@
 var arango, db, indices = {};
 var port;
 try {
-    arango = require('arango')
+    arango = require('arangojs')
 } catch (e) {
     arango = require('..')
 }
@@ -38,7 +38,7 @@ describe("simple", function() {
             port = port.port;
         }
 
-        this.timeout(20000);
+        this.timeout(30000);
         db = arango.Connection("http://127.0.0.1:"+port+"/_system");
         db.database.delete("newDatabase", function(err, ret) {
             db.database.create("newDatabase", function(err, ret) {

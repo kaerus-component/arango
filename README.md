@@ -33,6 +33,7 @@ Documentation
 make docs
 ```
 Generates the documentation in the documentation folder. An installation of yuidocjs is required (npm i -g yuidocjs).
+You can visit the latest documentation on http://www.arangodb.org/manuals-javascript/master/.
 
 Test
 ----
