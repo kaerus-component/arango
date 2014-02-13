@@ -57,7 +57,8 @@ test-browser: components component
 
 docs: components component
 	@echo "Generating docs"
-	@yuidoc -o ./documentation lib/
+	@yuidoc -o ./documentation lib/ -t yuidoctheme
+	@cp -a yuidoctheme/layouts documentation
 
 distclean:
 	@echo "Cleaning up build files"
