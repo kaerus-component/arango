@@ -60,6 +60,7 @@ docs: components component
 	@yuidoc -o ./documentation lib/ -t yuidoctheme
 	@cp -a yuidoctheme/layouts documentation
 	@cp -a yuidoctheme/layouts documentation/classes
+	@cp -a yuidoctheme/layouts documentation/modules
 
 distclean:
 	@echo "Cleaning up build files"
