@@ -59,6 +59,7 @@ docs: components component
 	@echo "Generating docs"
 	@yuidoc -o ./documentation lib/ -t yuidoctheme
 	@cp -a yuidoctheme/layouts documentation
+	@cp -a yuidoctheme/layouts documentation/classes
 
 distclean:
 	@echo "Cleaning up build files"
