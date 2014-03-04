@@ -35,18 +35,18 @@ describe("endpoint", function() {
             db.database.create("newDatabase3", function(err, ret) {
                 db.database.delete("newDatabase4", function(err, ret) {
                     db.database.create("newDatabase4", function(err, ret) {
-                        done();
+                        db.endpoint.delete("tcp://127.0.0.1:8888", function(err, ret) {
+                            done();
+                        });
                     });
                 });
             });
         });
-
     })
 
     describe("endpointFunctions", function() {
-
         it('create an endpoint', function(done) {
-            db.endpoint.create("tcp://127.0.0.1:8530", ["newDatabase3", "newDatabase4"], function(err, ret, message) {
+            db.endpoint.create("tcp://127.0.0.1:8888", ["newDatabase3", "newDatabase4"], function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(false);
                     message.status.should.equal(200);
@@ -69,7 +69,7 @@ describe("endpoint", function() {
             });
         })
         it('delete endpoint', function(done) {
-            db.endpoint.delete("tcp://127.0.0.1:8530", function(err, ret, message) {
+            db.endpoint.delete("tcp://127.0.0.1:8888", function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(false);
                     message.status.should.equal(200);

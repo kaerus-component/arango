@@ -63,7 +63,7 @@ describe("database", function() {
             db.database.create(databaseName, users, function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(false);
-                    message.status.should.equal(200);
+                    message.status.should.within(200, 201);
                 });
             });
         })
@@ -77,7 +77,7 @@ describe("database", function() {
             db.database.create(databaseName, users, function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(false);
-                    message.status.should.equal(200);
+                    message.status.should.within(200, 201);
                 });
             });
         })

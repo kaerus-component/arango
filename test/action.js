@@ -27,7 +27,7 @@ describe("action", function() {
             port = require('./port.js');
             port = port.port;
         }
-        db = arango.Connection("http://127.0.0.1:"+port);
+        db = arango.Connection("http://127.0.0.1:" + port);
         db.use(":_routing").simple.removeByExample({
             "url": {
                 "match": "/alreadyExistingRoute",
