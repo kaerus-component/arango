@@ -30,10 +30,9 @@ describe("async", function() {
     }
 
 
-
     before(function(done) {
         this.timeout(20000);
-        db = arango.Connection("http://127.0.0.1:"+port);
+        db = arango.Connection("http://127.0.0.1:" + port);
         db.database.delete("newDatabase", function(err, ret) {
             db.database.create("newDatabase", function(err, ret) {
                 db = db.use('/newDatabase');
@@ -263,7 +262,6 @@ describe("async", function() {
             });
         })
         it('lets switch back to normal mode ....and get the job result', function(done) {
-
             function callDb(done) {
                 db.setAsyncMode(false).job.get("done", function(err, ret, message) {
                     var jobs = ret;
