@@ -85,7 +85,6 @@ describe("collections", function() {
         })
 
         describe("collection Functions", function() {
-
             it('should be able to create a collection by name', function(done) {
                 var options = {
                     journalSize: 12345678,

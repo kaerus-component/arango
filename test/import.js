@@ -18,7 +18,6 @@ function check(done, f) {
 
 describe("import", function() {
 
-
     before(function(done) {
         if (typeof window !== "undefined") {
             port = window.port;

@@ -19,7 +19,6 @@ function check(done, f) {
 
 describe("user", function() {
 
-
     before(function(done) {
         if (typeof window !== "undefined") {
             port = window.port;
@@ -53,7 +52,6 @@ describe("user", function() {
     })
 
     it('create a user', function(done) {
-
         db.user.create("hans2", "passwordHans2", true, {
             "vorname": "hans2",
             "nachname": "otto2"
@@ -66,7 +64,6 @@ describe("user", function() {
     })
 
     it('create an already existing user', function(done) {
-
         db.user.create("hans", "passwordHans", true, {
             "vorname": "hans",
             "nachname": "otto"
@@ -79,7 +76,6 @@ describe("user", function() {
     })
 
     it('get user', function(done) {
-
         db.user.get("hans", function(err, ret, message) {
             check(done, function() {
                 ret.error.should.equal(false);
@@ -88,7 +84,6 @@ describe("user", function() {
         });
     })
     it('get non existing user', function(done) {
-
         db.user.get("hansGibtsNicht", function(err, ret, message) {
             check(done, function() {
                 ret.error.should.equal(true);
@@ -98,7 +93,6 @@ describe("user", function() {
     })
 
     it('delete user', function(done) {
-
         db.user.delete("hans2", function(err, ret, message) {
             check(done, function() {
                 ret.error.should.equal(false);
@@ -107,7 +101,6 @@ describe("user", function() {
         });
     })
     it('delete non existing user', function(done) {
-
         db.user.delete("hansGibtsNicht", function(err, ret, message) {
             check(done, function() {
                 ret.error.should.equal(true);
@@ -117,7 +110,6 @@ describe("user", function() {
     })
 
     it('patch non existing user', function(done) {
-
         db.user.patch("hans2", "newPassword", function(err, ret, message) {
             check(done, function() {
                 ret.error.should.equal(true);
@@ -126,7 +118,6 @@ describe("user", function() {
         });
     })
     it('patch user', function(done) {
-
         db.user.patch("hans", "newPassword", false, {
             "nachname": "otto-müller",
             "married": true
@@ -138,7 +129,6 @@ describe("user", function() {
         });
     })
     it('get user to verify last patch', function(done) {
-
         db.user.get("hans", function(err, ret, message) {
             check(done, function() {
                 ret.error.should.equal(false);
@@ -151,7 +141,6 @@ describe("user", function() {
     })
 
     it('put non existing user', function(done) {
-
         db.user.put("hans2", "newPassword", function(err, ret, message) {
             check(done, function() {
                 ret.error.should.equal(true);
@@ -160,7 +149,6 @@ describe("user", function() {
         });
     })
     it('put user', function(done) {
-
         db.user.put("hans", "newPassword", false, {
             "married": false,
             "sad": true
@@ -172,7 +160,6 @@ describe("user", function() {
         });
     })
     it('get user to verify last put', function(done) {
-
         db.user.get("hans", function(err, ret, message) {
             check(done, function() {
                 ret.extra.should.not.have.property("nachname");
