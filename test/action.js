@@ -154,6 +154,7 @@ describe("action", function() {
         callDb(done);
     })
     it('call this action and expect the route to be found', function(done) {
+        this.timeout(30000);
         db.action.submit("someAction", {
             firstname: "heinz",
             lastname: "hoenig"
@@ -190,6 +191,7 @@ describe("action", function() {
 
     })
     it('call the action defined in setup action and expect the route to be found', function(done) {
+        this.timeout(30000);
         db.action.submit("hello", function(err, ret, message) {
             check(done, function() {
                 ret.should.eql("Hello World!");
