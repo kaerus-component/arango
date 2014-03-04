@@ -179,6 +179,7 @@ describe("async", function() {
             });
         })
         it('lets switch back to normal mode ....and get the list of jobs', function(done) {
+            this.timeout(30000);
             db.setAsyncMode(false).job.get("pending", function(err, ret, message) {
                 check(done, function() {
                     message.status.should.equal(200);
@@ -186,6 +187,7 @@ describe("async", function() {
             });
         })
         it('lets delete the job queue', function(done) {
+            this.timeout(30000);
             db.job.delete("all", function(err, ret, message) {
                 check(done, function() {
                     ret.result.should.equal(true);
@@ -194,6 +196,7 @@ describe("async", function() {
             });
         })
         it('lets get the list of jobs', function(done) {
+            this.timeout(30000);
             db.job.get("done", function(err, ret, message) {
                 check(done, function() {
                     ret.length.should.equal(0);
