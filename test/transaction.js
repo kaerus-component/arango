@@ -28,7 +28,7 @@ describe("transaction", function() {
             port = port.port;
         }
 
-        this.timeout(20000);
+        this.timeout(50000);
         db = arango.Connection("http://127.0.0.1:"+port+"/_system");
         db.database.delete("newDatabase", function(err, ret) {
             db.database.create("newDatabase", function(err, ret) {
@@ -44,6 +44,7 @@ describe("transaction", function() {
     }) +
         it('submit transaction', function(done) {
 
+        this.timeout(50000);
             var collection = {
                 write: ["collection"]
             };
@@ -69,6 +70,7 @@ describe("transaction", function() {
 
     it('submit transaction with malformed action', function(done) {
 
+        this.timeout(50000);
         var collection = {
             write: ["collection"]
         };
@@ -93,6 +95,7 @@ describe("transaction", function() {
 
     it('submit transaction with unknown collection', function(done) {
 
+        this.timeout(50000);
         var collection = {
             write: ["unknown"]
         };

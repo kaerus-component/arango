@@ -26,7 +26,7 @@ describe("cursor", function() {
     }
 
     before(function(done) {
-        this.timeout(40000);
+		this.timeout(50000);
         db = arango.Connection("http://127.0.0.1:"+port);
 
         db.database.delete("newDatabase", function(err, ret) {
@@ -63,6 +63,7 @@ describe("cursor", function() {
     })
 
     it('should be able to validate a query', function(done) {
+		this.timeout(50000);
         db.cursor.query({
             "query": "FOR p IN products FILTER p.name == @name LIMIT 2 RETURN p.n"
         }, function(err, ret, message) {
@@ -73,6 +74,7 @@ describe("cursor", function() {
         });
     })
     it('should deny an invalid query', function(done) {
+		this.timeout(50000);
         db.cursor.query({
             "query": "FOR p INE products FILTER p.name == @name LIMIT 2 RETURN p.n"
         }, function(err, ret, message) {
@@ -83,6 +85,7 @@ describe("cursor", function() {
         });
     })
     it('should deny a valid query as the collection does not exists', function(done) {
+		this.timeout(50000);
         db.cursor.explain({
             "query": "FOR p IN products FILTER p.name == 'ee' LIMIT 2 RETURN p.n"
         }, function(err, ret, message) {
@@ -93,6 +96,7 @@ describe("cursor", function() {
         });
     })
     it('should deny an invalid query', function(done) {
+		this.timeout(50000);
         db.cursor.explain({
             "query": "FOR p INE products FILTER p.name == @name LIMIT 2 RETURN p.n"
         }, function(err, ret, message) {
@@ -103,6 +107,7 @@ describe("cursor", function() {
         });
     })
     it('should be able to validate a query', function(done) {
+		this.timeout(50000);
         db.cursor.explain({
             "query": "FOR p IN newCollection FILTER LIKE(p.abcde , 'eee') RETURN p._id"
         }, function(err, ret, message) {
@@ -115,6 +120,7 @@ describe("cursor", function() {
 
 
     it('creating a cursor with a bad query', function(done) {
+		this.timeout(50000);
         var cursorData = {};
         cursorData.query = "FOR p IN products FILTER LIKE(p.abcde ,@name) RETURN p._id "
         cursorData.count = true;
@@ -128,6 +134,7 @@ describe("cursor", function() {
         });
     })
     it('creating a cursor with an empty query', function(done) {
+		this.timeout(50000);
         var cursorData = {};
         cursorData.count = true;
         cursorData.bindVars = {};
@@ -140,6 +147,7 @@ describe("cursor", function() {
         });
     })
     it('creating a valid cursor using limit', function(done) {
+		this.timeout(50000);
         var cursorData = {};
         cursorData.query = "FOR p IN newCollection FiLTER LIKE(p.key1 ,@name) LIMIT 1 RETURN p._id"
         cursorData.count = true;
@@ -160,6 +168,7 @@ describe("cursor", function() {
     })
 
     it('creating a valid cursor with more results', function(done) {
+		this.timeout(50000);
         var cursorData = {};
         cursorData.query = "FOR p IN newCollection FiLTER LIKE(p.key1 ,@name) RETURN p._id"
         cursorData.count = true;
@@ -177,6 +186,7 @@ describe("cursor", function() {
     })
 
     it('using the current cursor we fetch more results', function(done) {
+		this.timeout(50000);
         db.cursor.get(cursor.id, function(err, ret, message) {
             check(done, function() {
                 ret.error.should.equal(false);
@@ -188,6 +198,7 @@ describe("cursor", function() {
     })
 
     it('deleting the current cursor', function(done) {
+		this.timeout(50000);
         db.cursor.delete(cursor.id, function(err, ret, message) {
             check(done, function() {
                 ret.error.should.equal(false);
@@ -196,6 +207,7 @@ describe("cursor", function() {
         });
     })
     it('deleting the no longer existing cursor', function(done) {
+		this.timeout(50000);
         db.cursor.delete(cursor.id, function(err, ret, message) {
             check(done, function() {
                 ret.error.should.equal(true);
@@ -205,6 +217,7 @@ describe("cursor", function() {
     })
 
     it('using the no longer existing cursor to fetch more results', function(done) {
+		this.timeout(50000);
         db.cursor.get(cursor.id, function(err, ret, message) {
             check(done, function() {
                 ret.error.should.equal(true);
@@ -214,6 +227,7 @@ describe("cursor", function() {
     })
 
     it('using query module', function(done) {
+		this.timeout(50000);
         var query = db.query.
         for ('u'). in ('@@collection').
         return ('u');
@@ -229,6 +243,7 @@ describe("cursor", function() {
     })
 
     it('using query module with plain query', function(done) {
+		this.timeout(50000);
         db.query.exec("for u in newCollection return u", function(err, ret) {
             check(done, function() {
                 ret.error.should.equal(false);
@@ -239,6 +254,7 @@ describe("cursor", function() {
     })
 
     it('using query module explain', function(done) {
+		this.timeout(50000);
         var query = db.query.
         for ('u'). in ('@@collection').
         return ('u');
@@ -254,6 +270,7 @@ describe("cursor", function() {
     })
 
     it('using query module test', function(done) {
+		this.timeout(50000);
         var query = db.query.
         for ('u'). in ('@@collection').
         return ('u');

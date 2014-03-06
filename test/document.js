@@ -28,7 +28,7 @@ describe("document", function() {
     db = arango.Connection("http://127.0.0.1:"+port);
 
     before(function(done) {
-        this.timeout(30000);
+        this.timeout(50000);
         db.database.delete("newDatabase", function(err, ret) {
             db.database.create("newDatabase", function(err, ret) {
                 db = db.use('/newDatabase');
@@ -44,6 +44,7 @@ describe("document", function() {
     describe("documentFunctions", function() {
 
         it('create a document', function(done) {
+            this.timeout(50000);
             db.document.create(collection.id, {
                 "key1": "val1",
                 "key2": "val2",
@@ -57,6 +58,7 @@ describe("document", function() {
             });
         })
         it('create another document', function(done) {
+            this.timeout(50000);
             db.document.create(collection.id, {
                 "key1": "val1",
                 "key3": "val3"
@@ -68,6 +70,7 @@ describe("document", function() {
             });
         })
         it('create another document and the collection along with it', function(done) {
+            this.timeout(50000);
             var options = {};
             options.createCollection = true;
             options.waitForSync = true;
@@ -82,6 +85,7 @@ describe("document", function() {
             });
         })
         it('lets rotate the journal of "newCollection"', function(done) {
+            this.timeout(50000);
             db.collection.rotate(collection.id, function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(false);
@@ -91,6 +95,7 @@ describe("document", function() {
         })
 
         it('lets get a non existing document"', function(done) {
+            this.timeout(50000);
             db.document.get(doc._id + 200, function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(true);
@@ -99,6 +104,7 @@ describe("document", function() {
             });
         })
         it('lets get a document with "match" header == false and correct revision"', function(done) {
+            this.timeout(50000);
             var options = {};
             options.match = false;
             options.rev = doc._rev;
@@ -109,6 +115,7 @@ describe("document", function() {
             });
         })
         it('lets get a document with "match" header == false and wrong revision"', function(done) {
+            this.timeout(50000);
             var options = {};
             options.match = false;
             options.rev = doc._rev + 1;
@@ -119,6 +126,7 @@ describe("document", function() {
             });
         })
         it('lets get a document with "match" header and correct revision"', function(done) {
+            this.timeout(50000);
             var options = {};
             options.match = true;
             options.rev = doc._rev;
@@ -129,6 +137,7 @@ describe("document", function() {
             });
         })
         it('lets get a document with "match" header and wrong revision', function(done) {
+            this.timeout(50000);
             var options = {};
             options.match = true;
             options.rev = doc._rev + 1;
@@ -139,6 +148,7 @@ describe("document", function() {
             });
         })
         it('lets get a non existing documents head"', function(done) {
+            this.timeout(50000);
             db.document.head(doc._id + 200, function(err, ret, message) {
                 check(done, function() {
                     message.status.should.equal(404);
@@ -146,6 +156,7 @@ describe("document", function() {
             });
         })
         it('lets get a documents head with "match" header == false and correct revision"', function(done) {
+            this.timeout(50000);
             var options = {};
             options.match = false;
             options.rev = doc._rev;
@@ -156,6 +167,7 @@ describe("document", function() {
             });
         })
         it('lets get a documents head with "match" header == false and wrong revision"', function(done) {
+            this.timeout(50000);
             var options = {};
             options.match = false;
             options.rev = doc._rev + 1;
@@ -166,6 +178,7 @@ describe("document", function() {
             });
         })
         it('lets get a documents head with "match" header and correct revision"', function(done) {
+            this.timeout(50000);
             var options = {};
             options.match = true;
             options.rev = doc._rev;
@@ -176,6 +189,7 @@ describe("document", function() {
             });
         })
         it('lets get a documents head with "match" header and wrong revision', function(done) {
+            this.timeout(50000);
             var options = {};
             options.match = true;
             options.rev = doc._rev + 1;
@@ -186,6 +200,7 @@ describe("document", function() {
             });
         })
         it('lets get the list of all documents of collection', function(done) {
+            this.timeout(50000);
             db.document.list(collection.id, function(err, ret, message) {
                 check(done, function() {
                     ret.documents.length.should.equal(2);
@@ -195,6 +210,7 @@ describe("document", function() {
         })
 
         it('lets patch a non existing document"', function(done) {
+            this.timeout(50000);
             var data = {
                 "newKey": "newValue"
             };
@@ -206,6 +222,7 @@ describe("document", function() {
             });
         })
         it('lets patch a document with "match" header == false and wrong revision"', function(done) {
+            this.timeout(50000);
             var data = {
                 "newKey": "newValue"
             };
@@ -220,6 +237,7 @@ describe("document", function() {
             });
         })
         it('lets patch a document with "match" header and correct revision and the waitForSync param"', function(done) {
+            this.timeout(50000);
             var data = {
                 "newKey": "newValue"
             };
@@ -235,6 +253,7 @@ describe("document", function() {
             });
         })
         it('lets patch a document with "match" header and wrong revision', function(done) {
+            this.timeout(50000);
             var data = {
                 "newKey": "newValue"
             };
@@ -248,7 +267,7 @@ describe("document", function() {
             });
         })
         it('lets patch a document with "match" header and wrong revision but forceUpdate flag. And we do not keep null values', function(done) {
-            this.timeout(20000)
+            this.timeout(50000);
             var data = {
                 "newKey": "newValue",
                 "key3": null
@@ -269,6 +288,7 @@ describe("document", function() {
         })
 
         it('lets verify the last patch', function(done) {
+            this.timeout(50000);
             db.document.get(doc._id, function(err, ret, message) {
                 check(done, function() {
                     ret.should.not.have.property("key3");
@@ -278,6 +298,7 @@ describe("document", function() {
         })
 
         it('lets put a non existing document"', function(done) {
+            this.timeout(50000);
             var data = {
                 "newKey": "newValue"
             };
@@ -289,6 +310,7 @@ describe("document", function() {
             });
         })
         it('lets put a document with "match" header == false and wrong revision"', function(done) {
+            this.timeout(50000);
             var data = {
                 "newKey": "newValue"
             };
@@ -303,6 +325,7 @@ describe("document", function() {
             });
         })
         it('lets put a document with "match" header and correct revision and the waitForSync param"', function(done) {
+            this.timeout(50000);
             var data = {
                 "newKey": "newValue"
             };
@@ -318,6 +341,7 @@ describe("document", function() {
             });
         })
         it('lets put a document with "match" header and wrong revision', function(done) {
+            this.timeout(50000);
             var data = {
                 "newKey": "newValue"
             };
@@ -331,6 +355,7 @@ describe("document", function() {
             });
         })
         it('lets put a document with "match" header and wrong revision but forceUpdate flag.', function(done) {
+            this.timeout(50000);
             var data = {
                 "newKey": "newValue"
             };
@@ -346,6 +371,7 @@ describe("document", function() {
             });
         })
         it('lets verify the last put', function(done) {
+            this.timeout(50000);
             db.document.get(doc._id, function(err, ret, message) {
                 check(done, function() {
                     ret.should.not.have.property("key3");
@@ -357,6 +383,7 @@ describe("document", function() {
         })
 
         it('lets delete a non existing document"', function(done) {
+            this.timeout(50000);
             db.document.delete(doc._id + 200, null, function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(true);
@@ -365,6 +392,7 @@ describe("document", function() {
             });
         })
         it('lets delete a document with "match" header and wrong revision', function(done) {
+            this.timeout(50000);
             var options = {};
             options.match = true;
             options.rev = doc._rev + 1;
@@ -376,6 +404,7 @@ describe("document", function() {
         })
 
         it('lets delete a document with "match" header == false and wrong revision"', function(done) {
+            this.timeout(50000);
             var options = {};
             options.match = false;
             options.rev = doc._rev + 1;
@@ -387,6 +416,7 @@ describe("document", function() {
             });
         })
         it('create a document', function(done) {
+            this.timeout(50000);
             db.document.create(collection.id, {
                 "key1": "val1",
                 "key2": "val2",
@@ -400,6 +430,7 @@ describe("document", function() {
             });
         })
         it('lets delete a document with "match" header and correct revision and the waitForSync param"', function(done) {
+            this.timeout(50000);
             var options = {};
             options.match = true;
             options.waitForSync = true;

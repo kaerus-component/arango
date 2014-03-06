@@ -21,6 +21,7 @@ var db, actions;
 describe("action", function() {
 
     before(function(done) {
+        this.timeout(50000);
         if (typeof window !== "undefined") {
             port = window.port;
         } else {
@@ -71,7 +72,7 @@ describe("action", function() {
     })
 
     it('define an action for which no route exists', function(done) {
-
+        this.timeout(50000);
         db.action.define({
             name: 'someAction',
             url: 'http://127.0.0.1:'+port+'/test',
@@ -90,7 +91,7 @@ describe("action", function() {
 
 
     it('call this action and expect a route not found error', function(done) {
-
+        this.timeout(50000);
         db.action.submit("someAction", function(err, ret) {
             check(done, function() {
                 ret.code.should.eql(404);
@@ -101,7 +102,7 @@ describe("action", function() {
     })
 
     it('delete this action', function(done) {
-
+        this.timeout(50000);
         db.action.undefine("someAction");
         check(done, function() {
             db.action.getActions().should.not.have.property('someAction');
@@ -109,7 +110,7 @@ describe("action", function() {
     })
 
     it('define an action for which a route exists', function(done) {
-
+        this.timeout(50000);
         db.action.define({
             name: 'someAction',
             url: 'http://127.0.0.1:'+port+'/alreadyExistingRoute',
@@ -128,6 +129,7 @@ describe("action", function() {
     })
 
     it('lets get the list of all documents of collection', function(done) {
+        this.timeout(50000);
         db.document.list("_routing", function(err, ret, message) {
             check(done, function() {
                 message.status.should.equal(200);
@@ -137,7 +139,7 @@ describe("action", function() {
 
 
     it('lets wait until action is reachable', function(done) {
-        this.timeout(30000);
+        this.timeout(50000);
         function callDb(done) {
             db.action.submit("someAction",{
                 firstname: "heinz",
@@ -154,6 +156,7 @@ describe("action", function() {
         callDb(done);
     })
     it('call this action and expect the route to be found', function(done) {
+        this.timeout(50000);
         db.action.submit("someAction", {
             firstname: "heinz",
             lastname: "hoenig"
@@ -167,6 +170,7 @@ describe("action", function() {
     })
 
     it('lets get the list of all documents of collection', function(done) {
+        this.timeout(50000);
         db.document.list("_routing", function(err, ret, message) {
             check(done, function() {
                 message.status.should.equal(200);
@@ -175,7 +179,7 @@ describe("action", function() {
     })
 
     it('lets wait until action is reachable', function(done) {
-        this.timeout(30000);
+        this.timeout(50000);
         function callDb(done) {
             db.action.submit("hello", function(err, ret, message) {
                 if (message.status !== 200) {
@@ -190,6 +194,7 @@ describe("action", function() {
 
     })
     it('call the action defined in setup action and expect the route to be found', function(done) {
+        this.timeout(50000);
         db.action.submit("hello", function(err, ret, message) {
             check(done, function() {
                 ret.should.eql("Hello World!");
@@ -202,6 +207,7 @@ describe("action", function() {
     })
 
     it('lets get the list of all documents of collection', function(done) {
+        this.timeout(50000);
         db.document.list("_routing", function(err, ret, message) {
             check(done, function() {
                 message.status.should.equal(200);
@@ -210,6 +216,7 @@ describe("action", function() {
     })
 
     it('delete the action "hello".....', function(done) {
+        this.timeout(50000);
         db.action.undefine("hello");
         check(done, function() {
             db.action.getActions().should.not.have.property('hello');
@@ -218,6 +225,7 @@ describe("action", function() {
     })
 
     it('lets get the list of all documents of collection', function(done) {
+        this.timeout(50000);
         db.document.list("_routing", function(err, ret, message) {
             check(done, function() {
                 message.status.should.equal(200);
@@ -226,6 +234,7 @@ describe("action", function() {
     })
 
     it('lets get the list of all documents of collection', function(done) {
+        this.timeout(50000);
         db.document.list("_routing", function(err, ret, message) {
             check(done, function() {
                 message.status.should.equal(200);
@@ -234,6 +243,7 @@ describe("action", function() {
     })
 
     it('...and check that route has been deleted to', function(done) {
+        this.timeout(50000);
         db.document.get(actions.hello.route, function(err, ret, message) {
             check(done, function() {
                 ret.error.should.equal(true);

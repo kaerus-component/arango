@@ -35,6 +35,7 @@ describe("database", function() {
 
     var db = arango.Connection("http://127.0.0.1:"+port);
     before(function(done) {
+		this.timeout(50000);
         db.database.delete("newDatabase", function() {
             done()
         });
@@ -45,7 +46,7 @@ describe("database", function() {
     describe("create/delete", function() {
 
         it('create a database with some users', function(done) {
-            this.timeout(4500);
+		    this.timeout(50000);
             var databaseName = "newDatabase";
             var users = [{
                 "username": "Heinz",
@@ -68,7 +69,7 @@ describe("database", function() {
             });
         })
         it('create another database with some users', function(done) {
-            this.timeout(4500);
+		    this.timeout(50000);
             var databaseName = "newDatabase2";
             var users = [{
                 "username": "Heinz",
@@ -82,6 +83,7 @@ describe("database", function() {
             });
         })
         it('list databases', function(done) {
+		    this.timeout(50000);
             db.database.list(function(err, ret, message) {
                 check(done, function() {
                     message.status.should.equal(200);
@@ -89,6 +91,7 @@ describe("database", function() {
             });
         })
         it('get information about the current database', function(done) {
+		    this.timeout(50000);
             db.database.current(function(err, ret, message) {
                 check(done, function() {
                     ret.result.should.have.property("name");
@@ -99,6 +102,7 @@ describe("database", function() {
             });
         })
         it('get all databases the current user can access', function(done) {
+		    this.timeout(50000);
             db.database.user(function(err, ret, message) {
                 check(done, function() {
                     message.status.should.equal(200);
@@ -106,6 +110,7 @@ describe("database", function() {
             });
         })
         it('delete a databases', function(done) {
+		    this.timeout(50000);
             db.database.delete("newDatabase2", function(err, ret, message) {
                 check(done, function() {
                     message.status.should.equal(200);
@@ -113,6 +118,7 @@ describe("database", function() {
             });
         })
         it('delete a databases which does not exist and expect a 404', function(done) {
+		    this.timeout(50000);
             db.database.delete("newDatabase2", function(err, ret, message) {
                 check(done, function() {
                     message.status.should.equal(404);
