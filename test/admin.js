@@ -28,6 +28,7 @@ describe("admin", function() {
     var db = arango.Connection("http://127.0.0.1:"+port);
 
     it('should be able to get the arango version', function(done) {
+        this.timeout(50000);
         db.admin.version(true, function(err, ret) {
             check(done, function() {
                 ret.should.have.property('server');
@@ -37,6 +38,7 @@ describe("admin", function() {
         });
     })
     it('should be able to get the arango dbs statistics', function(done) {
+        this.timeout(50000);
         db.admin.statistics(function(err, ret) {
             check(done, function() {
                 ret.should.have.property('system');
@@ -48,6 +50,7 @@ describe("admin", function() {
         });
     })
     it('should be able to get the arango dbs statistics description', function(done) {
+        this.timeout(50000);
         db.admin.statisticsDescription(function(err, ret) {
             check(done, function() {
                 ret.should.have.property('groups');
@@ -59,6 +62,7 @@ describe("admin", function() {
     })
 
     it('should be able to get the arango dbs routesReload', function(done) {
+        this.timeout(50000);
         db.admin.routesReload(function(err, ret) {
             check(done, function() {
                 ret.error.should.equal(false);
@@ -67,6 +71,7 @@ describe("admin", function() {
         });
     })
     it('should be able to flush the arango dbs modules', function(done) {
+        this.timeout(50000);
         db.admin.modulesFlush(function(err, ret) {
             check(done, function() {
                 ret.error.should.equal(false);
@@ -75,6 +80,7 @@ describe("admin", function() {
         });
     });
     it('should be able to get the arango dbs time', function(done) {
+        this.timeout(50000);
         db.admin.time(function(err, ret) {
             check(done, function() {
                 ret.should.have.property('time');
@@ -84,6 +90,7 @@ describe("admin", function() {
         });
     })
     it('should be able to get an echo from the arango db', function(done) {
+        this.timeout(50000);
         db.admin.echo('GET', null, null, null, function(err, ret) {
             check(done, function() {
                 ret.should.have.property('user');
@@ -93,6 +100,7 @@ describe("admin", function() {
         });
     })
     it('should be able to get logs from the arango db without options', function(done) {
+        this.timeout(50000);
         db.admin.log(null, function(err, ret) {
             check(done, function() {
                 ret.should.have.property('totalAmount');
@@ -104,6 +112,7 @@ describe("admin", function() {
         });
     })
     it('should be able to get logs from the arango db with full option set', function(done) {
+        this.timeout(50000);
         var options = {};
         options.upto = "debug";
         options.size = 15;
@@ -120,6 +129,8 @@ describe("admin", function() {
         });
     })
     it('should return a 400 as we pass a bad log level to logs', function(done) {
+
+        this.timeout(50000);
         var options = {};
         options.upto = "badlevel";
         options.size = 15;

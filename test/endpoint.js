@@ -22,7 +22,7 @@ describe("endpoint", function() {
 
 
     before(function(done) {
-        this.timeout(20000);
+        this.timeout(50000);
         if (typeof window !== "undefined") {
             port = window.port;
         } else {
@@ -45,6 +45,7 @@ describe("endpoint", function() {
     })
 
     describe("endpointFunctions", function() {
+        this.timeout(50000);
         it('create an endpoint', function(done) {
             db.endpoint.create("tcp://127.0.0.1:8888", ["newDatabase3", "newDatabase4"], function(err, ret, message) {
                 check(done, function() {
@@ -53,7 +54,9 @@ describe("endpoint", function() {
                 });
             });
         })
+
         it('create an endpoint with malformed request', function(done) {
+            this.timeout(50000);
             db.endpoint.create(null, ["newDatabase3", "newDatabase4"], function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(true);
@@ -62,6 +65,7 @@ describe("endpoint", function() {
             });
         })
         it('list endpoints', function(done) {
+            this.timeout(50000);
             db.endpoint.get(function(err, ret, message) {
                 check(done, function() {
                     message.status.should.equal(200);
@@ -69,6 +73,7 @@ describe("endpoint", function() {
             });
         })
         it('delete endpoint', function(done) {
+            this.timeout(50000);
             db.endpoint.delete("tcp://127.0.0.1:8888", function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(false);
@@ -77,6 +82,7 @@ describe("endpoint", function() {
             });
         })
         it('list endpoints', function(done) {
+            this.timeout(50000);
             db.endpoint.get(function(err, ret, message) {
                 check(done, function() {
                     message.status.should.equal(200);

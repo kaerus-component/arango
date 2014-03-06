@@ -38,7 +38,7 @@ describe("simple", function() {
             port = port.port;
         }
 
-        this.timeout(30000);
+        this.timeout(50000);
         db = arango.Connection("http://127.0.0.1:"+port+"/_system");
         db.database.delete("newDatabase", function(err, ret) {
             db.database.create("newDatabase", function(err, ret) {
@@ -132,7 +132,7 @@ describe("simple", function() {
     describe("simple Queries", function() {
 
         it('list all documents', function(done) {
-            this.timeout(30000);
+            this.timeout(50000);
             db.simple.skip(1).limit(2).list("SkiptListcollection", function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(false);
@@ -142,6 +142,7 @@ describe("simple", function() {
             });
         })
         it('get random document', function(done) {
+            this.timeout(50000);
             db.simple.any("SkiptListcollection", function(err, ret, message) {
                 check(done, function() {
                     ret.should.have.property("document");
@@ -152,6 +153,7 @@ describe("simple", function() {
         })
 
         it('list all documents matching an example, we tests that passing skip and limit in the function beats the global setting', function(done) {
+            this.timeout(50000);
             var opt = {
                 "skip": 0,
                 "limit": 4
@@ -167,6 +169,7 @@ describe("simple", function() {
             });
         })
         it('remove all documents matching an example.', function(done) {
+            this.timeout(50000);
             var opt = {
                 "waitForSync": true,
                 "limit": 1
@@ -182,6 +185,7 @@ describe("simple", function() {
             });
         })
         it('replace all documents matching an example.', function(done) {
+            this.timeout(50000);
             var opt = {
                 "waitForSync": true,
                 "limit": 1
@@ -200,6 +204,7 @@ describe("simple", function() {
             });
         })
         it('update all documents matching an example.', function(done) {
+            this.timeout(50000);
             var opt = {
                 "waitForSync": true
             }
@@ -217,6 +222,7 @@ describe("simple", function() {
         })
 
         it('return the first documents matching a given example.', function(done) {
+            this.timeout(50000);
             var opt = {
                 "skip": 0,
                 "limit": 4
@@ -233,6 +239,7 @@ describe("simple", function() {
         })
 
         it('return the first documents from the collection', function(done) {
+            this.timeout(50000);
             db.simple.first("SkiptListcollection", 3, function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(false);
@@ -242,6 +249,7 @@ describe("simple", function() {
             });
         })
         it('return the last documents from the collection', function(done) {
+            this.timeout(50000);
             db.simple.last("SkiptListcollection", 3, function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(false);
@@ -252,6 +260,7 @@ describe("simple", function() {
         })
 
         it('use the skip list index for a range query', function(done) {
+            this.timeout(50000);
             db.simple.range("SkiptListcollection", "age", 23, 29, {
                 closed: true
             }, function(err, ret, message) {
@@ -263,6 +272,7 @@ describe("simple", function() {
             });
         })
         it('use the skip list index for an open range query', function(done) {
+            this.timeout(50000);
             db.simple.range("SkiptListcollection", "age", 23, 29, function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(false);
@@ -272,6 +282,7 @@ describe("simple", function() {
             });
         })
         it('list all we created so far', function(done) {
+            this.timeout(50000);
             db.index.list("GeoCollection", function(err, ret, message) {
                 check(done, function() {
                     indices.GeoCollection = ret.indexes;
@@ -281,6 +292,7 @@ describe("simple", function() {
             });
         })
         it('list all we created so far', function(done) {
+            this.timeout(50000);
             db.index.list("SkiptListcollection", function(err, ret, message) {
                 check(done, function() {
                     indices.SkiptListcollection = ret.indexes;
@@ -290,6 +302,7 @@ describe("simple", function() {
             });
         })
         it('use the geo index for a near query on location', function(done) {
+            this.timeout(50000);
             var index = getIndexByType("GeoCollection", "geo1");
             db.simple.skip(undefined).limit(undefined).near("GeoCollection", 15, 15, {
                 geo: index,
@@ -303,6 +316,7 @@ describe("simple", function() {
             });
         })
         it('use the geo index for a near query on longitude and latitude', function(done) {
+            this.timeout(50000);
             var index = getIndexByType("GeoCollection", "geo2");
             db.simple.skip(undefined).limit(undefined).near("GeoCollection", 15, 15, {
                 geo: index,
@@ -316,6 +330,7 @@ describe("simple", function() {
             });
         })
         it('use the geo index for a within query on location', function(done) {
+            this.timeout(50000);
             var index = getIndexByType("GeoCollection", "geo1");
             db.simple.within("GeoCollection", 15, 15, 787593, {
                 geo: index,
@@ -329,6 +344,7 @@ describe("simple", function() {
             });
         })
         it('use the geo index for a within query on longitude and latitude', function(done) {
+            this.timeout(50000);
             var index = getIndexByType("GeoCollection", "geo2");
             db.simple.within("GeoCollection", 15, 15, 787593, {
                 geo: index,
@@ -343,6 +359,7 @@ describe("simple", function() {
         })
 
         it('use the geo index for a within query on location', function(done) {
+            this.timeout(50000);
             var index = getIndexByType("GeoCollection", "geo1");
             db.simple.within("GeoCollection", 15, 15, 787593, {
                 geo: index,
@@ -357,6 +374,7 @@ describe("simple", function() {
         })
 
         it('use the fulltext index for a fulltext query', function(done) {
+            this.timeout(50000);
             var index = getIndexByType("SkiptListcollection", "fulltext");
             db.simple.fulltext("SkiptListcollection", "birthplace", "munich", function(err, ret, message) {
                 check(done, function() {

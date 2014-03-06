@@ -20,6 +20,7 @@ describe("batch", function() {
 
     // now we end bacth mode and execute
     it('should exec bacth mode', function(done) {
+        this.timeout(50000);
         if (typeof window !== "undefined") {
             port = window.port;
         } else {
@@ -28,8 +29,6 @@ describe("batch", function() {
         }
 
         var db = arango.Connection("http://127.0.0.1:"+port);
-        this.timeout(5000);
-        // init batch mode
         var batch = db.batch.start();
 
         // 2 good calls

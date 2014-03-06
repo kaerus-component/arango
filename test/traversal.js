@@ -29,7 +29,7 @@ describe("traversal", function() {
             port = port.port;
         }
 
-        this.timeout(20000);
+        this.timeout(50000);
         db = arango.Connection("http://127.0.0.1:"+port+"/_system");
         db.database.delete("newDatabase", function(err, ret) {
             db.database.create("newDatabase", function(err, ret) {
@@ -76,6 +76,7 @@ describe("traversal", function() {
     })
 
     it('lets get the list of all documents of verticescollection', function(done) {
+        this.timeout(50000);
         db.document.list("verticescollection", function(err, ret, message) {
             check(done, function() {
                 ret.documents.length.should.equal(4);
@@ -85,7 +86,7 @@ describe("traversal", function() {
     })
 
     it('startTraversal in plain form', function(done) {
-
+        this.timeout(50000);
         var options = {};
         options.direction = "outbound";
 
@@ -98,7 +99,7 @@ describe("traversal", function() {
         });
     })
     it('startTraversal in with min depth and filter Bert by an attribute', function(done) {
-
+        this.timeout(50000);
         var options = {};
         options.minDepth = 1;
         options.filter = 'if (vertex.value1 === "baz") {return "exclude";}return;';
@@ -115,7 +116,7 @@ describe("traversal", function() {
     })
 
     it('startTraversal in with max depth, order  and strategy', function(done) {
-
+        this.timeout(50000);
         var options = {};
         options.maxDepth = 2;
         options.strategy = "depthfirst";
@@ -133,7 +134,7 @@ describe("traversal", function() {
     })
 
     it('startTraversal with visitor, init, itemOrder  and expander (only use outbound except for Emil)', function(done) {
-
+        this.timeout(50000);
         var options = {};
         options.itemOrder = "backward";
         options.visitor = "result.visited++; result.myVertices.push(vertex);"

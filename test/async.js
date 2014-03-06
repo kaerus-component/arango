@@ -31,7 +31,7 @@ describe("async", function() {
 
 
     before(function(done) {
-        this.timeout(20000);
+        this.timeout(50000);
         db = arango.Connection("http://127.0.0.1:" + port);
         db.database.delete("newDatabase", function(err, ret) {
             db.database.create("newDatabase", function(err, ret) {
@@ -45,7 +45,7 @@ describe("async", function() {
     describe("async Functions", function() {
 
         it('lets create a collection in normal mode ....we expect a result', function(done) {
-            this.timeout(20000);
+            this.timeout(50000);
             db.collection.create("newCollection", function(err, ret, message) {
                 check(done, function() {
                     ret.status.should.equal(3);
@@ -55,6 +55,7 @@ describe("async", function() {
             });
         })
         it('lets create a collection in async store mode ....we only expect a header with a job id', function(done) {
+            this.timeout(50000);
             db.setAsyncMode(true).collection.create("newCollection2", function(err, ret, message) {
                 check(done, function() {
                     var keys = Object.keys(message.headers);
@@ -65,6 +66,7 @@ describe("async", function() {
             });
         })
         it('lets create a collection in async fire and forget mode ....we only expect a header without a job id', function(done) {
+            this.timeout(50000);
             db.setAsyncMode(true, true).collection.create("newCollection3", function(err, ret, message) {
                 check(done, function() {
                     ret.should.equal("");
@@ -77,6 +79,7 @@ describe("async", function() {
         })
 
         it('Ok, we switched to fire and forget, lets check if db is still configuredthat way.', function(done) {
+            this.timeout(50000);
             db.collection.create("newCollection", function(err, ret, message) {
                 check(done, function() {
                     ret.should.equal("");
@@ -88,7 +91,7 @@ describe("async", function() {
             });
         })
         it('lets switch back to normal mode ....we expect a result', function(done) {
-            this.timeout(20000);
+            this.timeout(50000);
             db.setAsyncMode(false).collection.create("newCollection6", function(err, ret, message) {
                 check(done, function() {
                     ret.status.should.equal(3);
@@ -98,6 +101,7 @@ describe("async", function() {
             });
         })
         it('lets create a collection in normal mode ....we expect a result', function(done) {
+            this.timeout(50000);
             db.collection.create("newCollection7", function(err, ret, message) {
                 check(done, function() {
                     ret.status.should.equal(3);
@@ -107,7 +111,7 @@ describe("async", function() {
             });
         })
         it('lets switch back to async store mode ....and create some jobs', function(done) {
-            this.timeout(20000);
+            this.timeout(50000);
             db.setAsyncMode(true).collection.create("newCollection10", function(err, ret, message) {
                 check(done, function() {
                     ret.should.equal("");
@@ -119,6 +123,7 @@ describe("async", function() {
             });
         })
         it('create a document', function(done) {
+            this.timeout(50000);
             db.document.create("newCollection10", {
                 "key1": "val1",
                 "key2": "val2",
@@ -134,6 +139,7 @@ describe("async", function() {
             });
         })
         it('create a document', function(done) {
+            this.timeout(50000);
             db.document.create("newCollection10", {
                 "key1": "val1",
                 "key2": "val2",
@@ -149,6 +155,7 @@ describe("async", function() {
             });
         })
         it('create a document', function(done) {
+            this.timeout(50000);
             db.document.create("newCollection100", {
                 "key1": "val1",
                 "key2": "val2",
@@ -164,6 +171,7 @@ describe("async", function() {
             });
         })
         it('create a document', function(done) {
+            this.timeout(50000);
             db.document.create("newCollection10", {
                 "key1": "val1",
                 "key2": "val2",
@@ -179,7 +187,7 @@ describe("async", function() {
             });
         })
         it('lets switch back to normal mode ....and get the list of jobs', function(done) {
-            this.timeout(30000);
+            this.timeout(50000);
             db.setAsyncMode(false).job.get("pending", function(err, ret, message) {
                 check(done, function() {
                     message.status.should.equal(200);
@@ -187,7 +195,7 @@ describe("async", function() {
             });
         })
         it('lets delete the job queue', function(done) {
-            this.timeout(30000);
+            this.timeout(50000);
             db.job.delete("all", function(err, ret, message) {
                 check(done, function() {
                     ret.result.should.equal(true);
@@ -196,7 +204,7 @@ describe("async", function() {
             });
         })
         it('lets get the list of jobs', function(done) {
-            this.timeout(30000);
+            this.timeout(50000);
             db.job.get("done", function(err, ret, message) {
                 check(done, function() {
                     ret.length.should.equal(0);
@@ -205,6 +213,7 @@ describe("async", function() {
             });
         })
         it('lets switch back to async store mode ....and create failing jobs', function(done) {
+            this.timeout(50000);
             db.setAsyncMode(true).collection.create("newCollection10", function(err, ret, message) {
                 check(done, function() {
                     storedJobs[message.headers["x-arango-async-id"]] = 409;
@@ -217,6 +226,7 @@ describe("async", function() {
             });
         })
         it('create a failing document', function(done) {
+            this.timeout(50000);
             db.document.create("newCollection100", {
                 "key1": "val1",
                 "key2": "val2",
@@ -233,6 +243,7 @@ describe("async", function() {
             });
         })
         it('create a document', function(done) {
+            this.timeout(50000);
             db.document.create("newCollection10", {
                 "key1": "val1",
                 "key2": "val2",
@@ -249,6 +260,7 @@ describe("async", function() {
             });
         })
         it('create a failing document', function(done) {
+            this.timeout(50000);
             db.document.create("newCollection100", {
                 "key1": "val1",
                 "key2": "val2",
@@ -265,6 +277,7 @@ describe("async", function() {
             });
         })
         it('lets switch back to normal mode ....and get the job result', function(done) {
+            this.timeout(50000);
             function callDb(done) {
                 db.setAsyncMode(false).job.get("done", function(err, ret, message) {
                     var jobs = ret;
@@ -279,6 +292,7 @@ describe("async", function() {
 
         })
         it('lets get the job results', function(done) {
+            this.timeout(50000);
             Object.keys(storedJobs).forEach(function(key) {
                 db.job.put(key, function(err, ret, message) {
                     ret.code.should.equal(storedJobs[key]);

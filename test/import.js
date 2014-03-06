@@ -26,7 +26,7 @@ describe("import", function() {
             port = port.port;
         }
 
-        this.timeout(20000);
+        this.timeout(50000);
         db = arango.Connection("http://127.0.0.1:"+port+"/_system");
         db.database.delete("newDatabase", function(err, ret) {
             db.database.create("newDatabase", function(err, ret) {
@@ -41,13 +41,14 @@ describe("import", function() {
     describe("importFunctions", function() {
 
         beforeEach(function(done) {
+            this.timeout(50000);
             db.collection.create("collection", function(err, ret) {
                 done();
             });
         })
 
         afterEach(function(done) {
-            this.timeout(5000);
+            this.timeout(50000);
             db.collection.delete("collection", function(err, ret) {
                 db.collection.delete("newCollection", function(err, ret) {
                     done();
@@ -55,6 +56,8 @@ describe("import", function() {
             })
         })
         it('importJSONData with single JSON Object and waitForSync', function(done) {
+
+            this.timeout(50000);
 
             var options = {
                 "waitForSync": true,
@@ -87,6 +90,9 @@ describe("import", function() {
         })
         it('importJSONData with single JSON Object into unknown collection', function(done) {
 
+
+            this.timeout(50000);
+
             var options = {
                 "waitForSync": true,
                 "details": true
@@ -116,6 +122,8 @@ describe("import", function() {
             });
         })
         it('importJSONData with single JSON Object, with one error, we create the collection as well', function(done) {
+
+            this.timeout(50000);
 
             var options = {
                 "waitForSync": true,
@@ -150,7 +158,7 @@ describe("import", function() {
         })
         it('importJSONData with single JSON Object, without options', function(done) {
 
-
+            this.timeout(50000);
             var data = [{
                 "_key": "abcuu",
                 "value1": 25,
@@ -178,7 +186,7 @@ describe("import", function() {
         })
         it('importJSONData with single JSON Object, without options and with default collection', function(done) {
 
-
+            this.timeout(50000);
             var data = [{
                 "_key": "abcww",
                 "value1": 25,
@@ -204,6 +212,8 @@ describe("import", function() {
             });
         })
         it('importJSONData with single JSON Object, with options and with default collection', function(done) {
+
+            this.timeout(50000);
 
             var options = {
                 "waitForSync": true
@@ -236,6 +246,8 @@ describe("import", function() {
         })
         it('importJSONData with single JSON Object and complete. Provoke a unique constraint violation and expect a 409', function(done) {
 
+            this.timeout(50000);
+
             var options = {
                 "waitForSync": true,
                 "details": true,
@@ -267,6 +279,8 @@ describe("import", function() {
         })
         it('importValueList with single JSON Object and waitForSync', function(done) {
 
+            this.timeout(50000);
+
             var options = {
                 "waitForSync": true,
                 "details": true
@@ -286,6 +300,8 @@ describe("import", function() {
         })
         it('importValueList with single JSON Object into unknown collection', function(done) {
 
+            this.timeout(50000);
+
             var options = {
                 "waitForSync": true,
                 "details": true
@@ -303,6 +319,8 @@ describe("import", function() {
             });
         })
         it('importValueList with single JSON Object, with one error, we create the collection as well', function(done) {
+
+            this.timeout(50000);
 
             var options = {
                 "waitForSync": true,
@@ -324,6 +342,8 @@ describe("import", function() {
         })
         it('importValueList with single JSON Object and complete. Provoke a unique constraint violation and expect a 409', function(done) {
 
+            this.timeout(50000);
+
             var options = {
                 "waitForSync": true,
                 "details": true,
@@ -341,7 +361,7 @@ describe("import", function() {
         })
         it('importValueList with single JSON Object, without options', function(done) {
 
-
+            this.timeout(50000);
             var options = {
                 "waitForSync": true,
                 "details": true
@@ -360,7 +380,7 @@ describe("import", function() {
         })
         it('importValueList with single JSON Object, without options and with default collection', function(done) {
 
-
+            this.timeout(50000);
             var data = '[ "_key", "value1", "value2" ]\n\n\n[ "abczz", 25, "test" ]\n[ "aabcdww", 253, "stest" ]'
             db = db.use('/newDatabase:collection');
             db.import.importValueList(data, function(err, ret, message) {
@@ -372,6 +392,8 @@ describe("import", function() {
             });
         })
         it('importValueList with single JSON Object, with options and with default collection', function(done) {
+
+            this.timeout(50000);
 
             var options = {
                 "waitForSync": true,
