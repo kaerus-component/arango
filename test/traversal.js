@@ -35,49 +35,68 @@ describe("traversal", function() {
             db.database.create("newDatabase", function(err, ret) {
                 db = db.use('/newDatabase');
                 db.graph.create("graph1", "verticescollection", "edgecollection", true, function(err, ret, message) {
-                    var data = [{
+                    db.document.create("verticescollection", {
                         "_key": "Anton",
                         "value1": 25,
                         "value2": "test",
                         "allowed": true
-                    }, {
-                        "_key": "Bert",
-                        "value1": "baz"
-                    }, {
-                        "_key": "Cindy",
-                        "value1": "baaaz"
-                    }, {
-                        "_key": "Emil",
-                        "value1": "batz"
-                    }];
-                    db.import.importJSONData("verticescollection", data, function(err, ret, message) {
-                        var data = [{
-                            "_from": "verticescollection/Anton",
-                            "_to": "verticescollection/Bert"
-                        }, {
-                            "_from": "verticescollection/Bert",
-                            "_to": "verticescollection/Cindy"
-                        }, {
-                            "_from": "verticescollection/Cindy",
-                            "_to": "verticescollection/Emil"
-                        }, {
-                            "_from": "verticescollection/Anton",
-                            "_to": "verticescollection/Emil",
-                            "name": "other name"
-                        }];
-                        db.import.importJSONData("edgecollection", data, function(err, ret, message) {
-                            done();
+                    }, function (err, ret, message) {
+                        db.document.create("verticescollection", {
+                            "_key": "Bert",
+                            "value1": "baz"
+                        }, function (err, ret, message) {
+                            db.document.create("verticescollection", {
+                                "_key": "Cindy",
+                                "value1": "baaaz"
+                            }, function (err, ret, message) {
+                                db.document.create("verticescollection", {
+                                    "_key": "Emil",
+                                    "value1": "batz"
+                                }, function (err, ret, message) {
+                                    db.edge.create("edgecollection",
+                                        "verticescollection/Anton",
+                                        "verticescollection/Bert", {}
+                                    , function (err, ret, message) {
+                                        db.edge.create("edgecollection",
+                                            "verticescollection/Bert",
+                                            "verticescollection/Cindy", {}
+                                        , function (err, ret, message) {
+                                            db.edge.create("edgecollection",
+                                                "verticescollection/Cindy",
+                                                "verticescollection/Emil", {}
+                                            , function (err, ret, message) {
+                                                db.edge.create("edgecollection",
+                                                    "verticescollection/Anton",
+                                                    "verticescollection/Emil",{
+                                                    "name": "other name"
+                                                }, function (err, ret, message) {
+                                                    done();
+                                                })
+                                            });
+                                        });
+                                    });
+                                });
+                            });
                         });
                     });
                 });
             });
         });
+    });
 
-    })
 
     it('lets get the list of all documents of verticescollection', function(done) {
         this.timeout(50000);
         db.document.list("verticescollection", function(err, ret, message) {
+            check(done, function() {
+                ret.documents.length.should.equal(4);
+                message.status.should.equal(200);
+            });
+        });
+    })
+    it('lets get the list of all documents of edgecollection', function(done) {
+        this.timeout(50000);
+        db.document.list("edgecollection", function(err, ret, message) {
             check(done, function() {
                 ret.documents.length.should.equal(4);
                 message.status.should.equal(200);

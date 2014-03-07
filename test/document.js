@@ -69,30 +69,38 @@ describe("document", function() {
                 });
             });
         })
-        it('create another document and the collection along with it', function(done) {
-            this.timeout(50000);
-            var options = {};
-            options.createCollection = true;
-            options.waitForSync = true;
-            db.document.create("anotherCollection", {
-                "key1": "val1",
-                "key2": "val2"
-            }, options, function(err, ret, message) {
-                check(done, function() {
-                    ret.error.should.equal(false);
-                    message.status.should.equal(201);
-                });
+        db.admin.role(function(err, ret, message) {
+            check(done, function() {
+                role = ret.role;
+                if (role === "UNDEFINED") {
+                    it('create another document and the collection along with it', function(done) {
+                        this.timeout(50000);
+                        var options = {};
+                        options.createCollection = true;
+                        options.waitForSync = true;
+                        db.document.create("anotherCollection", {
+                            "key1": "val1",
+                            "key2": "val2"
+                        }, options, function(err, ret, message) {
+                            check(done, function() {
+                                ret.error.should.equal(false);
+                                message.status.should.equal(201);
+                            });
+                        });
+                    })
+                    it('lets rotate the journal of "newCollection"', function(done) {
+                        this.timeout(50000);
+                        db.collection.rotate(collection.id, function(err, ret, message) {
+                            check(done, function() {
+                                ret.error.should.equal(false);
+                                message.status.should.equal(200);
+                            });
+                        });
+                    })
+                }
             });
-        })
-        it('lets rotate the journal of "newCollection"', function(done) {
-            this.timeout(50000);
-            db.collection.rotate(collection.id, function(err, ret, message) {
-                check(done, function() {
-                    ret.error.should.equal(false);
-                    message.status.should.equal(200);
-                });
-            });
-        })
+        });
+
 
         it('lets get a non existing document"', function(done) {
             this.timeout(50000);
