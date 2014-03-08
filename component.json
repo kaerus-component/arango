@@ -1,8 +1,8 @@
 {
-  "name": "arangojs",
+  "name": "arango",
   "version": "1.0.0",
-  "description": "ArangoDB Javascript/nodejs client",
-  "repo": "triAGENS/ArangoDB-JavaScript",
+  "description": "ArangoDB Javascript client",
+  "repo": "kaerus-component/arango",
   "dependencies": {
     "kaerus-component/uP": "0.3.7",
     "kaerus-component/ajax": "0.3.1",

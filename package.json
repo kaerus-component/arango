@@ -1,5 +1,5 @@
 {
-  "name": "arangojs",
+  "name": "arango",
   "version": "1.0.0",
   "description": "ArangoDB javascript client",
   "keywords": [
@@ -8,9 +8,8 @@
     "nosql"
   ],
   "author": { 
-    "name": "Florian Bartels",
-    "email": "f.bartels@ŧriagens.de",
-    "web": "https://www.arangodb.org"
+    "name": "Anders Elo",
+    "email": "anders@kaerus.com"
   },
   "contributors": [
     "anders elo <anders@kaerus.com>",
@@ -41,7 +40,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/triAGENS/ArangoDB-JavaScript.git"
+    "url": "git://github.com/kaerus-component/arango.git"
   },
   "main": "index.js",
   "license": "APACHE2_0"
