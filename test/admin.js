@@ -11,7 +11,7 @@ function check(done, f) {
         f()
         done()
     } catch (e) {
-        //console.log(e);
+        console.log(e);
         done(e)
     }
 }

@@ -19,7 +19,6 @@ function check(done, f) {
 
 describe("transaction", function() {
 
-
     before(function(done) {
         if (typeof window !== "undefined") {
             port = window.port;
@@ -41,8 +40,9 @@ describe("transaction", function() {
             });
         });
 
-    }) +
-        it('submit transaction', function(done) {
+    })
+
+    it('submit transaction', function(done) {
 
         this.timeout(50000);
             var collection = {
