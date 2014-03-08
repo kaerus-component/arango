@@ -1,7 +1,7 @@
-var arango, db;
-
+var arango, db, role;
+var port;
 try {
-    arango = require('arango')
+    arango = require('arangojs')
 } catch (e) {
     arango = require('..')
 }
@@ -18,35 +18,41 @@ function check(done, f) {
 
 describe("import", function() {
 
+    before(function (done) {
+        if (typeof window !== "undefined") {
+            port = window.port;
+        } else {
+            port = require('./port.js');
+            port = port.port;
+        }
 
-    before(function(done) {
-        this.timeout(20000);
-        db = arango.Connection("http://127.0.0.1:8529/_system");
-        db.database.delete("newDatabase", function(err, ret) {
-            db.database.create("newDatabase", function(err, ret) {
-                db = arango.Connection({
-                    _name: "newDatabase",
-                    _server: {
-                        hostname: "localhost"
-                    }
-                });
-                db.collection.create("collection", function(err, ret) {
-                    done();
+        this.timeout(50000);
+        db = arango.Connection("http://127.0.0.1:" + port + "/_system");
+        db.database.delete("newDatabase", function (err, ret) {
+            db.database.create("newDatabase", function (err, ret) {
+                db = db.use('/newDatabase');
+                db.collection.create("collection", function (err, ret) {
+                    db.admin.role(function(err, ret, message) {
+                        check(done, function() {
+                            role = ret.role;
+                        });
+                    });
                 });
             });
         });
-    })
 
-    describe("importFunctions", function() {
+    })
+   describe("importFunctions", function() {
 
         beforeEach(function(done) {
+            this.timeout(50000);
             db.collection.create("collection", function(err, ret) {
                 done();
             });
         })
 
         afterEach(function(done) {
-            this.timeout(5000);
+            this.timeout(50000);
             db.collection.delete("collection", function(err, ret) {
                 db.collection.delete("newCollection", function(err, ret) {
                     done();
@@ -54,6 +60,11 @@ describe("import", function() {
             })
         })
         it('importJSONData with single JSON Object and waitForSync', function(done) {
+            if (role !== "UNDEFINED") {
+                done();
+		       return;
+            }
+            this.timeout(50000);
 
             var options = {
                 "waitForSync": true,
@@ -85,6 +96,11 @@ describe("import", function() {
             });
         })
         it('importJSONData with single JSON Object into unknown collection', function(done) {
+            if (role !== "UNDEFINED") {
+                done();
+		       return;
+            }
+            this.timeout(50000);
 
             var options = {
                 "waitForSync": true,
@@ -115,6 +131,12 @@ describe("import", function() {
             });
         })
         it('importJSONData with single JSON Object, with one error, we create the collection as well', function(done) {
+            if (role !== "UNDEFINED") {
+                done();
+		       return;
+            }
+
+            this.timeout(50000);
 
             var options = {
                 "waitForSync": true,
@@ -148,8 +170,12 @@ describe("import", function() {
             });
         })
         it('importJSONData with single JSON Object, without options', function(done) {
+            if (role !== "UNDEFINED") {
+                done();
+		       return;
+            }
 
-
+            this.timeout(50000);
             var data = [{
                 "_key": "abcuu",
                 "value1": 25,
@@ -176,8 +202,12 @@ describe("import", function() {
             });
         })
         it('importJSONData with single JSON Object, without options and with default collection', function(done) {
+            if (role !== "UNDEFINED") {
+                done();
+		       return;
+            }
 
-
+            this.timeout(50000);
             var data = [{
                 "_key": "abcww",
                 "value1": 25,
@@ -192,14 +222,7 @@ describe("import", function() {
                     "short": "short name"
                 }
             }];
-
-            db = arango.Connection({
-                _name: "newDatabase",
-                _server: {
-                    hostname: "localhost"
-                },
-                _collection: "collection"
-            });
+            db = db.use('/newDatabase:collection');
             db.import.importJSONData(data, function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(false);
@@ -210,6 +233,12 @@ describe("import", function() {
             });
         })
         it('importJSONData with single JSON Object, with options and with default collection', function(done) {
+            if (role !== "UNDEFINED") {
+                done();
+		       return;
+            }
+
+            this.timeout(50000);
 
             var options = {
                 "waitForSync": true
@@ -241,6 +270,12 @@ describe("import", function() {
             });
         })
         it('importJSONData with single JSON Object and complete. Provoke a unique constraint violation and expect a 409', function(done) {
+            if (role !== "UNDEFINED") {
+                done();
+		       return;
+            }
+
+            this.timeout(50000);
 
             var options = {
                 "waitForSync": true,
@@ -262,12 +297,7 @@ describe("import", function() {
                     "short": "short name"
                 }
             }];
-            db = arango.Connection({
-                _name: "newDatabase",
-                _server: {
-                    hostname: "localhost"
-                }
-            });
+            db = db.use('/newDatabase');
 
             db.import.importJSONData("collection", data, options, function(err, ret, message) {
                 check(done, function() {
@@ -277,6 +307,12 @@ describe("import", function() {
             });
         })
         it('importValueList with single JSON Object and waitForSync', function(done) {
+            if (role !== "UNDEFINED") {
+                done();
+		       return;
+            }
+
+            this.timeout(50000);
 
             var options = {
                 "waitForSync": true,
@@ -296,6 +332,12 @@ describe("import", function() {
             });
         })
         it('importValueList with single JSON Object into unknown collection', function(done) {
+            if (role !== "UNDEFINED") {
+                done();
+		       return;
+            }
+
+            this.timeout(50000);
 
             var options = {
                 "waitForSync": true,
@@ -314,6 +356,12 @@ describe("import", function() {
             });
         })
         it('importValueList with single JSON Object, with one error, we create the collection as well', function(done) {
+            if (role !== "UNDEFINED") {
+                done();
+		       return;
+            }
+
+            this.timeout(50000);
 
             var options = {
                 "waitForSync": true,
@@ -334,6 +382,12 @@ describe("import", function() {
             });
         })
         it('importValueList with single JSON Object and complete. Provoke a unique constraint violation and expect a 409', function(done) {
+            if (role !== "UNDEFINED") {
+                done();
+		       return;
+            }
+
+            this.timeout(50000);
 
             var options = {
                 "waitForSync": true,
@@ -351,8 +405,12 @@ describe("import", function() {
             });
         })
         it('importValueList with single JSON Object, without options', function(done) {
+            if (role !== "UNDEFINED") {
+                done();
+		       return;
+            }
 
-
+            this.timeout(50000);
             var options = {
                 "waitForSync": true,
                 "details": true
@@ -370,17 +428,14 @@ describe("import", function() {
             });
         })
         it('importValueList with single JSON Object, without options and with default collection', function(done) {
+            if (role !== "UNDEFINED") {
+                done();
+		       return;
+            }
 
-
+            this.timeout(50000);
             var data = '[ "_key", "value1", "value2" ]\n\n\n[ "abczz", 25, "test" ]\n[ "aabcdww", 253, "stest" ]'
-
-            db = arango.Connection({
-                _name: "newDatabase",
-                _server: {
-                    hostname: "localhost"
-                },
-                _collection: "collection"
-            });
+            db = db.use('/newDatabase:collection');
             db.import.importValueList(data, function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(false);
@@ -390,6 +445,12 @@ describe("import", function() {
             });
         })
         it('importValueList with single JSON Object, with options and with default collection', function(done) {
+            if (role !== "UNDEFINED") {
+                done();
+		       return;
+            }
+
+            this.timeout(50000);
 
             var options = {
                 "waitForSync": true,

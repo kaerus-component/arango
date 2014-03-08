@@ -1,7 +1,7 @@
 var arango, db;
-
+var port;
 try {
-    arango = require('arango')
+    arango = require('arangojs')
 } catch (e) {
     arango = require('..')
 }
@@ -19,18 +19,19 @@ function check(done, f) {
 
 describe("user", function() {
 
-
     before(function(done) {
-        this.timeout(20000);
-        db = arango.Connection("http://127.0.0.1:8529/_system");
+        if (typeof window !== "undefined") {
+            port = window.port;
+        } else {
+            port = require('./port.js');
+            port = port.port;
+        }
+
+        this.timeout(50000);
+        db = arango.Connection("http://127.0.0.1:"+port+"/_system");
         db.database.delete("newDatabase", function(err, ret) {
             db.database.create("newDatabase", function(err, ret) {
-                db = arango.Connection({
-                    _name: "newDatabase",
-                    _server: {
-                        hostname: "localhost"
-                    }
-                });
+                db = db.use('/newDatabase');
                 done();
             });
         });
@@ -38,7 +39,7 @@ describe("user", function() {
     })
 
     it('create a user', function(done) {
-        this.timeout(20000);
+        this.timeout(50000);
         db.user.create("hans", "passwordHans", true, {
             "vorname": "hans",
             "nachname": "otto"
@@ -51,7 +52,7 @@ describe("user", function() {
     })
 
     it('create a user', function(done) {
-
+        this.timeout(50000);
         db.user.create("hans2", "passwordHans2", true, {
             "vorname": "hans2",
             "nachname": "otto2"
@@ -64,7 +65,7 @@ describe("user", function() {
     })
 
     it('create an already existing user', function(done) {
-
+        this.timeout(50000);
         db.user.create("hans", "passwordHans", true, {
             "vorname": "hans",
             "nachname": "otto"
@@ -77,7 +78,7 @@ describe("user", function() {
     })
 
     it('get user', function(done) {
-
+        this.timeout(50000);
         db.user.get("hans", function(err, ret, message) {
             check(done, function() {
                 ret.error.should.equal(false);
@@ -86,7 +87,7 @@ describe("user", function() {
         });
     })
     it('get non existing user', function(done) {
-
+        this.timeout(50000);
         db.user.get("hansGibtsNicht", function(err, ret, message) {
             check(done, function() {
                 ret.error.should.equal(true);
@@ -96,7 +97,7 @@ describe("user", function() {
     })
 
     it('delete user', function(done) {
-
+        this.timeout(50000);
         db.user.delete("hans2", function(err, ret, message) {
             check(done, function() {
                 ret.error.should.equal(false);
@@ -105,7 +106,7 @@ describe("user", function() {
         });
     })
     it('delete non existing user', function(done) {
-
+        this.timeout(50000);
         db.user.delete("hansGibtsNicht", function(err, ret, message) {
             check(done, function() {
                 ret.error.should.equal(true);
@@ -115,7 +116,7 @@ describe("user", function() {
     })
 
     it('patch non existing user', function(done) {
-
+        this.timeout(50000);
         db.user.patch("hans2", "newPassword", function(err, ret, message) {
             check(done, function() {
                 ret.error.should.equal(true);
@@ -124,7 +125,7 @@ describe("user", function() {
         });
     })
     it('patch user', function(done) {
-
+        this.timeout(50000);
         db.user.patch("hans", "newPassword", false, {
             "nachname": "otto-müller",
             "married": true
@@ -136,7 +137,7 @@ describe("user", function() {
         });
     })
     it('get user to verify last patch', function(done) {
-
+        this.timeout(50000);
         db.user.get("hans", function(err, ret, message) {
             check(done, function() {
                 ret.error.should.equal(false);
@@ -149,7 +150,7 @@ describe("user", function() {
     })
 
     it('put non existing user', function(done) {
-
+        this.timeout(50000);
         db.user.put("hans2", "newPassword", function(err, ret, message) {
             check(done, function() {
                 ret.error.should.equal(true);
@@ -158,7 +159,7 @@ describe("user", function() {
         });
     })
     it('put user', function(done) {
-
+        this.timeout(50000);
         db.user.put("hans", "newPassword", false, {
             "married": false,
             "sad": true
@@ -170,7 +171,7 @@ describe("user", function() {
         });
     })
     it('get user to verify last put', function(done) {
-
+        this.timeout(50000);
         db.user.get("hans", function(err, ret, message) {
             check(done, function() {
                 ret.extra.should.not.have.property("nachname");

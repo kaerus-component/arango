@@ -1,6 +1,8 @@
 node_modules
+build
+documentation
 .DS_Store
 components
-build
 *~
 *.log
+test/port.js

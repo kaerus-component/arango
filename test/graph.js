@@ -1,8 +1,8 @@
 var arango, db, verticescollection, edgecollection, vertices = [],
     edges = [];
-
+var port;
 try {
-    arango = require('arango')
+    arango = require('arangojs')
 } catch (e) {
     arango = require('..')
 }
@@ -21,18 +21,20 @@ describe("graph", function() {
 
 
     before(function(done) {
-        this.timeout(30000);
+        if (typeof window !== "undefined") {
+            port = window.port;
+        } else {
+            port = require('./port.js');
+            port = port.port;
+        }
+
+        this.timeout(50000);
         vertices = [];
         edges = [];
-        db = arango.Connection("http://127.0.0.1:8529/_system");
+        db = arango.Connection("http://127.0.0.1:"+port+"/_system");
         db.database.delete("newDatabase", function(err, ret) {
             db.database.create("newDatabase", function(err, ret) {
-                db = arango.Connection({
-                    _name: "newDatabase",
-                    _server: {
-                        hostname: "localhost"
-                    }
-                });
+                db = db.use('/newDatabase');
                 db.collection.create("edgeCollection", {
                     "type": 3
                 }, function(err, ret) {
@@ -85,25 +87,37 @@ describe("graph", function() {
     })
 
     describe("graphFunctions", function() {
+        it('setProperties of graph collection', function(done) {
+            this.timeout(50000);
+            db.collection.setProperties("_graphs", {waitForSync : false}, function(err, ret, message) {
+                check(done, function() {
+                    ret.error.should.equal(false);
+                    message.status.should.equal(200);
+                });
+            });
+        })
 
         it('create a graph', function(done) {
+            this.timeout(50000);
+            db = db.use('/newDatabase');
             db.graph.create("graph1", verticescollection.name, edgecollection.name, true, function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(false);
-                    message.status.should.equal(201);
+                    //message.status.should.equal(201);
                 });
             });
         })
         it('create another graph', function(done) {
+            this.timeout(50000);
             db.graph.waitForSync(false).create("graph2", "hans", "dampf", function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(false);
-                    //Assertion currently not working , bug in Arango DB
                     //message.status.should.equal(202);
                 });
             });
         })
         it('list graphs', function(done) {
+            this.timeout(50000);
             db.graph.list(function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(false);
@@ -112,6 +126,7 @@ describe("graph", function() {
             });
         })
         it('get graph', function(done) {
+            this.timeout(50000);
             db.graph.get("graph1", function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(false);
@@ -120,24 +135,25 @@ describe("graph", function() {
             });
         })
         it('create a graph without waitForSync', function(done) {
+            this.timeout(50000);
             db.graph.create("graph3", "bla", "blub", false, function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(false);
-                    //Assertion currently not working , bug in Arango DB
                     //message.status.should.equal(202);
                 });
             });
         })
         it('delete graph  without waitForSync', function(done) {
+            this.timeout(50000);
             db.graph.delete("graph3", false, function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(false);
-                    //Assertion currently not working , bug in Arango DB
                     //message.status.should.equal(202);
                 });
             });
         })
         it('request all neighbouring edges of a vertex', function(done) {
+            this.timeout(50000);
             db.graph.getEdgesForVertex("graph1", vertices[1]._id, null, function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(false);
@@ -149,6 +165,7 @@ describe("graph", function() {
         })
 
         it('request all neighbouring edges of a vertex with batchsize 1 and count', function(done) {
+            this.timeout(50000);
             db.graph.getEdgesForVertex("graph1", vertices[1]._id, {
                 "batchSize": 1,
                 "count": true
@@ -162,6 +179,7 @@ describe("graph", function() {
             });
         })
         it('request all neighbouring edges of a vertex using filter direction', function(done) {
+            this.timeout(50000);
             db.graph.getEdgesForVertex("graph1", vertices[1]._id, {
                 "filter": {
                     "direction": "in"
@@ -176,6 +194,7 @@ describe("graph", function() {
             });
         })
         it('request all neighbouring edges of a vertex using filter properties', function(done) {
+            this.timeout(50000);
             db.graph.getEdgesForVertex("graph1", vertices[1]._id, {
                 "filter": {
                     "properties": {
@@ -195,6 +214,7 @@ describe("graph", function() {
         })
 
         it('request all neighbouring vertices of a vertex', function(done) {
+            this.timeout(50000);
             db.graph.getNeighbourVertices("graph1", vertices[1]._id, null, function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(false);
@@ -206,6 +226,7 @@ describe("graph", function() {
         })
 
         it('request all neighbouring vertices of a vertex with batchsize 1 and count', function(done) {
+            this.timeout(50000);
             db.graph.getNeighbourVertices("graph1", vertices[1]._id, {
                 "batchSize": 1,
                 "count": true
@@ -219,6 +240,7 @@ describe("graph", function() {
             });
         })
         it('request all neighbouring vertices of a vertex using filter direction', function(done) {
+            this.timeout(50000);
             db.graph.getNeighbourVertices("graph1", vertices[1]._id, {
                 "filter": {
                     "direction": "in"
@@ -233,6 +255,7 @@ describe("graph", function() {
             });
         })
         it('request all neighbouring vertices of a vertex using filter properties', function(done) {
+            this.timeout(50000);
             db.graph.getNeighbourVertices("graph1", vertices[1]._id, {
                 "filter": {
                     "properties": {
@@ -252,6 +275,7 @@ describe("graph", function() {
         })
 
         it('request all edges of a graph', function(done) {
+            this.timeout(50000);
             db.graph.edges("graph1", null, function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(false);
@@ -263,6 +287,7 @@ describe("graph", function() {
         })
 
         it('request all edges of a graph with batchsize 1 and count', function(done) {
+            this.timeout(50000);
             db.graph.edges("graph1", {
                 "batchSize": 1,
                 "count": true
@@ -276,6 +301,7 @@ describe("graph", function() {
             });
         })
         it('request all edges of a graph using filter properties', function(done) {
+            this.timeout(50000);
             db.graph.edges("graph1", {
                 "filter": {
                     "properties": {
@@ -295,6 +321,7 @@ describe("graph", function() {
         })
 
         it('request all vertices of a graph', function(done) {
+            this.timeout(50000);
             db.graph.vertices("graph1", null, function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(false);
@@ -306,6 +333,7 @@ describe("graph", function() {
         })
 
         it('request all vertices of a graph with batchsize 1 and count', function(done) {
+            this.timeout(50000);
             db.graph.vertices("graph1", {
                 "batchSize": 1,
                 "count": true
@@ -319,6 +347,7 @@ describe("graph", function() {
             });
         })
         it('request all vertices of a graph using filter properties', function(done) {
+            this.timeout(50000);
             db.graph.vertices("graph1", {
                 "filter": {
                     "properties": {
@@ -339,6 +368,7 @@ describe("graph", function() {
 
 
         it('lets get a non existing vertex"', function(done) {
+            this.timeout(50000);
             db.graph.vertex.get("graph1", "nonExisting", function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(true);
@@ -347,6 +377,7 @@ describe("graph", function() {
             });
         })
         it('lets get a vertex with "match" header == false and correct revision"', function(done) {
+            this.timeout(50000);
             var options = {};
             options.match = false;
             options.rev = vertices[1]._rev;
@@ -357,6 +388,7 @@ describe("graph", function() {
             });
         })
         it('lets get a vertex with "match" header == false and wrong revision"', function(done) {
+            this.timeout(50000);
             var options = {};
             options.match = false;
             options.rev = vertices[1]._rev + 1;
@@ -367,6 +399,7 @@ describe("graph", function() {
             });
         })
         it('lets get a vertex with "match" header and correct revision"', function(done) {
+            this.timeout(50000);
             var options = {};
             options.match = true;
             options.rev = vertices[1]._rev;
@@ -377,6 +410,7 @@ describe("graph", function() {
             });
         })
         it('lets get a vertex with "match" header and wrong revision', function(done) {
+            this.timeout(50000);
             var options = {};
             options.match = true;
             options.rev = vertices[1]._rev + 1;
@@ -388,6 +422,7 @@ describe("graph", function() {
         })
 
         it('lets patch a non existing vertex"', function(done) {
+            this.timeout(50000);
             var data = {
                 "newKey": "newValue"
             };
@@ -399,6 +434,7 @@ describe("graph", function() {
             });
         })
         it('lets patch a vertex with "match" header == false and wrong revision"', function(done) {
+            this.timeout(50000);
             var data = {
                 "newKey": "newValue"
             };
@@ -413,6 +449,7 @@ describe("graph", function() {
             });
         })
         it('lets patch a vertex with "match" header and correct revision and the waitForSync param"', function(done) {
+            this.timeout(50000);
             var data = {
                 "newKey": "newValue"
             };
@@ -428,6 +465,7 @@ describe("graph", function() {
             });
         })
         it('lets patch a vertex with "match" header and wrong revision', function(done) {
+            this.timeout(50000);
             var data = {
                 "newKey": "newValue"
             };
@@ -441,7 +479,7 @@ describe("graph", function() {
             });
         })
         it('lets patch a vertex and not keep null values', function(done) {
-            this.timeout(20000)
+            this.timeout(50000);
             var data = {
                 "newKey": "newValue",
                 "key3": null
@@ -457,7 +495,7 @@ describe("graph", function() {
         })
 
         it('lets patch a vertex and not keep null values with keepNUll and wailForSync functions', function(done) {
-            this.timeout(20000)
+            this.timeout(50000);
             var data = {
                 "newKey": "newValue",
                 "key3": null
@@ -470,6 +508,7 @@ describe("graph", function() {
         })
 
         it('lets verify the last patch', function(done) {
+            this.timeout(50000);
             db.graph.vertex.get("graph1", vertices[1]._id, function(err, ret, message) {
                 check(done, function() {
                     ret.vertex.should.not.have.property("key3");
@@ -479,6 +518,7 @@ describe("graph", function() {
         })
 
         it('lets put a non existing vertex"', function(done) {
+            this.timeout(50000);
             var data = {
                 "newKey": "newValue"
             };
@@ -490,6 +530,7 @@ describe("graph", function() {
             });
         })
         it('lets put a vertex with "match" header == false and wrong revision"', function(done) {
+            this.timeout(50000);
             var data = {
                 "newKey": "newValue"
             };
@@ -504,6 +545,7 @@ describe("graph", function() {
             });
         })
         it('lets put a vertex with "match" header and correct revision and the waitForSync param"', function(done) {
+            this.timeout(50000);
             var data = {
                 "newKey": "newValue"
             };
@@ -519,6 +561,7 @@ describe("graph", function() {
             });
         })
         it('lets put a vertex with "match" header and wrong revision', function(done) {
+            this.timeout(50000);
             var data = {
                 "newKey": "newValue"
             };
@@ -532,6 +575,7 @@ describe("graph", function() {
             });
         })
         it('lets put a vertex with "match" header', function(done) {
+            this.timeout(50000);
             var data = {
                 "newKey": "newValue"
             };
@@ -543,6 +587,7 @@ describe("graph", function() {
             });
         })
         it('lets verify the last put', function(done) {
+            this.timeout(50000);
             db.graph.vertex.get("graph1", vertices[1]._id, function(err, ret, message) {
                 check(done, function() {
                     ret.vertex.should.not.have.property("key3");
@@ -554,6 +599,7 @@ describe("graph", function() {
         })
 
         it('lets delete a non existing vertex"', function(done) {
+            this.timeout(50000);
             db.graph.vertex.delete("graph1", vertices[1]._id + 200, function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(true);
@@ -562,6 +608,7 @@ describe("graph", function() {
             });
         })
         it('lets delete a vertex with "match" header and wrong revision', function(done) {
+            this.timeout(50000);
             var options = {};
             options.match = true;
             options.rev = vertices[1]._rev + 1;
@@ -573,6 +620,7 @@ describe("graph", function() {
         })
 
         it('lets delete a vertex with "match" header == false and wrong revision"', function(done) {
+            this.timeout(50000);
             var options = {};
             options.match = false;
             options.rev = vertices[1]._rev + 1;
@@ -583,6 +631,7 @@ describe("graph", function() {
             });
         })
         it('create a vertex', function(done) {
+            this.timeout(50000);
             db.graph.vertex.create("graph1", {
                 "key1": "val1",
                 "key2": "val2",
@@ -597,6 +646,7 @@ describe("graph", function() {
             });
         })
         it('lets delete a vertex with "match" header and correct revision and the waitForSync param"', function(done) {
+            this.timeout(50000);
             var options = {};
             options.match = true;
             options.waitForSync = true;
@@ -608,6 +658,7 @@ describe("graph", function() {
             });
         })
         it('create a vertex', function(done) {
+            this.timeout(50000);
             db.graph.vertex.create("graph1", {
                 "key1": "val1",
                 "key2": "val2",
@@ -624,6 +675,7 @@ describe("graph", function() {
 
 
         it('create a edge', function(done) {
+            this.timeout(50000);
             db.graph.edge.create("graph1", {
                 "key1": "val1",
                 "key2": "val2",
@@ -638,6 +690,7 @@ describe("graph", function() {
             });
         })
         it('create another edge', function(done) {
+            this.timeout(50000);
             db.graph.edge.create("graph1", {
                 "key1": "val1",
                 "key3": "val3"
@@ -650,6 +703,7 @@ describe("graph", function() {
             });
         })
         it('create another edge', function(done) {
+            this.timeout(50000);
             db.graph.edge.create("graph1", {
                 "key1": "val1",
                 "key2": "val2"
@@ -663,6 +717,7 @@ describe("graph", function() {
         })
 
         it('lets get a non existing edge', function(done) {
+            this.timeout(50000);
             db.graph.edge.get("graph1", edges[0]._id + 200, function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(true);
@@ -672,6 +727,7 @@ describe("graph", function() {
         })
 
         it('request all edges of a graph', function(done) {
+            this.timeout(50000);
             db.graph.edges("graph1", null, function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(false);
@@ -682,6 +738,7 @@ describe("graph", function() {
             });
         })
         it('lets get a edge with "match" header == false and correct revision"', function(done) {
+            this.timeout(50000);
             var options = {};
             options.match = false;
             options.rev = edges[0]._rev;
@@ -692,6 +749,7 @@ describe("graph", function() {
             });
         })
         it('lets get a edge with "match" header == false and wrong revision"', function(done) {
+            this.timeout(50000);
             var options = {};
             options.match = false;
             options.rev = edges[0]._rev + 1;
@@ -702,6 +760,7 @@ describe("graph", function() {
             });
         })
         it('lets get a edge with "match" header and correct revision"', function(done) {
+            this.timeout(50000);
             var options = {};
             options.match = true;
             options.rev = edges[0]._rev;
@@ -712,6 +771,7 @@ describe("graph", function() {
             });
         })
         it('lets get a edge with "match" header and wrong revision', function(done) {
+            this.timeout(50000);
             var options = {};
             options.match = true;
             options.rev = edges[0]._rev + 1;
@@ -723,6 +783,7 @@ describe("graph", function() {
         })
 
         it('lets patch a non existing edge"', function(done) {
+            this.timeout(50000);
             var data = {
                 "newKey": "newValue"
             };
@@ -734,6 +795,7 @@ describe("graph", function() {
             });
         })
         it('lets patch a edge with "match" header == false and wrong revision"', function(done) {
+            this.timeout(50000);
             var data = {
                 "newKey": "newValue"
             };
@@ -748,6 +810,7 @@ describe("graph", function() {
             });
         })
         it('lets patch a edge with "match" header and correct revision and the waitForSync param"', function(done) {
+            this.timeout(50000);
             var data = {
                 "newKey": "newValue"
             };
@@ -763,6 +826,7 @@ describe("graph", function() {
             });
         })
         it('lets patch a edge with "match" header and wrong revision', function(done) {
+            this.timeout(50000);
             var data = {
                 "newKey": "newValue"
             };
@@ -776,6 +840,7 @@ describe("graph", function() {
             });
         })
         it('lets patch a edge  keep null values', function(done) {
+            this.timeout(50000);
             this.timeout(20000)
             var data = {
                 "newKey": "newValue",
@@ -793,6 +858,7 @@ describe("graph", function() {
         })
 
         it('lets verify the last patch', function(done) {
+            this.timeout(50000);
             db.graph.edge.get("graph1", edges[0]._id, function(err, ret, message) {
                 check(done, function() {
                     ret.edge.should.not.have.property("key3");
@@ -802,6 +868,7 @@ describe("graph", function() {
         })
 
         it('lets put a non existing edge"', function(done) {
+            this.timeout(50000);
             var data = {
                 "newKey": "newValue"
             };
@@ -813,6 +880,7 @@ describe("graph", function() {
             });
         })
         it('lets put a edge with "match" header == false and wrong revision"', function(done) {
+            this.timeout(50000);
             var data = {
                 "newKey": "newValue"
             };
@@ -827,6 +895,7 @@ describe("graph", function() {
             });
         })
         it('lets put a edge with "match" header and correct revision and the waitForSync param"', function(done) {
+            this.timeout(50000);
             var data = {
                 "newKey": "newValue"
             };
@@ -842,6 +911,7 @@ describe("graph", function() {
             });
         })
         it('lets put a edge with "match" header and wrong revision', function(done) {
+            this.timeout(50000);
             var data = {
                 "newKey": "newValue"
             };
@@ -855,6 +925,7 @@ describe("graph", function() {
             });
         })
         it('lets verify the last put', function(done) {
+            this.timeout(50000);
             db.graph.edge.get("graph1", edges[0]._id, function(err, ret, message) {
                 check(done, function() {
                     ret.edge.should.not.have.property("key3");
@@ -866,6 +937,7 @@ describe("graph", function() {
         })
 
         it('lets delete a non existing edge"', function(done) {
+            this.timeout(50000);
             db.graph.edge.delete("graph1", edges[0]._id + 200, function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(true);
@@ -874,6 +946,7 @@ describe("graph", function() {
             });
         })
         it('lets delete a edge with "match" header and wrong revision', function(done) {
+            this.timeout(50000);
             var options = {};
             options.match = true;
             options.rev = edges[0]._rev + 1;
@@ -885,6 +958,7 @@ describe("graph", function() {
         })
 
         it('lets delete a edge with "match" header == false and wrong revision"', function(done) {
+            this.timeout(50000);
             var options = {};
             options.match = false;
             options.rev = edges[0]._rev + 1;
@@ -895,6 +969,7 @@ describe("graph", function() {
             });
         })
         it('create a edge', function(done) {
+            this.timeout(50000);
             db.graph.edge.create("graph1", edgecollection.id, vertices[0]._id, vertices[1]._id, {
                 "key1": "val1",
                 "key2": "val2",
@@ -908,6 +983,7 @@ describe("graph", function() {
             });
         })
         it('lets delete a edge with "match" header and correct revision and the waitForSync param"', function(done) {
+            this.timeout(50000);
             var options = {};
             options.match = true;
             options.waitForSync = true;
@@ -920,6 +996,7 @@ describe("graph", function() {
         })
 
         it('delete graph', function(done) {
+            this.timeout(50000);
             db.graph.delete("graph1", true, function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(false);

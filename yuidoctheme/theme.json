@@ -1,0 +1,4 @@
+{
+    "yuiGridsUrl": "./layouts/cssgrids-min.css",
+    "yuiSeedUrl": "./layouts/yui-min.js"
+}

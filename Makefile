@@ -6,10 +6,10 @@ BEAUTIFY = @./node_modules/.bin/js-beautify --config ./code.json
 UGLIFYJS = @./node_modules/.bin/uglifyjs
 KARMA = @./node_modules/.bin/karma
 MOCHA = @./node_modules/.bin/mocha
-
 LIB=$(wildcard lib/*.js)
 API=$(wildcard lib/api/*.js)
 TEST=$(wildcard test/*.js)
+ARANGOPORT=8529
 
 build: dependencies component
 
@@ -18,7 +18,7 @@ component:
 	$(COMPONENT) build -v
 	@echo "Building standalone web component"
 	$(COMPONENT) build -v -n $(NAME) -s $(NAME)
-	
+
 dependencies: node_modules components
 
 node_modules:
@@ -29,21 +29,38 @@ components:
 	@echo "Installing v$(COM_VER) component dependencies"
 	$(COMPONENT) install -v
 
-test: test-browser test-nodejs
 
+.PHONY: test
+test:
+	$(MAKE) test-browser ARANGOPORT=$(ARANGOPORT)
+	$(MAKE) test-nodejs ARANGOPORT=$(ARANGOPORT)
+
+.PHONY: test-nodejs
 test-nodejs: node_modules
+	@echo "(function () {if (typeof window !== 'undefined') {window.port = $(ARANGOPORT);} else {exports.port = $(ARANGOPORT);}}());"  > test/port.js
 	@echo "Running tests for nodejs"
 	$(MOCHA) --require should --reporter spec
+	@rm test/port.js
 
+
+.PHONY: test-browser
 test-browser: components component
 	@echo "Running tests for browser"
+	@npm i karma
+	@npm i karma-chai
+	@npm i karma-mocha
+	@echo "(function () {if (window) {window.port = $(ARANGOPORT);} else {exports.port = $(ARANGOPORT);}}());"  > test/port.js
 	$(KARMA) start --browsers Firefox test/karma/karma.conf.js
 	$(KARMA) start --browsers Chrome test/karma/karma.conf.js
+	@rm test/port.js
+
 
 docs: components component
 	@echo "Generating docs"
-	@npm install yuidocjs
-	@yuidoc -o ./documentation lib/
+	@yuidoc -o ./documentation lib/ -t yuidoctheme
+	@cp -a yuidoctheme/layouts documentation
+	@cp -a yuidoctheme/layouts documentation/classes
+	@cp -a yuidoctheme/layouts documentation/modules
 
 distclean:
 	@echo "Cleaning up build files"

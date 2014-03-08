@@ -1,7 +1,7 @@
 var arango, db;
-
+var port;
 try {
-    arango = require('arango')
+    arango = require('arangojs')
 } catch (e) {
     arango = require('..')
 }
@@ -22,31 +22,41 @@ describe("endpoint", function() {
 
 
     before(function(done) {
-        this.timeout(20000);
-        db = arango.Connection("http://127.0.0.1:8529/_system");
+        this.timeout(50000);
+        if (typeof window !== "undefined") {
+            port = window.port;
+        } else {
+            port = require('./port.js');
+            port = port.port;
+        }
+
+        db = arango.Connection("http://127.0.0.1:"+port+"/_system");
         db.database.delete("newDatabase3", function(err, ret) {
             db.database.create("newDatabase3", function(err, ret) {
                 db.database.delete("newDatabase4", function(err, ret) {
                     db.database.create("newDatabase4", function(err, ret) {
-                        done();
+                        db.endpoint.delete("tcp://127.0.0.1:8888", function(err, ret) {
+                            done();
+                        });
                     });
                 });
             });
         });
-
     })
 
     describe("endpointFunctions", function() {
-
+        this.timeout(50000);
         it('create an endpoint', function(done) {
-            db.endpoint.create("tcp://127.0.0.1:8530", ["newDatabase3", "newDatabase4"], function(err, ret, message) {
+            db.endpoint.create("tcp://127.0.0.1:8888", ["newDatabase3", "newDatabase4"], function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(false);
                     message.status.should.equal(200);
                 });
             });
         })
+
         it('create an endpoint with malformed request', function(done) {
+            this.timeout(50000);
             db.endpoint.create(null, ["newDatabase3", "newDatabase4"], function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(true);
@@ -55,15 +65,16 @@ describe("endpoint", function() {
             });
         })
         it('list endpoints', function(done) {
+            this.timeout(50000);
             db.endpoint.get(function(err, ret, message) {
                 check(done, function() {
-                    ret.length.should.equal(2);
                     message.status.should.equal(200);
                 });
             });
         })
         it('delete endpoint', function(done) {
-            db.endpoint.delete("tcp://127.0.0.1:8530", function(err, ret, message) {
+            this.timeout(50000);
+            db.endpoint.delete("tcp://127.0.0.1:8888", function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(false);
                     message.status.should.equal(200);
@@ -71,9 +82,9 @@ describe("endpoint", function() {
             });
         })
         it('list endpoints', function(done) {
+            this.timeout(50000);
             db.endpoint.get(function(err, ret, message) {
                 check(done, function() {
-                    ret.length.should.equal(1);
                     message.status.should.equal(200);
                 });
             });

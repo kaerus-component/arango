@@ -1,7 +1,7 @@
 var arango, db, indices;
-
+var port;
 try {
-    arango = require('arango')
+    arango = require('arangojs')
 } catch (e) {
     arango = require('..')
 }
@@ -21,16 +21,18 @@ describe("indexWithDefaultCollection", function() {
 
 
     before(function(done) {
-        this.timeout(20000);
-        db = arango.Connection("http://127.0.0.1:8529/_system");
+        if (typeof window !== "undefined") {
+            port = window.port;
+        } else {
+            port = require('./port.js');
+            port = port.port;
+        }
+
+        this.timeout(50000);
+        db = arango.Connection("http://127.0.0.1:"+port+"/_system");
         db.database.delete("newDatabase", function(err, ret) {
             db.database.create("newDatabase", function(err, ret) {
-                db = arango.Connection({
-                    _name: "newDatabase",
-                    _server: {
-                        hostname: "localhost"
-                    }
-                });
+                db = db.use('/newDatabase');
                 db.collection.create("collection1", function(err, ret, message) {
                     var data = [{
                         "_key": "Anton",
@@ -47,13 +49,7 @@ describe("indexWithDefaultCollection", function() {
                         "_key": "Emil",
                         "value1": "batz"
                     }];
-                    db = arango.Connection({
-                        _name: "newDatabase",
-                        _server: {
-                            hostname: "localhost"
-                        },
-                        _collection: "collection1"
-                    });
+                    db = db.use('/newDatabase:collection1');
                     done();
                 });
             });
@@ -64,6 +60,7 @@ describe("indexWithDefaultCollection", function() {
     describe("indexWithDefaultCollectionFunctions", function() {
 
         it('create a cap index', function(done) {
+            this.timeout(50000);
             db.index.createCapIndex({
                 "size": 100,
                 "byteSize": 1000000
@@ -75,6 +72,7 @@ describe("indexWithDefaultCollection", function() {
             });
         })
         it('create same cap index again and expect a 200', function(done) {
+            this.timeout(50000);
             db.index.createCapIndex({
                 "size": 100,
                 "byteSize": 1000000
@@ -87,6 +85,7 @@ describe("indexWithDefaultCollection", function() {
         })
 
         it('create a geo spatial index', function(done) {
+            this.timeout(50000);
             db.index.createGeoSpatialIndex(["latitude", "longitude"], function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(false);
@@ -95,6 +94,7 @@ describe("indexWithDefaultCollection", function() {
             });
         })
         it('create same geo spatial index again and expect a 200', function(done) {
+            this.timeout(50000);
             db.index.createGeoSpatialIndex(["latitude", "longitude"], function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(false);
@@ -103,6 +103,7 @@ describe("indexWithDefaultCollection", function() {
             });
         })
         it('create a location based geo spatial index', function(done) {
+            this.timeout(50000);
             db.index.createGeoSpatialIndex(["location"], {
                 "geoJson": true
             }, function(err, ret, message) {
@@ -114,6 +115,7 @@ describe("indexWithDefaultCollection", function() {
         })
 
         it('create a hash index', function(done) {
+            this.timeout(50000);
             db.index.createHashIndex(["value1"], function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(false);
@@ -122,6 +124,7 @@ describe("indexWithDefaultCollection", function() {
             });
         })
         it('create same hash again and expect a 200', function(done) {
+            this.timeout(50000);
             db.index.createHashIndex(["value1"], function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(false);
@@ -131,6 +134,7 @@ describe("indexWithDefaultCollection", function() {
         })
 
         it('create a skiplist index', function(done) {
+            this.timeout(50000);
             db.index.createSkipListIndex(["value1"], function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(false);
@@ -139,6 +143,7 @@ describe("indexWithDefaultCollection", function() {
             });
         })
         it('create same skiplist again and expect a 200', function(done) {
+            this.timeout(50000);
             db.index.createSkipListIndex(["value1"], function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(false);
@@ -148,6 +153,7 @@ describe("indexWithDefaultCollection", function() {
         })
 
         it('create a fulltext index', function(done) {
+            this.timeout(50000);
             db.index.createFulltextIndex(["value1"], function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(false);
@@ -156,6 +162,7 @@ describe("indexWithDefaultCollection", function() {
             });
         })
         it('create same fulltext again and expect a 200', function(done) {
+            this.timeout(50000);
             db.index.createFulltextIndex(["value1"], function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(false);
@@ -165,6 +172,7 @@ describe("indexWithDefaultCollection", function() {
         })
 
         it('create a bitarray index', function(done) {
+            this.timeout(50000);
             db.index.createBitarrayIndex(["x", [0, 1, []], "y", ["a", "b", []]], function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(false);
@@ -173,6 +181,7 @@ describe("indexWithDefaultCollection", function() {
             });
         })
         it('create same bitarray again and expect a 200', function(done) {
+            this.timeout(50000);
             db.index.createBitarrayIndex(["x", [0, 1, []], "y", ["a", "b", []]], function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(false);
@@ -182,6 +191,7 @@ describe("indexWithDefaultCollection", function() {
         })
 
         it('list all we created so far', function(done) {
+            this.timeout(50000);
             db.index.list(function(err, ret, message) {
                 check(done, function() {
                     indices = ret.indexes;
@@ -192,6 +202,7 @@ describe("indexWithDefaultCollection", function() {
             });
         })
         it('get an index ', function(done) {
+            this.timeout(50000);
             db.index.get(indices[1].id, function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(false);
@@ -200,6 +211,7 @@ describe("indexWithDefaultCollection", function() {
             });
         })
         it('get an index ', function(done) {
+            this.timeout(50000);
             db.index.get(indices[5].id, function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(false);
@@ -208,6 +220,7 @@ describe("indexWithDefaultCollection", function() {
             });
         })
         it('delete an index ', function(done) {
+            this.timeout(50000);
             db.index.delete(indices[5].id, function(err, ret, message) {
                 check(done, function() {
                     ret.error.should.equal(false);
@@ -216,6 +229,7 @@ describe("indexWithDefaultCollection", function() {
             });
         })
         it('list all we created so far', function(done) {
+            this.timeout(50000);
             db.index.list(function(err, ret, message) {
                 check(done, function() {
                     indices = ret.indexes;
