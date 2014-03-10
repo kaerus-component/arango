@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/triAGENS/ArangoDB-JavaScript.png)](https://travis-ci.org/triAGENS/ArangoDB-JavaScript)
+[![Build Status](https://travis-ci.org/kaerus-component/arango.png)](https://travis-ci.org/kaerus-component/arango)
 
 ArangoDB client
 ===============
