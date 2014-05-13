@@ -50,7 +50,7 @@ test-browser: components component
 	@npm i karma-chai
 	@npm i karma-mocha
 	@echo "(function () {if (window) {window.port = $(ARANGOPORT);} else {exports.port = $(ARANGOPORT);}}());"  > test/port.js
-	$(KARMA) start --browsers Firefox test/karma/karma.conf.js
+	$(KARMA) start --browsers PhantomJS test/karma/karma.conf.js
 	$(KARMA) start --browsers Chrome test/karma/karma.conf.js
 	@rm test/port.js
 
