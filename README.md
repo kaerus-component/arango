@@ -498,30 +498,24 @@ db.action.submit("hello").then(function(res){
 
 Transactions
 ------------
-Transactions are sent to arangodb using ```transaction.submit(collections,params,actions,options,callback)```.
-The `params` and `options` arguments are optional and can be omitted from the function call.
-The `options` argument can be used for altering http request headers if required.
+Transactions are sent to arangodb using ```transaction.submit(collections,action,params,options,callback)```.
+`collections` defines read/write access to collections used within the transaction.
+`action` is a serverside handler for the transaction.
+`params` can be used for passing optinal arguments to the transaction handler.
+`options` can be used for altering http request headers if required.
 
 ```javascript
   
-  db.collection.create("accounts").then(function(){
-    return this.join([
-      db.document.create("accounts",{ _key: "john", amount: 423 }),
-      db.document.create("accounts",{ _key: "fred", amount: 9 })
-    ]);
-  }).spread(function(john,fred){
+  db.collection.create("accounts").join([
+    db.document.create("accounts",{ _key: "john", amount: 423 }),
+    db.document.create("accounts",{ _key: "fred", amount: 9 })
+  ]).spread(function(collection,john,fred){
     console.log("john:", JSON.stringify(john));
     console.log("fred:", JSON.stringify(fred));
     
       return [{
         /* collections affected by this transaction */
-        write: "accounts"
-      },
-      {
-        /* transaction parameters passed to action */
-        user1: "fred",
-        user2: "john", 
-        amount: 10
+        write: collection.name
       },
       function (params) {
         /* note: this code runs in arangodb */
@@ -537,9 +531,16 @@ The `options` argument can be used for altering http request headers if required
         db.accounts.update(account1, { amount : account1.amount - amount });
         db.accounts.update(account2, { amount : account2.amount + amount });
 
-        /* will commit the transaction and return the value true */
+        /* commit the transaction */
         return true; 
-      }]
+      },
+      {
+        /* parameters passed to the transaction handler */
+        user1: "fred",
+        user2: "john", 
+        amount: 10
+      }];
+      /* submit the transaction */
   }).spread(db.transaction.submit).then(function(ret){
       console.log("Transaction success:", JSON.stringify(ret));
     },function(error){
