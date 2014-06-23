@@ -226,8 +226,21 @@ describe("cursor", function() {
         });
     })
 
+    it('using query string', function(done) {
+      this.timeout(50000);
+      var query = db.query.string("FOR u IN @@collection RETURN u");
+      query.exec({
+        '@collection': 'newCollection'
+      }, function(err, ret) {
+        check(done, function() {
+          ret.error.should.equal(false);
+          ret.code.should.equal(201);
+        });
+      });
+    })
+
     it('using query module', function(done) {
-		this.timeout(50000);
+		    this.timeout(50000);
         var query = db.query.
         for ('u'). in ('@@collection').
         return ('u');
