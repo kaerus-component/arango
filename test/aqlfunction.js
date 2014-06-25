@@ -1,19 +1,19 @@
 var arango, db;
 var port;
 try {
-    arango = require('arangojs')
+  arango = require('arangojs')
 } catch (e) {
-    arango = require('..')
+  arango = require('..')
 }
 
 function check(done, f) {
-    try {
-        f()
-        done()
-    } catch (e) {
-        console.log(e);
-        done(e)
-    }
+  try {
+    f()
+    done()
+  } catch (e) {
+    console.log(e);
+    done(e)
+  }
 }
 
 function filter(data) {
@@ -26,91 +26,91 @@ function filter(data) {
   return result;
 }
 
-describe("aqlfunction", function() {
-    if (typeof window !== "undefined") {
-        port = window.port;
-    } else {
-        port = require('./port.js');
-        port = port.port;
-    }
+describe("aqlfunction", function () {
+  if (typeof window !== "undefined") {
+    port = window.port;
+  } else {
+    port = require('./port.js');
+    port = port.port;
+  }
 
-    db = arango.Connection("http://127.0.0.1:" + port);
+  db = arango.Connection("http://127.0.0.1:" + port);
 
-    it('should be able to create an aql function', function(done) {
-        this.timeout(50000);
-        db.aqlfunction.create("javascripttest::temperature::celsiustofahrenheit",
-            "function (celsius) { return celsius * 1.8 + 32; }", null, function(err, ret) {
-                check(done, function() {
-                    ret.error.should.equal(false);
-                });
-            });
-    })
-    it('should be able to create another aql function', function(done) {
-        this.timeout(50000);
-        db.aqlfunction.create("javascripttest::temperature::celsiustofahrenheit2",
-            "function (celsius) { return celsius * 2.8 + 32; }", null, function(err, ret) {
-                check(done, function() {
-                    ret.error.should.equal(false);
-                });
-            });
-    })
-    it('should be able to create another aql function, different namespace', function(done) {
-        this.timeout(50000);
-        db.aqlfunction.create("javascripttest2::temperature::celsiustofahrenheit2",
-            "function (celsius) { return celsius * 2.8 + 32; }", null, function(err, ret) {
-                check(done, function() {
-                    ret.error.should.equal(false);
-                });
-            });
-    })
-    it('should be able to get all aql function', function(done) {
-        this.timeout(50000);
-        db.aqlfunction.get(null, function(err, ret) {
-            check(done, function() {
-                filter(ret).length.should.equal(3);
-            });
+  it('should be able to create an aql function', function (done) {
+    this.timeout(50000);
+    db.aqlfunction.create("javascripttest::temperature::celsiustofahrenheit",
+      "function (celsius) { return celsius * 1.8 + 32; }", null, function (err, ret) {
+        check(done, function () {
+          ret.error.should.equal(false);
         });
-    })
-    it('should be able to get all aql functions in one namespace', function(done) {
-        this.timeout(50000);
-        db.aqlfunction.get("javascripttest", function(err, ret) {
-            check(done, function() {
-                filter(ret).length.should.equal(2);
-            });
+      });
+  })
+  it('should be able to create another aql function', function (done) {
+    this.timeout(50000);
+    db.aqlfunction.create("javascripttest::temperature::celsiustofahrenheit2",
+      "function (celsius) { return celsius * 2.8 + 32; }", null, function (err, ret) {
+        check(done, function () {
+          ret.error.should.equal(false);
         });
-    })
-    it('should delete all aql functions in one namespace', function(done) {
-        this.timeout(50000);
-        db.aqlfunction.delete("javascripttest", true, function(err, ret) {
-            check(done, function() {
-                ret.error.should.equal(false);
-                ret.code.should.equal(200);
-            });
+      });
+  })
+  it('should be able to create another aql function, different namespace', function (done) {
+    this.timeout(50000);
+    db.aqlfunction.create("javascripttest2::temperature::celsiustofahrenheit2",
+      "function (celsius) { return celsius * 2.8 + 32; }", null, function (err, ret) {
+        check(done, function () {
+          ret.error.should.equal(false);
         });
-    })
-    it('should be able to get all aql function, one should be left', function(done) {
-        this.timeout(50000);
-        db.aqlfunction.get(null, function(err, ret) {
-            check(done, function() {
-                filter(ret).length.should.equal(1);
-            });
-        });
-    })
-    it('should delete a aql function by its name', function(done) {
-        this.timeout(50000);
-        db.aqlfunction.delete("javascripttest2", true, function(err, ret) {
-            check(done, function() {
-                ret.error.should.equal(false);
-                ret.code.should.equal(200);
-            });
-        });
-    })
-    it('should be able to get all aql function, none should be left', function(done) {
-        this.timeout(50000);
-        db.aqlfunction.get(null, function(err, ret) {
-            check(done, function() {
-                filter(ret).length.should.equal(0);
-            });
-        });
-    })
+      });
+  })
+  it('should be able to get all aql function', function (done) {
+    this.timeout(50000);
+    db.aqlfunction.get(null, function (err, ret) {
+      check(done, function () {
+        filter(ret).length.should.equal(3);
+      });
+    });
+  })
+  it('should be able to get all aql functions in one namespace', function (done) {
+    this.timeout(50000);
+    db.aqlfunction.get("javascripttest", function (err, ret) {
+      check(done, function () {
+        filter(ret).length.should.equal(2);
+      });
+    });
+  })
+  it('should delete all aql functions in one namespace', function (done) {
+    this.timeout(50000);
+    db.aqlfunction.delete("javascripttest", true, function (err, ret) {
+      check(done, function () {
+        ret.error.should.equal(false);
+        ret.code.should.equal(200);
+      });
+    });
+  })
+  it('should be able to get all aql function, one should be left', function (done) {
+    this.timeout(50000);
+    db.aqlfunction.get(null, function (err, ret) {
+      check(done, function () {
+        filter(ret).length.should.equal(1);
+      });
+    });
+  })
+  it('should delete a aql function by its name', function (done) {
+    this.timeout(50000);
+    db.aqlfunction.delete("javascripttest2", true, function (err, ret) {
+      check(done, function () {
+        ret.error.should.equal(false);
+        ret.code.should.equal(200);
+      });
+    });
+  })
+  it('should be able to get all aql function, none should be left', function (done) {
+    this.timeout(50000);
+    db.aqlfunction.get(null, function (err, ret) {
+      check(done, function () {
+        filter(ret).length.should.equal(0);
+      });
+    });
+  })
 })
