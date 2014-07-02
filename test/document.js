@@ -69,10 +69,12 @@ describe("document", function () {
         });
       });
     })
+
     db.admin.role(function (err, ret, message) {
       check(done, function () {
         role = ret.role;
         if (role === "UNDEFINED") {
+
           it('create another document and the collection along with it', function (done) {
             this.timeout(50000);
             var options = {};
@@ -88,15 +90,31 @@ describe("document", function () {
               });
             });
           })
-          it('lets rotate the journal of "newCollection"', function (done) {
+
+          it('lets check that rotation of WAL content is not possible', function (done) {
             this.timeout(50000);
             db.collection.rotate(collection.id, function (err, ret, message) {
               check(done, function () {
-                ret.error.should.equal(false);
-                message.status.should.equal(200);
+                ret.error.should.equal(true);
+                message.status.should.equal(400);
               });
             });
           })
+
+          it('lets rotate the journal of "newCollection"', function (done) {
+            this.timeout(50000);
+            // First flush the WAL otherwise rotation has no effect
+            db.admin.walFlush(false, true, function(errWal, retWal, messageWal) {
+              db.collection.rotate(collection.id, function (err, ret, message) {
+                check(done, function () {
+                  messageWal.status.should.equal(200);
+                  retWal.error.should.equal(false);
+                  ret.error.should.equal(false);
+                  message.status.should.equal(200);
+                });
+              });
+            });
+          });
         }
       });
     });
