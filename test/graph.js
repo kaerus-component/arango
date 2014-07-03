@@ -103,7 +103,7 @@ describe("graph", function () {
       db.graph.create("graph1", verticescollection.name, edgecollection.name, true, function (err, ret, message) {
         check(done, function () {
           ret.error.should.equal(false);
-          //message.status.should.equal(201);
+          message.status.should.equal(201);
         });
       });
     })
@@ -112,7 +112,7 @@ describe("graph", function () {
       db.graph.waitForSync(false).create("graph2", "hans", "dampf", function (err, ret, message) {
         check(done, function () {
           ret.error.should.equal(false);
-          //message.status.should.equal(202);
+          message.status.should.equal(201);
         });
       });
     })
@@ -369,9 +369,9 @@ describe("graph", function () {
 
     it('lets get a non existing vertex"', function (done) {
       this.timeout(50000);
-      db.graph.vertex.get("graph1", "nonExisting", function (err, ret, message) {
+      db.graph.vertex.get("graph1", "verticescollection/nonExisting", function (err, ret, message) {
         check(done, function () {
-          ret.error.should.equal(true);
+          ret.error.should.equal("document not found");
           message.status.should.equal(404);
         });
       });
@@ -428,7 +428,7 @@ describe("graph", function () {
       };
       db.graph.vertex.patch("graph1", vertices[1]._id + 200, data, function (err, ret, message) {
         check(done, function () {
-          ret.error.should.equal(true);
+          ret.error.should.equal("document not found");
           message.status.should.equal(404);
         });
       });
@@ -460,7 +460,7 @@ describe("graph", function () {
       db.graph.vertex.patch("graph1", vertices[1]._id, data, options, function (err, ret, message) {
         check(done, function () {
           vertices[1]._rev = ret.vertex._rev;
-          message.status.should.equal(201);
+          message.status.should.equal(200);
         });
       });
     })
@@ -489,7 +489,7 @@ describe("graph", function () {
       options.keepNull = "false";
       db.graph.vertex.patch("graph1", vertices[1]._id, data, options, function (err, ret, message) {
         check(done, function () {
-          message.status.should.equal(201);
+          message.status.should.equal(200);
         });
       });
     })
@@ -502,7 +502,7 @@ describe("graph", function () {
       };
       db.graph.keepNull(false).waitForSync(true).vertex.patch("graph1", vertices[1]._id, data, function (err, ret, message) {
         check(done, function () {
-          message.status.should.equal(201);
+          message.status.should.equal(200);
         });
       });
     })
@@ -524,7 +524,7 @@ describe("graph", function () {
       };
       db.graph.vertex.put("graph1", vertices[1]._id + 200, data, function (err, ret, message) {
         check(done, function () {
-          ret.error.should.equal(true);
+          ret.error.should.equal("document not found");
           message.status.should.equal(404);
         });
       });
@@ -556,7 +556,7 @@ describe("graph", function () {
       db.graph.vertex.put("graph1", vertices[1]._id, data, options, function (err, ret, message) {
         check(done, function () {
           vertices[1]._rev = ret.vertex._rev;
-          message.status.should.equal(201);
+          message.status.should.equal(200);
         });
       });
     })
@@ -602,7 +602,7 @@ describe("graph", function () {
       this.timeout(50000);
       db.graph.vertex.delete("graph1", vertices[1]._id + 200, function (err, ret, message) {
         check(done, function () {
-          ret.error.should.equal(true);
+          ret.error.should.equal("document not found");
           message.status.should.equal(404);
         });
       });
@@ -720,7 +720,7 @@ describe("graph", function () {
       this.timeout(50000);
       db.graph.edge.get("graph1", edges[0]._id + 200, function (err, ret, message) {
         check(done, function () {
-          ret.error.should.equal(true);
+          ret.error.should.equal("document not found");
           message.status.should.equal(404);
         });
       });
@@ -789,7 +789,7 @@ describe("graph", function () {
       };
       db.graph.edge.patch("graph1", edges[0]._id + 200, data, function (err, ret, message) {
         check(done, function () {
-          ret.error.should.equal(true);
+          ret.error.should.equal("document not found");
           message.status.should.equal(404);
         });
       });
@@ -821,7 +821,7 @@ describe("graph", function () {
       db.graph.edge.patch("graph1", edges[0]._id, data, options, function (err, ret, message) {
         check(done, function () {
           edges[0]._rev = ret.edge._rev;
-          message.status.should.equal(201);
+          message.status.should.equal(200);
         });
       });
     })
@@ -852,7 +852,7 @@ describe("graph", function () {
       db.graph.edge.patch("graph1", edges[0]._id, data, options, function (err, ret, message) {
         check(done, function () {
 
-          message.status.should.equal(201);
+          message.status.should.equal(200);
         });
       });
     })
@@ -874,7 +874,7 @@ describe("graph", function () {
       };
       db.graph.edge.put("graph1", edges[0]._id + 200, data, function (err, ret, message) {
         check(done, function () {
-          ret.error.should.equal(true);
+          ret.error.should.equal("document not found");
           message.status.should.equal(404);
         });
       });
@@ -906,7 +906,7 @@ describe("graph", function () {
       db.graph.edge.put("graph1", edges[0]._id, data, options, function (err, ret, message) {
         check(done, function () {
           edges[0]._rev = ret.edge._rev;
-          message.status.should.equal(201);
+          message.status.should.equal(200);
         });
       });
     })
@@ -940,7 +940,7 @@ describe("graph", function () {
       this.timeout(50000);
       db.graph.edge.delete("graph1", edges[0]._id + 200, function (err, ret, message) {
         check(done, function () {
-          ret.error.should.equal(true);
+          ret.error.should.equal("document not found");
           message.status.should.equal(404);
         });
       });
