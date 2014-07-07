@@ -995,6 +995,32 @@ describe("graph", function () {
       });
     })
 
+    // New graph functionality
+
+    it("should offer all vertex collections", function(done) {
+      this.timeout(50000);
+      db.graph.vertexCollections.list("graph1", function (err, ret, message) {
+        check(done, function () {
+          ret.error.should.equal(false);
+          ret.collections.length.should.equal(1);
+          ret.collections[0].should.equal(verticescollection.name);
+          message.status.should.equal(200);
+        });
+      });
+    });
+
+    it("should offer all edge collections", function(done) {
+      this.timeout(50000);
+      db.graph.edgeCollections.list("graph1", function (err, ret, message) {
+        check(done, function () {
+          ret.error.should.equal(false);
+          ret.collections.length.should.equal(1);
+          ret.collections[0].should.equal(edgecollection.name);
+          message.status.should.equal(200);
+        });
+      });
+    });
+
     it('delete graph', function (done) {
       this.timeout(50000);
       db.graph.delete("graph1", true, function (err, ret, message) {
@@ -1005,4 +1031,73 @@ describe("graph", function () {
       });
     })
   })
-})
+  
+});
+
+describe("multi collection graph", function () {
+
+  var graphName = "UnitTestMultiGraph";
+  var edgeDefinitions = [
+    {
+      collection: "UnitTestE1",
+      from: ["UnitTestV1"],
+      to: ["UnitTestV2"]
+    },
+    {
+      collection: "UnitTestE2",
+      from: ["UnitTestV1"],
+      to: ["UnitTestV1"]
+    }
+  ];
+  var orphans = ["UnitTestO1", "UnitTest02"];
+
+  before(function() {
+    db = db.use('/newDatabase');
+  });
+
+  beforeEach(function(done) {
+    db.graph.delete(graphName, true, function (err, ret, message){
+      done();
+    }); 
+  });
+
+  it("should create an empty graph", function (done) {
+    this.timeout(50000);
+    db.graph.create(graphName, function (err, ret, message) {
+      check(done, function() {
+        ret.error.should.equal(false);
+        ret.graph.name.should.equal(graphName);
+        ret.graph.edgeDefinitions.length.should.equal(0);
+        ret.graph.orphanCollections.length.should.equal(0);
+        message.status.should.equal(201);
+      });
+    });
+  });
+
+  it("should create a graph with multiple edge definitions", function (done) {
+    this.timeout(50000);
+    db.graph.create(graphName, edgeDefinitions, function (err, ret, message) {
+      check(done, function() {
+        ret.error.should.equal(false);
+        ret.graph.name.should.equal(graphName);
+        ret.graph.edgeDefinitions.length.should.equal(2);
+        ret.graph.orphanCollections.length.should.equal(0);
+        message.status.should.equal(201);
+      });
+    });
+  });
+
+  it("should create a graph with multiple edge definitions and orphans", function (done) {
+    this.timeout(50000);
+    db.graph.create(graphName, edgeDefinitions, orphans, function (err, ret, message) {
+      check(done, function() {
+        ret.error.should.equal(false);
+        ret.graph.name.should.equal(graphName);
+        ret.graph.edgeDefinitions.length.should.equal(2);
+        ret.graph.orphanCollections.length.should.equal(2);
+        message.status.should.equal(201);
+      });
+    });
+  });
+
+});
