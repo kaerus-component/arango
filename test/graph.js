@@ -371,7 +371,8 @@ describe("graph", function () {
       this.timeout(50000);
       db.graph.vertex.get("graph1", "verticescollection/nonExisting", function (err, ret, message) {
         check(done, function () {
-          ret.error.should.equal("document not found");
+          ret.error.should.equal(true);
+          ret.errorMessage.should.equal("document not found");
           message.status.should.equal(404);
         });
       });
@@ -428,7 +429,8 @@ describe("graph", function () {
       };
       db.graph.vertex.patch("graph1", vertices[1]._id + 200, data, function (err, ret, message) {
         check(done, function () {
-          ret.error.should.equal("document not found");
+          ret.error.should.equal(true);
+          ret.errorMessage.should.equal("document not found");
           message.status.should.equal(404);
         });
       });
@@ -524,7 +526,8 @@ describe("graph", function () {
       };
       db.graph.vertex.put("graph1", vertices[1]._id + 200, data, function (err, ret, message) {
         check(done, function () {
-          ret.error.should.equal("document not found");
+          ret.errorMessage.should.equal("document not found");
+          ret.error.should.equal(true);
           message.status.should.equal(404);
         });
       });
@@ -602,7 +605,8 @@ describe("graph", function () {
       this.timeout(50000);
       db.graph.vertex.delete("graph1", vertices[1]._id + 200, function (err, ret, message) {
         check(done, function () {
-          ret.error.should.equal("document not found");
+          ret.error.should.equal(true);
+          ret.errorMessage.should.equal("document not found");
           message.status.should.equal(404);
         });
       });
@@ -720,7 +724,8 @@ describe("graph", function () {
       this.timeout(50000);
       db.graph.edge.get("graph1", edges[0]._id + 200, function (err, ret, message) {
         check(done, function () {
-          ret.error.should.equal("document not found");
+          ret.error.should.equal(true);
+          ret.errorMessage.should.equal("document not found");
           message.status.should.equal(404);
         });
       });
@@ -789,7 +794,8 @@ describe("graph", function () {
       };
       db.graph.edge.patch("graph1", edges[0]._id + 200, data, function (err, ret, message) {
         check(done, function () {
-          ret.error.should.equal("document not found");
+          ret.error.should.equal(true);
+          ret.errorMessage.should.equal("document not found");
           message.status.should.equal(404);
         });
       });
@@ -874,7 +880,8 @@ describe("graph", function () {
       };
       db.graph.edge.put("graph1", edges[0]._id + 200, data, function (err, ret, message) {
         check(done, function () {
-          ret.error.should.equal("document not found");
+          ret.error.should.equal(true);
+          ret.errorMessage.should.equal("document not found");
           message.status.should.equal(404);
         });
       });
@@ -940,7 +947,8 @@ describe("graph", function () {
       this.timeout(50000);
       db.graph.edge.delete("graph1", edges[0]._id + 200, function (err, ret, message) {
         check(done, function () {
-          ret.error.should.equal("document not found");
+          ret.error.should.equal(true);
+          ret.errorMessage.should.equal("document not found");
           message.status.should.equal(404);
         });
       });
@@ -1035,21 +1043,27 @@ describe("graph", function () {
 });
 
 describe("multi collection graph", function () {
+  var orphan1 = "UnitTestO1";
+  var orphan2 = "UnitTestO2";
+  var from1 = "UnitTestV1";
+  var to1 = "UnitTestV2";
+  var e1 = "UnitTestE1";
+  var e2 = "UnitTestE2";
 
   var graphName = "UnitTestMultiGraph";
   var edgeDefinitions = [
     {
-      collection: "UnitTestE1",
-      from: ["UnitTestV1"],
-      to: ["UnitTestV2"]
+      collection: e1,
+      from: [from1],
+      to: [to1]
     },
     {
-      collection: "UnitTestE2",
-      from: ["UnitTestV1"],
-      to: ["UnitTestV1"]
+      collection: e2,
+      from: [from1],
+      to: [from1]
     }
   ];
-  var orphans = ["UnitTestO1", "UnitTest02"];
+  var orphans = [orphan1, orphan2];
 
   before(function() {
     db = db.use('/newDatabase');
@@ -1096,6 +1110,52 @@ describe("multi collection graph", function () {
         ret.graph.edgeDefinitions.length.should.equal(2);
         ret.graph.orphanCollections.length.should.equal(2);
         message.status.should.equal(201);
+      });
+    });
+  });
+
+  describe("management", function() {
+    
+    beforeEach(function(done) {
+      db.graph.create(graphName, edgeDefinitions, orphans, function () {
+        done();
+      });
+    });
+
+    it("should add a new vertex collection", function(done) {
+      this.timeout(50000);
+      var toAdd = "UnitTestNewCollection";
+      db.graph.vertexCollections.add(graphName, toAdd, function(err, ret, message) {
+        check(done, function() {
+          ret.error.should.equal(false);
+          message.status.should.equal(201);
+          ret.graph.name.should.equal(graphName);
+          ret.graph.edgeDefinitions.length.should.equal(2);
+          ret.graph.orphanCollections.length.should.equal(3);
+        });
+      });
+    });
+
+    it("should drop a vertex collection", function(done) {
+      this.timeout(50000);
+      db.graph.vertexCollections.delete(graphName, orphan1, function(err, ret, message) {
+        check(done, function() {
+          ret.error.should.equal(false);
+          message.status.should.equal(200);
+          ret.graph.name.should.equal(graphName);
+          ret.graph.edgeDefinitions.length.should.equal(2);
+          ret.graph.orphanCollections.length.should.equal(1);
+          ret.graph.orphanCollections[0].should.equal(orphan2);
+        });
+      });
+    });
+
+    it("should not drop a vertex collection used in an edge definition", function(done) {
+      this.timeout(50000);
+      db.graph.vertexCollections.delete(graphName, from1, function(err, ret, message) {
+        check(done, function() {
+          message.status.should.equal(400);
+        });
       });
     });
   });
