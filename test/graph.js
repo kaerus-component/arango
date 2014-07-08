@@ -644,8 +644,7 @@ describe("graph", function () {
         check(done, function () {
           ret.error.should.equal(false);
           vertices[1] = ret.vertex;
-          //Assertion currently not working , bug in Arango DB
-          //message.status.should.equal(202);
+          message.status.should.equal(202);
         });
       });
     })
@@ -671,8 +670,7 @@ describe("graph", function () {
         check(done, function () {
           ret.error.should.equal(false);
           vertices[1] = ret.vertex;
-          //Assertion currently not working , bug in Arango DB
-          //message.status.should.equal(202);
+          message.status.should.equal(202);
         });
       });
     })
@@ -1158,6 +1156,160 @@ describe("multi collection graph", function () {
         });
       });
     });
+
+    it("should add a new edge definition using single orphan collections", function(done) {
+      this.timeout(50000);
+      var edge = "UnitTestAddEdge";
+      var from = orphan1;
+      var to = orphan2;
+      db.graph.edgeCollections.add(graphName, edge, from, to, function(err, ret, message) {
+        check(done, function() {
+          ret.error.should.equal(false);
+          message.status.should.equal(201);
+          ret.graph.name.should.equal(graphName);
+          ret.graph.edgeDefinitions.length.should.equal(3);
+          ret.graph.orphanCollections.length.should.equal(0);
+        });
+      });
+    });
+
+    it("should add a new edge definition using collection arrays", function(done) {
+      this.timeout(50000);
+      var edge = "UnitTestAddEdge";
+      var from = [orphan1, orphan2];
+      var to = orphan2;
+      db.graph.edgeCollections.add(graphName, edge, from, to, function(err, ret, message) {
+        check(done, function() {
+          ret.error.should.equal(false);
+          message.status.should.equal(201);
+          ret.graph.name.should.equal(graphName);
+          ret.graph.edgeDefinitions.length.should.equal(3);
+          ret.graph.orphanCollections.length.should.equal(0);
+        });
+      });
+    });
+
+    it("should add a new edge definition using only one collection array", function(done) {
+      this.timeout(50000);
+      var edge = "UnitTestAddEdge";
+      var from = orphan1;
+      db.graph.edgeCollections.add(graphName, edge, from, function(err, ret, message) {
+        check(done, function() {
+          ret.error.should.equal(false);
+          message.status.should.equal(201);
+          ret.graph.name.should.equal(graphName);
+          ret.graph.edgeDefinitions.length.should.equal(3);
+          ret.graph.orphanCollections.length.should.equal(1);
+        });
+      });
+    });
+
+    it("should replace an existing edge definition", function(done) {
+      this.timeout(50000);
+      var from = orphan1;
+      var to = orphan2;
+      db.graph.edgeCollections.replace(graphName, e1, from, to, function(err, ret, message) {
+        check(done, function() {
+          ret.error.should.equal(false);
+          message.status.should.equal(200);
+          ret.graph.name.should.equal(graphName);
+          ret.graph.edgeDefinitions.length.should.equal(2);
+          ret.graph.orphanCollections.length.should.equal(1);
+          ret.graph.orphanCollections[0].should.equal(to1);
+        });
+      });
+    });
+
+    it("should drop an edge definition", function(done) {
+      this.timeout(50000);
+      db.graph.edgeCollections.delete(graphName, e1, function(err, ret, message) {
+        check(done, function() {
+          ret.error.should.equal(false);
+          message.status.should.equal(200);
+          ret.graph.name.should.equal(graphName);
+          ret.graph.edgeDefinitions.length.should.equal(1);
+          ret.graph.orphanCollections.length.should.equal(3);
+        });
+      });
+    });
   });
 
+  describe("creation of", function() {
+
+    var fromVertex;
+    var toVertex;
+    
+    before(function(done) {
+      db.graph.create(graphName, edgeDefinitions, orphans, function () {
+        done();
+      });
+    });
+
+    it("a vertex", function() {
+      this.timeout(50000);
+      db.graph.vertex.create(graphName, {
+        "key1": "val1",
+        "key2": "val2"
+      }, from1, function (err, ret, message) {
+        check(done, function () {
+          ret.error.should.equal(false);
+          message.status.should.equal(202);
+          ret.vertex._id.split("/")[0].should.equal(from1);
+          ret.vertex.key1.should.equal("val1");
+          ret.vertex.key2.should.equal("val2");
+          fromVertex = ret.vertex._id;
+        });
+      });
+    });
+
+    it("another vertex", function() {
+      this.timeout(50000);
+      db.graph.vertex.create(graphName, {
+        "key1": "val1",
+        "key2": "val2"
+      }, to1, function (err, ret, message) {
+        check(done, function () {
+          ret.error.should.equal(false);
+          message.status.should.equal(202);
+          ret.vertex._id.split("/")[0].should.equal(to1);
+          ret.vertex.key1.should.equal("val1");
+          ret.vertex.key2.should.equal("val2");
+          toVertex = ret.vertex._id;
+        });
+      });
+    });
+
+    it("an orphan", function() {
+      this.timeout(50000);
+      db.graph.vertex.create(graphName, {
+        "key1": "val1",
+        "key2": "val2"
+      }, orphan1, function (err, ret, message) {
+        check(done, function () {
+          ret.error.should.equal(false);
+          message.status.should.equal(202);
+          ret.vertex._id.split("/")[0].should.equal(orphan1);
+          ret.vertex.key1.should.equal("val1");
+          ret.vertex.key2.should.equal("val2");
+        });
+      });
+    });
+
+    it("an edge", function() {
+      this.timeout(50000);
+      db.graph.edge.create(graphName, {
+        "key1": "val1",
+        "key2": "val2"
+      }, fromVertex, toVertex, e1, function (err, ret, message) {
+        check(done, function () {
+          ret.error.should.equal(false);
+          message.status.should.equal(202);
+          ret.edge._id.split("/")[0].should.equal(e1);
+          ret.edge.key1.should.equal("val1");
+          ret.edge.key2.should.equal("val2");
+        });
+      });
+    });
+
+  });
 });
