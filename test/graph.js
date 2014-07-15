@@ -1300,7 +1300,7 @@ describe("multi collection graph", function () {
       db.graph.edge.create(graphName, {
         "key1": "val1",
         "key2": "val2"
-      }, fromVertex, toVertex, e1, function (err, ret, message) {
+      }, fromVertex, toVertex, "", e1, function (err, ret, message) {
         check(done, function () {
           ret.error.should.equal(false);
           message.status.should.equal(202);
