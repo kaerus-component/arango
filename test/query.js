@@ -24,7 +24,7 @@ function check(done, f) {
   done();
 }
 
-describe("queryPenis", function() {
+describe("query", function() {
 
   before(function(done) {
     if (typeof window !== "undefined") {
@@ -394,7 +394,150 @@ describe("queryPenis", function() {
 
     // Graph Meassurements
 
+    it("should calculate the absolute eccentricity", function(done) {
+      this.timeout(timeoutConstant);
+      db.query.return.graph_absolute_eccentricity(graphName, {}, {weight: "distance"})
+      .exec()
+      .then(function(result) {
+        checkOnly(done, function() {
+          result.length.should.equal(1);
+        });
+        result = result[0];
+        checkOnly(done, function() {
+          result[hamburg._id].should.equal(1200);
+          result[berlin._id].should.equal(1200);
+          result[paris._id].should.equal(1200);
+          result[lyon._id].should.equal(1200);
+          result[cologne._id].should.equal(850);
+        });
+        done();
+      });
+    });
  
+    it("should calculate the normalized eccentricity", function(done) {
+      this.timeout(timeoutConstant);
+      db.query.return.graph_eccentricity(graphName, {weight: "distance"})
+      .exec()
+      .then(function(result) {
+        checkOnly(done, function() {
+          result.length.should.equal(1);
+        });
+        result = result[0];
+        checkOnly(done, function() {
+          result[hamburg._id].should.equal(0.7083333333333335);
+          result[berlin._id].should.equal(0.7083333333333335);
+          result[paris._id].should.equal(0.7083333333333335);
+          result[lyon._id].should.equal(0.7083333333333335);
+          result[cologne._id].should.equal(1);
+        });
+        done();
+      });
+    });
+
+    it("should calculate the absolute closeness", function(done) {
+      this.timeout(timeoutConstant);
+      db.query.return.graph_absolute_closeness(graphName, {}, {weight: "distance"})
+      .exec()
+      .then(function(result) {
+        checkOnly(done, function() {
+          result.length.should.equal(1);
+        });
+        result = result[0];
+        checkOnly(done, function() {
+          result[hamburg._id].should.equal(3000);
+          result[berlin._id].should.equal(3550);
+          result[paris._id].should.equal(3200);
+          result[lyon._id].should.equal(3550);
+          result[cologne._id].should.equal(2600);
+        });
+        done();
+      });
+    });
+ 
+    it("should calculate the relative closeness", function(done) {
+      this.timeout(timeoutConstant);
+      db.query.return.graph_closeness(graphName, {weight: "distance"})
+      .exec()
+      .then(function(result) {
+        checkOnly(done, function() {
+          result.length.should.equal(1);
+        });
+        result = result[0];
+        checkOnly(done, function() {
+          result[hamburg._id].should.equal(0.8666666666666666);
+          result[berlin._id].should.equal(0.7323943661971831);
+          result[paris._id].should.equal(0.8125);
+          result[lyon._id].should.equal(0.7323943661971831);
+          result[cologne._id].should.equal(1);
+        });
+        done();
+      });
+    });
+ 
+    it("should calculate the absolute betweenness", function(done) {
+      this.timeout(timeoutConstant);
+      db.query.return.graph_absolute_betweenness(graphName, {weight: "distance"})
+      .exec()
+      .then(function(result) {
+        checkOnly(done, function() {
+          result.length.should.equal(1);
+        });
+        result = result[0];
+        checkOnly(done, function() {
+          result[hamburg._id].should.equal(0);
+          result[berlin._id].should.equal(0);
+          result[paris._id].should.equal(0);
+          result[lyon._id].should.equal(0);
+          result[cologne._id].should.equal(2);
+        });
+        done();
+      });
+    });
+ 
+    it("should calculate the relative betweenness", function(done) {
+      this.timeout(timeoutConstant);
+      db.query.return.graph_betweenness(graphName, {weight: "distance"})
+      .exec()
+      .then(function(result) {
+        checkOnly(done, function() {
+          result.length.should.equal(1);
+        });
+        result = result[0];
+        checkOnly(done, function() {
+          result[hamburg._id].should.equal(0);
+          result[berlin._id].should.equal(0);
+          result[paris._id].should.equal(0);
+          result[lyon._id].should.equal(0);
+          result[cologne._id].should.equal(1);
+        });
+        done();
+      });
+    });
+ 
+    it("should calculate the radius", function(done) {
+      this.timeout(timeoutConstant);
+      db.query.return.graph_radius(graphName, {weight: "distance"})
+      .exec()
+      .then(function(result) {
+        check(done, function() {
+          result.length.should.equal(1);
+          result[0].should.equal(850);
+        });
+      });
+    });
+
+    it("should calculate the diameter", function(done) {
+      this.timeout(timeoutConstant);
+      db.query.return.graph_diameter(graphName, {weight: "distance"})
+      .exec()
+      .then(function(result) {
+        check(done, function() {
+          result.length.should.equal(1);
+          result[0].should.equal(1200);
+        });
+      });
+    });
+
   });
 
 });
