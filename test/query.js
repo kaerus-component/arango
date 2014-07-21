@@ -37,15 +37,18 @@ describe("query", function() {
     db = arango.Connection("http://127.0.0.1:" + port + "/_system");
     db.database.delete("UnitTestDatabase")
     .then(
-      db.database.create("UnitTestDatabase"),
-      setTimeout(function() {
-        db.database.create("UnitTestDatabase");
-      }, 1000)
+      function() {
+        return db.database.create("UnitTestDatabase");
+      },
+      function() {
+        return db.database.create("UnitTestDatabase");
+      }
+      // db.database.create.apply(db.database, ["UnitTestDatabase"]),
+      // db.database.create.apply(db.database, ["UnitTestDatabase"])
     )
-    .then(setTimeout(function() {
-        done();
-      }, 1000)
-    );
+    .then(function() {
+      done();
+    });
   });
 
   after(function(done) {
@@ -54,7 +57,7 @@ describe("query", function() {
     .then(function() {
       done();
     }, function() {
-      console.log("Failed");
+      console.log("Failed to delete Database");
       done();
     });
   });
@@ -126,23 +129,36 @@ describe("query", function() {
 
 
       db = db.use('/UnitTestDatabase');
-      db.graph.create(graphName, edgeDefinition, [], function() {
-        db.graph.vertex.create(graphName, berlin, gC)
-        .then(db.graph.vertex.create(graphName, cologne, gC))
-        .then(db.graph.vertex.create(graphName, hamburg, gC))
-        .then(db.graph.vertex.create(graphName, lyon, fC))
-        .then(db.graph.vertex.create(graphName, paris, fC))
-        .then(db.graph.edge.create(graphName, btoc, berlin._id, cologne._id, "", gHw))
-        .then(db.graph.edge.create(graphName, btoh, berlin._id, hamburg._id, "", gHw))
-        .then(db.graph.edge.create(graphName, htoc, hamburg._id, cologne._id, "", gHw))
-        .then(db.graph.edge.create(graphName, ptol, paris._id, lyon._id, "", fHw))
-        .then(db.graph.edge.create(graphName, btol, berlin._id, lyon._id, "", iHw))
-        .then(db.graph.edge.create(graphName, btop, berlin._id, paris._id, "", iHw))
-        .then(db.graph.edge.create(graphName, htop, hamburg._id, paris._id, "", iHw))
-        .then(db.graph.edge.create(graphName, htol, hamburg._id, lyon._id, "", iHw))
-        .then(db.graph.edge.create(graphName, ctol, cologne._id, lyon._id, "", iHw))
-        .then(db.graph.edge.create(graphName, ctop, cologne._id, paris._id, "", iHw))
-        .then(function() {done();});
+      db.graph.create(graphName, edgeDefinition, [], true)
+      .then(function() {
+      //  db.graph.vertex.create.apply(this, [graphName, berlin, gC])
+      return db.graph.vertex.create(graphName, berlin, gC)
+      .join([
+        db.graph.vertex.create.apply(this, [graphName, cologne, gC]),
+        db.graph.vertex.create.apply(this, [graphName, hamburg, gC]),
+        db.graph.vertex.create.apply(this, [graphName, lyon, fC]),
+        db.graph.vertex.create.apply(this, [graphName, paris, fC])
+      ]);
+    }
+      )
+      .then(
+        function() {
+          return db.graph.edge.create(graphName, btoc, berlin._id, cologne._id, "", gHw)
+            .join([
+              db.graph.edge.create.apply(this, [graphName, btoh, berlin._id, hamburg._id, "", gHw]),
+              db.graph.edge.create.apply(this, [graphName, htoc, hamburg._id, cologne._id, "", gHw]),
+              db.graph.edge.create.apply(this, [graphName, ptol, paris._id, lyon._id, "", fHw]),
+              db.graph.edge.create.apply(this, [graphName, btol, berlin._id, lyon._id, "", iHw]),
+              db.graph.edge.create.apply(this, [graphName, btop, berlin._id, paris._id, "", iHw]),
+              db.graph.edge.create.apply(this, [graphName, htop, hamburg._id, paris._id, "", iHw]),
+              db.graph.edge.create.apply(this, [graphName, htol, hamburg._id, lyon._id, "", iHw]),
+              db.graph.edge.create.apply(this, [graphName, ctol, cologne._id, lyon._id, "", iHw]),
+              db.graph.edge.create.apply(this, [graphName, ctop, cologne._id, paris._id, "", iHw])
+            ]);
+        }
+      )
+      .then(function() {
+        done();
       });
     });
 
