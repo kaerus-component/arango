@@ -204,12 +204,12 @@ With use() you can switch connection settings
 
 Use another database
 ```js
-  var test_mydb = test.use("mydb");
+  var test_mydb = test.use("/mydb");
 ```
 
 Change to another database & collection
 ```js
-  var test_mydb2_mail = test_mydb.use("mydb2:mail");
+  var test_mydb2_mail = test_mydb.use("/mydb2:mail");
 ```
 
 Change collection
@@ -235,7 +235,7 @@ db.database.create('mydb').then(function(res){
 
 Use mydb database
 ```js
-var mydb = db.use('mydb');
+var mydb = db.use('/mydb');
 ```
 
 Create a 'test' collection
