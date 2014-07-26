@@ -26,7 +26,7 @@ describe("cursor", function () {
   }
 
   before(function (done) {
-    this.timeout(50000);
+    this.timeout(80000);
     db = arango.Connection("http://127.0.0.1:" + port);
 
     db.database.delete("newDatabase", function (err, ret) {

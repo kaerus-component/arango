@@ -44,103 +44,108 @@ describe("simple", function () {
       db.database.create("newDatabase", function (err, ret) {
         db = db.use('/newDatabase');
         db.collection.create("GeoCollection", function (err, ret, message) {
-          var data = [
-            {
-              "_key": "Ort1",
-              "longitude": 20.00,
-              latitude: 22.00,
-              location: [20.00, 12.00]
-            },
-            {
+          db.document.create("GeoCollection", {
+            "_key": "Ort1",
+            "longitude": 20.00,
+            latitude: 22.00,
+            location: [20.00, 12.00]
+          }, function (err, ret, message) {
+            db.document.create("GeoCollection", {
               "_key": "Ort2",
               "longitude": 21.00,
               latitude: 19.00,
               location: [28.00, 12.00]
-            },
-            {
-              "_key": "Ort3",
-              "longitude": 22.00,
-              latitude: 15.00,
-              location: [16.00, 18.00]
-            },
-            {
-              "_key": "Ort4",
-              "longitude": 23.00,
-              latitude: 24.00,
-              location: [21.00, 19.00]
-            }
-          ];
-          db.import.importJSONData("GeoCollection", data, function (err, ret, message) {
-            db.index.createGeoSpatialIndex("GeoCollection", ["latitude", "longitude"], {
-              "constraint": true,
-              "ignoreNull": true
             }, function (err, ret, message) {
-              db.index.createGeoSpatialIndex("GeoCollection", ["location"], {
-                  "geoJson": true
-                },
-                function (err, ret, message) {
-                  db.collection.create("SkiptListcollection", function (err, ret, message) {
-                    var data = [
-                      {
-                        "_key": "Anton",
-                        "age": 23,
-                        "income": 2000,
-                        "birthplace": "munich"
+              db.document.create("GeoCollection", {
+                "_key": "Ort3",
+                "longitude": 22.00,
+                latitude: 15.00,
+                location: [16.00, 18.00]
+              }, function (err, ret, message) {
+                db.document.create("GeoCollection", {
+                  "_key": "Ort4",
+                  "longitude": 23.00,
+                  latitude: 24.00,
+                  location: [21.00, 19.00]
+                }, function (err, ret, message) {
+                  db.index.createGeoSpatialIndex("GeoCollection", ["latitude", "longitude"], {
+                    "constraint": true,
+                    "ignoreNull": true
+                  }, function (err, ret, message) {
+                    db.index.createGeoSpatialIndex("GeoCollection", ["location"], {
+                        "geoJson": true
                       },
-                      {
-                        "_key": "Bert",
-                        "age": 22,
-                        "income": 2100,
-                        "birthplace": "munich-passing"
-                      },
-                      {
-                        "_key": "Bernd",
-                        "age": 24,
-                        "income": 2100,
-                        "birthplace": "berlin"
-                      },
-                      {
-                        "_key": "Cindy",
-                        "age": 31,
-                        "income": 2000,
-                        "birthplace": "cologne"
-                      },
-                      {
-                        "_key": "Cinderella",
-                        "age": 30,
-                        "income": 2000,
-                        "birthplace": "munich"
-                      },
-                      {
-                        "_key": "Emil",
-                        "age": 29,
-                        "income": 2100,
-                        "birthplace": "munich"
-                      },
-                      {
-                        "_key": "Kurt",
-                        "age": 29,
-                        "income": 2900,
-                        "birthplace": "cologne"
-                      }
-                    ];
-                    db.import.importJSONData("SkiptListcollection", data, function (err, ret, message) {
-                      db.index.createSkipListIndex("SkiptListcollection", ["age"], false, function (err, ret, message) {
-                        db.index.createFulltextIndex("SkiptListcollection", ["birthplace"], function (err, ret, message) {
-                          done();
-                        });
+                      function (err, ret, message) {
+                        db.collection.create("SkiptListcollection", function (err, ret, message) {
+                          db.document.create("SkiptListcollection", {
+                            "_key": "Anton",
+                            "age": 23,
+                            "income": 2000,
+                            "birthplace": "munich"
+                          }, function (err, ret, message) {
+                            db.document.create("SkiptListcollection", {
+                              "_key": "Bert",
+                              "age": 22,
+                              "income": 2100,
+                              "birthplace": "munich-passing"
+                            }, function (err, ret, message) {
+                              db.document.create("SkiptListcollection", {
+                                "_key": "Bernd",
+                                "age": 24,
+                                "income": 2100,
+                                "birthplace": "berlin"
+                              }, function (err, ret, message) {
+                                db.document.create("SkiptListcollection", {
+                                  "_key": "Cindy",
+                                  "age": 31,
+                                  "income": 2000,
+                                  "birthplace": "cologne"
+                                }, function (err, ret, message) {
+                                  db.document.create("SkiptListcollection", {
+                                    "_key": "Cinderella",
+                                    "age": 30,
+                                    "income": 2000,
+                                    "birthplace": "munich"
+                                  }, function (err, ret, message) {
+                                    db.document.create("SkiptListcollection", {
+                                      "_key": "Emil",
+                                      "age": 29,
+                                      "income": 2100,
+                                      "birthplace": "munich"
+                                    }, function (err, ret, message) {
+                                      db.document.create("SkiptListcollection", {
+                                        "_key": "Kurt",
+                                        "age": 29,
+                                        "income": 2900,
+                                        "birthplace": "cologne"
+                                      }, function (err, ret, message) {
+                                        db.index.createSkipListIndex("SkiptListcollection", ["age"], false, function (err, ret, message) {
+                                          db.index.createFulltextIndex("SkiptListcollection", ["birthplace"], function (err, ret, message) {
+                                            done();
+                                          });
+                                        });
+                                      })
+                                    })
+                                  })
+                                })
+                              })
+                            })
+                          })
+                        })
                       });
-                    });
-                  });
+                  })
+
                 });
 
+              });
             });
           });
+
         });
       });
-    });
 
-  })
+    });
+  });
 
   describe("simple Queries", function () {
 

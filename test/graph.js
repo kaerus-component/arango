@@ -103,7 +103,7 @@ describe("graph", function () {
       db.graph.create("graph1", verticescollection.name, edgecollection.name, true, function (err, ret, message) {
         check(done, function () {
           ret.error.should.equal(false);
-          //message.status.should.equal(201);
+          message.status.should.equal(201);
         });
       });
     })
@@ -112,7 +112,7 @@ describe("graph", function () {
       db.graph.waitForSync(false).create("graph2", "hans", "dampf", function (err, ret, message) {
         check(done, function () {
           ret.error.should.equal(false);
-          //message.status.should.equal(202);
+          message.status.should.equal(201);
         });
       });
     })
@@ -369,9 +369,10 @@ describe("graph", function () {
 
     it('lets get a non existing vertex"', function (done) {
       this.timeout(50000);
-      db.graph.vertex.get("graph1", "nonExisting", function (err, ret, message) {
+      db.graph.vertex.get("graph1", "verticescollection/nonExisting", function (err, ret, message) {
         check(done, function () {
           ret.error.should.equal(true);
+          ret.errorMessage.should.equal("document not found");
           message.status.should.equal(404);
         });
       });
@@ -429,6 +430,7 @@ describe("graph", function () {
       db.graph.vertex.patch("graph1", vertices[1]._id + 200, data, function (err, ret, message) {
         check(done, function () {
           ret.error.should.equal(true);
+          ret.errorMessage.should.equal("document not found");
           message.status.should.equal(404);
         });
       });
@@ -460,7 +462,7 @@ describe("graph", function () {
       db.graph.vertex.patch("graph1", vertices[1]._id, data, options, function (err, ret, message) {
         check(done, function () {
           vertices[1]._rev = ret.vertex._rev;
-          message.status.should.equal(201);
+          message.status.should.equal(200);
         });
       });
     })
@@ -489,7 +491,7 @@ describe("graph", function () {
       options.keepNull = "false";
       db.graph.vertex.patch("graph1", vertices[1]._id, data, options, function (err, ret, message) {
         check(done, function () {
-          message.status.should.equal(201);
+          message.status.should.equal(200);
         });
       });
     })
@@ -502,7 +504,7 @@ describe("graph", function () {
       };
       db.graph.keepNull(false).waitForSync(true).vertex.patch("graph1", vertices[1]._id, data, function (err, ret, message) {
         check(done, function () {
-          message.status.should.equal(201);
+          message.status.should.equal(200);
         });
       });
     })
@@ -524,6 +526,7 @@ describe("graph", function () {
       };
       db.graph.vertex.put("graph1", vertices[1]._id + 200, data, function (err, ret, message) {
         check(done, function () {
+          ret.errorMessage.should.equal("document not found");
           ret.error.should.equal(true);
           message.status.should.equal(404);
         });
@@ -556,7 +559,7 @@ describe("graph", function () {
       db.graph.vertex.put("graph1", vertices[1]._id, data, options, function (err, ret, message) {
         check(done, function () {
           vertices[1]._rev = ret.vertex._rev;
-          message.status.should.equal(201);
+          message.status.should.equal(200);
         });
       });
     })
@@ -603,6 +606,7 @@ describe("graph", function () {
       db.graph.vertex.delete("graph1", vertices[1]._id + 200, function (err, ret, message) {
         check(done, function () {
           ret.error.should.equal(true);
+          ret.errorMessage.should.equal("document not found");
           message.status.should.equal(404);
         });
       });
@@ -640,8 +644,7 @@ describe("graph", function () {
         check(done, function () {
           ret.error.should.equal(false);
           vertices[1] = ret.vertex;
-          //Assertion currently not working , bug in Arango DB
-          //message.status.should.equal(202);
+          message.status.should.equal(202);
         });
       });
     })
@@ -667,8 +670,7 @@ describe("graph", function () {
         check(done, function () {
           ret.error.should.equal(false);
           vertices[1] = ret.vertex;
-          //Assertion currently not working , bug in Arango DB
-          //message.status.should.equal(202);
+          message.status.should.equal(202);
         });
       });
     })
@@ -721,6 +723,7 @@ describe("graph", function () {
       db.graph.edge.get("graph1", edges[0]._id + 200, function (err, ret, message) {
         check(done, function () {
           ret.error.should.equal(true);
+          ret.errorMessage.should.equal("document not found");
           message.status.should.equal(404);
         });
       });
@@ -790,6 +793,7 @@ describe("graph", function () {
       db.graph.edge.patch("graph1", edges[0]._id + 200, data, function (err, ret, message) {
         check(done, function () {
           ret.error.should.equal(true);
+          ret.errorMessage.should.equal("document not found");
           message.status.should.equal(404);
         });
       });
@@ -821,7 +825,7 @@ describe("graph", function () {
       db.graph.edge.patch("graph1", edges[0]._id, data, options, function (err, ret, message) {
         check(done, function () {
           edges[0]._rev = ret.edge._rev;
-          message.status.should.equal(201);
+          message.status.should.equal(200);
         });
       });
     })
@@ -852,7 +856,7 @@ describe("graph", function () {
       db.graph.edge.patch("graph1", edges[0]._id, data, options, function (err, ret, message) {
         check(done, function () {
 
-          message.status.should.equal(201);
+          message.status.should.equal(200);
         });
       });
     })
@@ -875,6 +879,7 @@ describe("graph", function () {
       db.graph.edge.put("graph1", edges[0]._id + 200, data, function (err, ret, message) {
         check(done, function () {
           ret.error.should.equal(true);
+          ret.errorMessage.should.equal("document not found");
           message.status.should.equal(404);
         });
       });
@@ -906,7 +911,7 @@ describe("graph", function () {
       db.graph.edge.put("graph1", edges[0]._id, data, options, function (err, ret, message) {
         check(done, function () {
           edges[0]._rev = ret.edge._rev;
-          message.status.should.equal(201);
+          message.status.should.equal(200);
         });
       });
     })
@@ -941,6 +946,7 @@ describe("graph", function () {
       db.graph.edge.delete("graph1", edges[0]._id + 200, function (err, ret, message) {
         check(done, function () {
           ret.error.should.equal(true);
+          ret.errorMessage.should.equal("document not found");
           message.status.should.equal(404);
         });
       });
@@ -995,6 +1001,32 @@ describe("graph", function () {
       });
     })
 
+    // New graph functionality
+
+    it("should offer all vertex collections", function(done) {
+      this.timeout(50000);
+      db.graph.vertexCollections.list("graph1", function (err, ret, message) {
+        check(done, function () {
+          ret.error.should.equal(false);
+          ret.collections.length.should.equal(1);
+          ret.collections[0].should.equal(verticescollection.name);
+          message.status.should.equal(200);
+        });
+      });
+    });
+
+    it("should offer all edge collections", function(done) {
+      this.timeout(50000);
+      db.graph.edgeCollections.list("graph1", function (err, ret, message) {
+        check(done, function () {
+          ret.error.should.equal(false);
+          ret.collections.length.should.equal(1);
+          ret.collections[0].should.equal(edgecollection.name);
+          message.status.should.equal(200);
+        });
+      });
+    });
+
     it('delete graph', function (done) {
       this.timeout(50000);
       db.graph.delete("graph1", true, function (err, ret, message) {
@@ -1005,4 +1037,279 @@ describe("graph", function () {
       });
     })
   })
-})
+  
+});
+
+describe("multi collection graph", function () {
+  var orphan1 = "UnitTestO1";
+  var orphan2 = "UnitTestO2";
+  var from1 = "UnitTestV1";
+  var to1 = "UnitTestV2";
+  var e1 = "UnitTestE1";
+  var e2 = "UnitTestE2";
+
+  var graphName = "UnitTestMultiGraph";
+  var edgeDefinitions = [
+    {
+      collection: e1,
+      from: [from1],
+      to: [to1]
+    },
+    {
+      collection: e2,
+      from: [from1],
+      to: [from1]
+    }
+  ];
+  var orphans = [orphan1, orphan2];
+
+  before(function() {
+    db = db.use('/newDatabase');
+  });
+
+  beforeEach(function(done) {
+    db.graph.delete(graphName, true, function (err, ret, message){
+      done();
+    }); 
+  });
+
+  it("should create an empty graph", function (done) {
+    this.timeout(50000);
+    db.graph.create(graphName, function (err, ret, message) {
+      check(done, function() {
+        ret.error.should.equal(false);
+        ret.graph.name.should.equal(graphName);
+        ret.graph.edgeDefinitions.length.should.equal(0);
+        ret.graph.orphanCollections.length.should.equal(0);
+        message.status.should.equal(201);
+      });
+    });
+  });
+
+  it("should create a graph with multiple edge definitions", function (done) {
+    this.timeout(50000);
+    db.graph.create(graphName, edgeDefinitions, function (err, ret, message) {
+      check(done, function() {
+        ret.error.should.equal(false);
+        ret.graph.name.should.equal(graphName);
+        ret.graph.edgeDefinitions.length.should.equal(2);
+        ret.graph.orphanCollections.length.should.equal(0);
+        message.status.should.equal(201);
+      });
+    });
+  });
+
+  it("should create a graph with multiple edge definitions and orphans", function (done) {
+    this.timeout(50000);
+    db.graph.create(graphName, edgeDefinitions, orphans, function (err, ret, message) {
+      check(done, function() {
+        ret.error.should.equal(false);
+        ret.graph.name.should.equal(graphName);
+        ret.graph.edgeDefinitions.length.should.equal(2);
+        ret.graph.orphanCollections.length.should.equal(2);
+        message.status.should.equal(201);
+      });
+    });
+  });
+
+  describe("management", function() {
+    
+    beforeEach(function(done) {
+      db.graph.create(graphName, edgeDefinitions, orphans, function () {
+        done();
+      });
+    });
+
+    it("should add a new vertex collection", function(done) {
+      this.timeout(50000);
+      var toAdd = "UnitTestNewCollection";
+      db.graph.vertexCollections.add(graphName, toAdd, function(err, ret, message) {
+        check(done, function() {
+          ret.error.should.equal(false);
+          message.status.should.equal(201);
+          ret.graph.name.should.equal(graphName);
+          ret.graph.edgeDefinitions.length.should.equal(2);
+          ret.graph.orphanCollections.length.should.equal(3);
+        });
+      });
+    });
+
+    it("should drop a vertex collection", function(done) {
+      this.timeout(50000);
+      db.graph.vertexCollections.delete(graphName, orphan1, function(err, ret, message) {
+        check(done, function() {
+          ret.error.should.equal(false);
+          message.status.should.equal(200);
+          ret.graph.name.should.equal(graphName);
+          ret.graph.edgeDefinitions.length.should.equal(2);
+          ret.graph.orphanCollections.length.should.equal(1);
+          ret.graph.orphanCollections[0].should.equal(orphan2);
+        });
+      });
+    });
+
+    it("should not drop a vertex collection used in an edge definition", function(done) {
+      this.timeout(50000);
+      db.graph.vertexCollections.delete(graphName, from1, function(err, ret, message) {
+        check(done, function() {
+          message.status.should.equal(400);
+        });
+      });
+    });
+
+    it("should add a new edge definition using single orphan collections", function(done) {
+      this.timeout(50000);
+      var edge = "UnitTestAddEdge";
+      var from = orphan1;
+      var to = orphan2;
+      db.graph.edgeCollections.add(graphName, edge, from, to, function(err, ret, message) {
+        check(done, function() {
+          ret.error.should.equal(false);
+          message.status.should.equal(201);
+          ret.graph.name.should.equal(graphName);
+          ret.graph.edgeDefinitions.length.should.equal(3);
+          ret.graph.orphanCollections.length.should.equal(0);
+        });
+      });
+    });
+
+    it("should add a new edge definition using collection arrays", function(done) {
+      this.timeout(50000);
+      var edge = "UnitTestAddEdge";
+      var from = [orphan1, orphan2];
+      var to = orphan2;
+      db.graph.edgeCollections.add(graphName, edge, from, to, function(err, ret, message) {
+        check(done, function() {
+          ret.error.should.equal(false);
+          message.status.should.equal(201);
+          ret.graph.name.should.equal(graphName);
+          ret.graph.edgeDefinitions.length.should.equal(3);
+          ret.graph.orphanCollections.length.should.equal(0);
+        });
+      });
+    });
+
+    it("should add a new edge definition using only one collection array", function(done) {
+      this.timeout(50000);
+      var edge = "UnitTestAddEdge";
+      var from = orphan1;
+      db.graph.edgeCollections.add(graphName, edge, from, function(err, ret, message) {
+        check(done, function() {
+          ret.error.should.equal(false);
+          message.status.should.equal(201);
+          ret.graph.name.should.equal(graphName);
+          ret.graph.edgeDefinitions.length.should.equal(3);
+          ret.graph.orphanCollections.length.should.equal(1);
+        });
+      });
+    });
+
+    it("should replace an existing edge definition", function(done) {
+      this.timeout(50000);
+      var from = orphan1;
+      var to = orphan2;
+      db.graph.edgeCollections.replace(graphName, e1, from, to, function(err, ret, message) {
+        check(done, function() {
+          ret.error.should.equal(false);
+          message.status.should.equal(200);
+          ret.graph.name.should.equal(graphName);
+          ret.graph.edgeDefinitions.length.should.equal(2);
+          ret.graph.orphanCollections.length.should.equal(1);
+          ret.graph.orphanCollections[0].should.equal(to1);
+        });
+      });
+    });
+
+    it("should drop an edge definition", function(done) {
+      this.timeout(50000);
+      db.graph.edgeCollections.delete(graphName, e1, function(err, ret, message) {
+        check(done, function() {
+          ret.error.should.equal(false);
+          message.status.should.equal(200);
+          ret.graph.name.should.equal(graphName);
+          ret.graph.edgeDefinitions.length.should.equal(1);
+          ret.graph.orphanCollections.length.should.equal(3);
+        });
+      });
+    });
+  });
+
+  describe("creation of", function() {
+
+    var fromVertex;
+    var toVertex;
+    
+    before(function(done) {
+      db.graph.create(graphName, edgeDefinitions, orphans, function () {
+        done();
+      });
+    });
+
+    it("a vertex", function() {
+      this.timeout(50000);
+      db.graph.vertex.create(graphName, {
+        "key1": "val1",
+        "key2": "val2"
+      }, from1, function (err, ret, message) {
+        check(done, function () {
+          ret.error.should.equal(false);
+          message.status.should.equal(202);
+          ret.vertex._id.split("/")[0].should.equal(from1);
+          ret.vertex.key1.should.equal("val1");
+          ret.vertex.key2.should.equal("val2");
+          fromVertex = ret.vertex._id;
+        });
+      });
+    });
+
+    it("another vertex", function() {
+      this.timeout(50000);
+      db.graph.vertex.create(graphName, {
+        "key1": "val1",
+        "key2": "val2"
+      }, to1, function (err, ret, message) {
+        check(done, function () {
+          ret.error.should.equal(false);
+          message.status.should.equal(202);
+          ret.vertex._id.split("/")[0].should.equal(to1);
+          ret.vertex.key1.should.equal("val1");
+          ret.vertex.key2.should.equal("val2");
+          toVertex = ret.vertex._id;
+        });
+      });
+    });
+
+    it("an orphan", function() {
+      this.timeout(50000);
+      db.graph.vertex.create(graphName, {
+        "key1": "val1",
+        "key2": "val2"
+      }, orphan1, function (err, ret, message) {
+        check(done, function () {
+          ret.error.should.equal(false);
+          message.status.should.equal(202);
+          ret.vertex._id.split("/")[0].should.equal(orphan1);
+          ret.vertex.key1.should.equal("val1");
+          ret.vertex.key2.should.equal("val2");
+        });
+      });
+    });
+
+    it("an edge", function() {
+      this.timeout(50000);
+      db.graph.edge.create(graphName, {
+        "key1": "val1",
+        "key2": "val2"
+      }, fromVertex, toVertex, "", e1, function (err, ret, message) {
+        check(done, function () {
+          ret.error.should.equal(false);
+          message.status.should.equal(202);
+          ret.edge._id.split("/")[0].should.equal(e1);
+          ret.edge.key1.should.equal("val1");
+          ret.edge.key2.should.equal("val2");
+        });
+      });
+    });
+
+  });
+});

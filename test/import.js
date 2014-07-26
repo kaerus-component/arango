@@ -1,4 +1,4 @@
-var arango, db;
+var arango, db, role;
 var port;
 try {
   arango = require('arangojs')
@@ -32,12 +32,16 @@ describe("import", function () {
       db.database.create("newDatabase", function (err, ret) {
         db = db.use('/newDatabase');
         db.collection.create("collection", function (err, ret) {
-          done();
+          db.admin.role(function (err, ret, message) {
+            check(done, function () {
+              role = ret.role;
+            });
+          });
         });
       });
     });
-  })
 
+  })
   describe("importFunctions", function () {
 
     beforeEach(function (done) {
@@ -56,7 +60,10 @@ describe("import", function () {
       })
     })
     it('importJSONData with single JSON Object and waitForSync', function (done) {
-
+      if (role !== "UNDEFINED") {
+        done();
+        return;
+      }
       this.timeout(50000);
 
       var options = {
@@ -93,8 +100,10 @@ describe("import", function () {
       });
     })
     it('importJSONData with single JSON Object into unknown collection', function (done) {
-
-
+      if (role !== "UNDEFINED") {
+        done();
+        return;
+      }
       this.timeout(50000);
 
       var options = {
@@ -130,6 +139,10 @@ describe("import", function () {
       });
     })
     it('importJSONData with single JSON Object, with one error, we create the collection as well', function (done) {
+      if (role !== "UNDEFINED") {
+        done();
+        return;
+      }
 
       this.timeout(50000);
 
@@ -169,6 +182,10 @@ describe("import", function () {
       });
     })
     it('importJSONData with single JSON Object, without options', function (done) {
+      if (role !== "UNDEFINED") {
+        done();
+        return;
+      }
 
       this.timeout(50000);
       var data = [
@@ -201,6 +218,10 @@ describe("import", function () {
       });
     })
     it('importJSONData with single JSON Object, without options and with default collection', function (done) {
+      if (role !== "UNDEFINED") {
+        done();
+        return;
+      }
 
       this.timeout(50000);
       var data = [
@@ -232,6 +253,10 @@ describe("import", function () {
       });
     })
     it('importJSONData with single JSON Object, with options and with default collection', function (done) {
+      if (role !== "UNDEFINED") {
+        done();
+        return;
+      }
 
       this.timeout(50000);
 
@@ -269,6 +294,10 @@ describe("import", function () {
       });
     })
     it('importJSONData with single JSON Object and complete. Provoke a unique constraint violation and expect a 409', function (done) {
+      if (role !== "UNDEFINED") {
+        done();
+        return;
+      }
 
       this.timeout(50000);
 
@@ -306,6 +335,10 @@ describe("import", function () {
       });
     })
     it('importValueList with single JSON Object and waitForSync', function (done) {
+      if (role !== "UNDEFINED") {
+        done();
+        return;
+      }
 
       this.timeout(50000);
 
@@ -327,6 +360,10 @@ describe("import", function () {
       });
     })
     it('importValueList with single JSON Object into unknown collection', function (done) {
+      if (role !== "UNDEFINED") {
+        done();
+        return;
+      }
 
       this.timeout(50000);
 
@@ -346,6 +383,10 @@ describe("import", function () {
       });
     })
     it('importValueList with single JSON Object, with one error, we create the collection as well', function (done) {
+      if (role !== "UNDEFINED") {
+        done();
+        return;
+      }
 
       this.timeout(50000);
 
@@ -368,6 +409,10 @@ describe("import", function () {
       });
     })
     it('importValueList with single JSON Object and complete. Provoke a unique constraint violation and expect a 409', function (done) {
+      if (role !== "UNDEFINED") {
+        done();
+        return;
+      }
 
       this.timeout(50000);
 
@@ -387,6 +432,10 @@ describe("import", function () {
       });
     })
     it('importValueList with single JSON Object, without options', function (done) {
+      if (role !== "UNDEFINED") {
+        done();
+        return;
+      }
 
       this.timeout(50000);
       var options = {
@@ -406,6 +455,10 @@ describe("import", function () {
       });
     })
     it('importValueList with single JSON Object, without options and with default collection', function (done) {
+      if (role !== "UNDEFINED") {
+        done();
+        return;
+      }
 
       this.timeout(50000);
       var data = '[ "_key", "value1", "value2" ]\n\n\n[ "abczz", 25, "test" ]\n[ "aabcdww", 253, "stest" ]'
@@ -419,6 +472,10 @@ describe("import", function () {
       });
     })
     it('importValueList with single JSON Object, with options and with default collection', function (done) {
+      if (role !== "UNDEFINED") {
+        done();
+        return;
+      }
 
       this.timeout(50000);
 

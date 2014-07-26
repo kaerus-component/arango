@@ -99,20 +99,29 @@ describe("edge", function () {
         });
       });
     })
-    it('create another edge and the collection along with it', function (done) {
-      this.timeout(50000);
-      var options = {};
-      options.createCollection = true;
-      options.waitForSync = true;
-      db.edge.create("anotherCollection", vertices[0]._id, vertices[1]._id, {
-        "key1": "val1",
-        "key2": "val2"
-      }, options, function (err, ret, message) {
+    it('create another edge', function (done) {
+      db.admin.role(function (err, ret, message) {
         check(done, function () {
-          ret.error.should.equal(false);
-          message.status.should.equal(201);
-        });
-      });
+          role = ret.role;
+          if (role === "UNDEFINED") {
+            it('create another edge and the collection along with it', function (done) {
+              this.timeout(50000);
+              var options = {};
+              options.createCollection = true;
+              options.waitForSync = true;
+              db.edge.create("anotherCollection", vertices[0]._id, vertices[1]._id, {
+                "key1": "val1",
+                "key2": "val2"
+              }, options, function (err, ret, message) {
+                check(done, function () {
+                  ret.error.should.equal(false);
+                  message.status.should.equal(201);
+                });
+              });
+            })
+          }
+        })
+      })
     })
 
     it('lets get a non existing edge"', function (done) {

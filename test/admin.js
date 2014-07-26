@@ -37,6 +37,14 @@ describe("admin", function () {
       });
     });
   })
+  it('should be able to get the server role', function (done) {
+    this.timeout(50000);
+    db.admin.role(function (err, ret, message) {
+      check(done, function () {
+        ret.should.have.property('role');
+      });
+    });
+  })
   it('should be able to get the arango dbs statistics', function (done) {
     this.timeout(50000);
     db.admin.statistics(function (err, ret) {
