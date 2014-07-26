@@ -51,7 +51,7 @@ module.exports = function (karma) {
     reporters: ['dots'],
 
     // web server port
-    port: 9877,
+    port: 9876,
 
 
     // cli runner port

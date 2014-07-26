@@ -48,7 +48,7 @@ Quick start
 ===========
 To use the client you require it at a commonJS module.
 ```javascript
-var arango = require('arangojs');
+var arango = require('arango');
 ``` 
 
 Then you initialize a connection which returns a db handle.
