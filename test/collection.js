@@ -32,6 +32,7 @@ describe("collections", function () {
         journalSize: 12345678,
         waitForSync: true,
         keyOptions: {
+          type: 'autoincrement',
           offset: 0,
           increment: 5,
           allowUserKeys: true
@@ -76,7 +77,6 @@ describe("collections", function () {
             /* note: rounded to KB */
             (prop.journalSize >> 10).should.equal(options.journalSize >> 10);
             prop.keyOptions.should.eql(options.keyOptions);
-            done();
           })
         });
       });
