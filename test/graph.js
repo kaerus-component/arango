@@ -1238,14 +1238,14 @@ describe("multi collection graph", function () {
 
     var fromVertex;
     var toVertex;
-    
-    before(function(done) {
-      db.graph.create(graphName, edgeDefinitions, orphans, function () {
+
+    beforeEach(function(done) {
+      db.graph.create(graphName, edgeDefinitions, orphans, function (err, ret) {
         done();
       });
     });
 
-    it("a vertex", function() {
+    it("a vertex", function(done) {
       this.timeout(50000);
       db.graph.vertex.create(graphName, {
         "key1": "val1",
@@ -1255,14 +1255,16 @@ describe("multi collection graph", function () {
           ret.error.should.equal(false);
           message.status.should.equal(202);
           ret.vertex._id.split("/")[0].should.equal(from1);
-          ret.vertex.key1.should.equal("val1");
-          ret.vertex.key2.should.equal("val2");
+          ret.vertex.should.not.have.property('key1');
+          ret.vertex.should.not.have.property('key2');
+          //ret.vertex.key1.should.equal("val1");
+          //ret.vertex.key2.should.equal("val2");
           fromVertex = ret.vertex._id;
         });
       });
     });
 
-    it("another vertex", function() {
+    it("another vertex", function(done) {
       this.timeout(50000);
       db.graph.vertex.create(graphName, {
         "key1": "val1",
@@ -1272,14 +1274,16 @@ describe("multi collection graph", function () {
           ret.error.should.equal(false);
           message.status.should.equal(202);
           ret.vertex._id.split("/")[0].should.equal(to1);
-          ret.vertex.key1.should.equal("val1");
-          ret.vertex.key2.should.equal("val2");
+          ret.vertex.should.not.have.property('key1');
+          ret.vertex.should.not.have.property('key2');
+          //ret.vertex.key1.should.equal("val1");
+          //ret.vertex.key2.should.equal("val2");
           toVertex = ret.vertex._id;
         });
       });
     });
 
-    it("an orphan", function() {
+    it("an orphan", function(done) {
       this.timeout(50000);
       db.graph.vertex.create(graphName, {
         "key1": "val1",
@@ -1289,13 +1293,15 @@ describe("multi collection graph", function () {
           ret.error.should.equal(false);
           message.status.should.equal(202);
           ret.vertex._id.split("/")[0].should.equal(orphan1);
-          ret.vertex.key1.should.equal("val1");
-          ret.vertex.key2.should.equal("val2");
+          ret.vertex.should.not.have.property('key1');
+          ret.vertex.should.not.have.property('key2');
+          //ret.vertex.key1.should.equal("val1");
+          //ret.vertex.key2.should.equal("val2");
         });
       });
     });
 
-    it("an edge", function() {
+    it("an edge", function(done) {
       this.timeout(50000);
       db.graph.edge.create(graphName, {
         "key1": "val1",
@@ -1305,8 +1311,10 @@ describe("multi collection graph", function () {
           ret.error.should.equal(false);
           message.status.should.equal(202);
           ret.edge._id.split("/")[0].should.equal(e1);
-          ret.edge.key1.should.equal("val1");
-          ret.edge.key2.should.equal("val2");
+          ret.edge.should.not.have.property('key1');
+          ret.edge.should.not.have.property('key2');
+          //ret.edge.key1.should.equal("val1");
+          //ret.edge.key2.should.equal("val2");
         });
       });
     });

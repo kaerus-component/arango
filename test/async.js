@@ -78,7 +78,7 @@ describe("async", function () {
       });
     })
 
-    it('Ok, we switched to fire and forget, lets check if db is still configuredthat way.', function (done) {
+    it('Ok, we switched to fire and forget, lets check if db is still configured that way.', function (done) {
       this.timeout(50000);
       db.collection.create("newCollection", function (err, ret, message) {
         check(done, function () {
@@ -251,7 +251,7 @@ describe("async", function () {
       }, function (err, ret, message) {
         check(done, function () {
           ret.should.equal("");
-          storedJobs[message.headers["x-arango-async-id"]] = 200;
+          storedJobs[message.headers["x-arango-async-id"]] = 202;
           var keys = Object.keys(message.headers);
           var e = keys.indexOf("x-arango-async-id");
           e.should.not.equal(-1);
@@ -296,7 +296,7 @@ describe("async", function () {
       this.timeout(50000);
       Object.keys(storedJobs).forEach(function (key) {
         db.job.put(key, function (err, ret, message) {
-          ret.code.should.equal(storedJobs[key]);
+          message.status.should.equal(storedJobs[key]);
         });
       })
       done();
