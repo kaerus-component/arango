@@ -4,6 +4,11 @@ ArangoDB client
 ===============
 A client for the ArangoDB nosql database for nodejs and browsers.
 
+NOTE: This repo is now officially maintained by the developers of ArangoDB @ https://github.com/triAGENS/ArangoDB-JavaScript
+
+Meanwhile I'll keep exploring new designs for my own personal pleasure.
+
+
 Introduction
 ============
 You can use arango-client either as node.js server module or from a web client.
