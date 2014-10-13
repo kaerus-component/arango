@@ -4,8 +4,8 @@ COM_VER = `cat component.json | grep version | grep -o '[0-9]\.[0-9]\.[0-9]\+'`
 COMPONENT = @./node_modules/.bin/component
 BEAUTIFY = @./node_modules/.bin/js-beautify --config ./code.json
 UGLIFYJS = @./node_modules/.bin/uglifyjs
-KARMA = @./node_modules/.bin/karma
-MOCHA = @./node_modules/.bin/mocha
+KARMA = @./node_modules/karma/bin/karma
+MOCHA = @./node_modules/mocha/bin/mocha
 LIB=$(wildcard lib/*.js)
 API=$(wildcard lib/api/*.js)
 TEST=$(wildcard test/*.js)
@@ -15,9 +15,9 @@ build: dependencies component
 
 component: 
 	@echo "Building web component"
-	$(COMPONENT) build -v
+	$(COMPONENT) build 
 	@echo "Building standalone web component"
-	$(COMPONENT) build -v -n $(NAME) -s $(NAME)
+	$(COMPONENT) build -n $(NAME) -s $(NAME)
 
 dependencies: node_modules components
 
@@ -27,7 +27,7 @@ node_modules:
 
 components:
 	@echo "Installing v$(COM_VER) component dependencies"
-	$(COMPONENT) install -v
+	$(COMPONENT) install
 
 
 .PHONY: test
@@ -49,6 +49,8 @@ test-browser: components component
 	@npm i karma
 	@npm i karma-chai
 	@npm i karma-mocha
+	@npm i karma-chrome-launcher
+	@npm i karma-firefox-launcher
 	@echo "(function () {if (window) {window.port = $(ARANGOPORT);} else {exports.port = $(ARANGOPORT);}}());"  > test/port.js
 	$(KARMA) start --browsers Firefox test/karma/karma.conf.js
 	$(KARMA) start --browsers Chrome test/karma/karma.conf.js
@@ -84,4 +86,3 @@ publish:
 	@npm publish
 
 .PHONY: build
-	

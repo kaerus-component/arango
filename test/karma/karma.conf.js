@@ -1,7 +1,7 @@
 // Karma configuration
 // Generated on Thu Jul 04 2013 11:39:34 GMT+0200 (CEST)
 
-module.exports = function(karma) {
+module.exports = function (karma) {
 
   karma.set({
 
@@ -16,28 +16,28 @@ module.exports = function(karma) {
     // list of files / patterns to load in the browser
     files: [
       'build/build.js',
-        'test/port.js',
-        'test/action.js',
-        'test/admin.js',
-        'test/aqlfunction.js',
-        'test/async.js',
-        'test/batch.js',
-        'test/collection.js',
-        'test/connection.js',
-        'test/cursor.js',
-        'test/database.js',
-        'test/document.js',
-        'test/edge.js',
-        'test/endpoint.js',
-        'test/graph.js',
-        'test/import.js',
-        'test/index.js',
-        'test/indexWithDefaultCollection.js',
-        'test/simple.js',
-        'test/simpleWithDefaultCollection.js',
-        'test/transaction.js',
-        'test/traversal.js',
-        'test/user.js'
+      'test/port.js',
+      'test/action.js',
+      'test/admin.js',
+      'test/aqlfunction.js',
+      //'test/async.js',
+      //'test/batch.js',
+      'test/collection.js',
+      'test/connection.js',
+      'test/cursor.js',
+      'test/database.js',
+      'test/document.js',
+      'test/edge.js',
+      'test/endpoint.js',
+      'test/graph.js',
+      'test/import.js',
+      'test/index.js',
+      'test/indexWithDefaultCollection.js',
+      'test/simple.js',
+      'test/simpleWithDefaultCollection.js',
+      'test/transaction.js',
+      'test/traversal.js',
+      'test/user.js'
     ],
 
 
