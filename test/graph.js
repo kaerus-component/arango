@@ -2,7 +2,7 @@ var arango, db, verticescollection, edgecollection, vertices = [],
   edges = [];
 var port;
 try {
-  arango = require('arangojs')
+  arango = require('arango')
 } catch (e) {
   arango = require('..')
 }

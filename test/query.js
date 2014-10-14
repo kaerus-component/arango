@@ -4,7 +4,7 @@ var arango, db, indices = {};
 var port;
 var timeoutConstant = 5000;
 try {
-  arango = require('arangojs');
+  arango = require('arango');
 } catch (e) {
   arango = require('..');
 }

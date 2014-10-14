@@ -1,7 +1,7 @@
 var arango, db, role;
 var port;
 try {
-  arango = require('arangojs')
+  arango = require('arango')
 } catch (e) {
   arango = require('..')
 }
