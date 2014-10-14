@@ -190,6 +190,11 @@ Connection object
   db = arango.Connection({_name:"database",_collection:"collection",_server:{hostname:"test.host"}});
 ```
 
+Connecting to a unix socket (nodejs only)
+```
+  db = arango.Connection({_server:{socketPath:"/var/tmp/arango.sock"}});
+```
+
 String and object
 ```js
   db = arango.Connection("http://test.host.com:80/default",{_server:{username:"user",password:"pass"}});
