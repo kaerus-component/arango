@@ -31,7 +31,7 @@ components:
 
 
 .PHONY: test
-test: test-browser test-nodejs
+test: test-nodejs test-browser
 
 .PHONY: test-nodejs
 test-nodejs: node_modules
@@ -41,7 +41,6 @@ test-nodejs: node_modules
 .PHONY: test-browser
 test-browser: components component
 	@echo "Running tests for browser"
-	$(KARMA) start ./test/karma/karma.conf.js  --single-run --no-auto-watch --browsers=Chrome
 	$(KARMA) start ./test/karma/karma.conf.js  --single-run --no-auto-watch --browsers=Firefox
 
 docs: components component
