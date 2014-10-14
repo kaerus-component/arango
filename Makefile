@@ -31,31 +31,18 @@ components:
 
 
 .PHONY: test
-test:
-	$(MAKE) test-browser ARANGOPORT=$(ARANGOPORT)
-	$(MAKE) test-nodejs ARANGOPORT=$(ARANGOPORT)
+test: test-browser test-nodejs
 
 .PHONY: test-nodejs
 test-nodejs: node_modules
-	@echo "(function () {if (typeof window !== 'undefined') {window.port = $(ARANGOPORT);} else {exports.port = $(ARANGOPORT);}}());"  > test/port.js
 	@echo "Running tests for nodejs"
 	$(MOCHA) --require should --reporter spec
-	@rm test/port.js
-
 
 .PHONY: test-browser
 test-browser: components component
 	@echo "Running tests for browser"
-	@npm i karma
-	@npm i karma-chai
-	@npm i karma-mocha
-	@npm i karma-chrome-launcher
-	@npm i karma-firefox-launcher
-	@echo "(function () {if (window) {window.port = $(ARANGOPORT);} else {exports.port = $(ARANGOPORT);}}());"  > test/port.js
-	$(KARMA) start --browsers Chrome test/karma/karma.conf.js
-	$(KARMA) start --browsers Firefox test/karma/karma.conf.js
-	@rm test/port.js
-
+	$(KARMA) start ./test/karma/karma.conf.js  --single-run --no-auto-watch --browsers=Chrome
+	$(KARMA) start ./test/karma/karma.conf.js  --single-run --no-auto-watch --browsers=Firefox
 
 docs: components component
 	@echo "Generating docs"

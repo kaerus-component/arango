@@ -1,135 +1,105 @@
 var arango;
-var port;
+
 try {
-  arango = require('arango')
+    arango = require('arango')
 } catch (e) {
-  arango = require('..')
+    arango = require('..')
 }
-
-function check(done, f) {
-  try {
-    f()
-    done()
-  } catch (e) {
-    console.log(e);
-    done(e)
-  }
-}
-
-//var db;
-
-/*
- beforeEach(function(done){
- db.database.delete("newDatabase",function(){ done() });
- db.database.delete("newDatabase2",function(){ done() });
- })
- */
 
 describe("database", function () {
-  if (typeof window !== "undefined") {
-    port = window.port;
-  } else {
-    port = require('./port.js');
-    port = port.port;
-  }
-
-  var db = arango.Connection("http://127.0.0.1:" + port);
-  before(function (done) {
-    this.timeout(50000);
-    db.database.delete("newDatabase", function () {
-      db.database.delete("newDatabase2", function () {
-        done()
-      });
+    
+    var db;
+    
+    before(function (done) {
+	db = arango.Connection();
+	
+	db.database.delete("newDatabase").end(function () {
+	    db.database.delete("newDatabase2").end(function(){
+		done();
+	    });
+	});
     });
-  })
-  describe("create/delete", function () {
+    
+    describe("create/delete", function () {
 
-    it('create a database with some users', function (done) {
-      this.timeout(100000);
-      var databaseName = "newDatabase";
-      var users = [
-        {
-          "username": "Heinz",
-          "passwd": "pjotr"
-        },
-        {
-          "username": "Herbert",
-          "active": false,
-          extra: {
-            "age": 44
-          }
-        },
-        {
-          "username": "Harald",
-          "passwd": "pjotr"
-        }
-      ];
-      db.database.create(databaseName, users, function (err, ret, message) {
-        check(done, function () {
-          ret.error.should.equal(false);
-          message.status.should.within(200, 201);
-        });
-      });
+	it('create a database with some users', function (done) {
+
+	    var databaseName = "newDatabase";
+	    var users = [
+		{
+		    "username": "Heinz",
+		    "passwd": "pjotr"
+		},
+		{
+		    "username": "Herbert",
+		    "active": false,
+		    extra: {
+			"age": 44
+		    }
+		},
+		{
+		    "username": "Harald",
+		    "passwd": "pjotr"
+		}
+	    ];
+	    db.database.create(databaseName, users)
+	    .then(function (ret, message) {
+		ret.error.should.equal(false);
+		message.status.should.within(200, 201);
+	    }).callback(done);
+	})
+	
+	it('create another database with some users', function (done) {
+
+	    var databaseName = "newDatabase2";
+	    var users = [
+		{
+		    "username": "Heinz",
+		    "passwd": "pjotr"
+		}
+	    ];
+	    db.database.create(databaseName, users)
+		.then(function (ret, message) {
+		    ret.error.should.equal(false);
+		    message.status.should.within(200, 201);
+		}).callback(done);
+	})
+	
+	it('list databases', function (done) {
+
+	    db.database.list().callback(done);
+	})
+	
+	it('get information about the current database', function (done) {
+
+	    db.database.current().
+		then(function (ret, message) {
+		    ret.result.should.have.property("name");
+		    //ret.result.should.have.property("id");
+		    ret.result.should.have.property("path");
+		    message.status.should.equal(200);
+		}).callback(done);
+	})
+	
+	it('get all databases the current user can access', function (done) {
+
+	    db.database.user().callback(done);
+		
+	})
+	
+	it('delete a databases', function (done) {
+
+	    db.database.delete("newDatabase2").callback(done);
+	})
+	
+	it('delete a databases which does not exist and expect a 404', function (done) {
+
+	    db.database.delete("newDatabase2").
+		catch(function (err) {
+		    err.code.should.equal(404);
+		    done();
+		});
+	})
     })
-    it('create another database with some users', function (done) {
-      this.timeout(100000);
-      var databaseName = "newDatabase2";
-      var users = [
-        {
-          "username": "Heinz",
-          "passwd": "pjotr"
-        }
-      ];
-      db.database.create(databaseName, users, function (err, ret, message) {
-        check(done, function () {
-          ret.error.should.equal(false);
-          message.status.should.within(200, 201);
-        });
-      });
-    })
-    it('list databases', function (done) {
-      this.timeout(50000);
-      db.database.list(function (err, ret, message) {
-        check(done, function () {
-          message.status.should.equal(200);
-        });
-      });
-    })
-    it('get information about the current database', function (done) {
-      this.timeout(50000);
-      db.database.current(function (err, ret, message) {
-        check(done, function () {
-          ret.result.should.have.property("name");
-          //ret.result.should.have.property("id");
-          ret.result.should.have.property("path");
-          message.status.should.equal(200);
-        });
-      });
-    })
-    it('get all databases the current user can access', function (done) {
-      this.timeout(50000);
-      db.database.user(function (err, ret, message) {
-        check(done, function () {
-          message.status.should.equal(200);
-        });
-      });
-    })
-    it('delete a databases', function (done) {
-      this.timeout(50000);
-      db.database.delete("newDatabase2", function (err, ret, message) {
-        check(done, function () {
-          message.status.should.equal(200);
-        });
-      });
-    })
-    it('delete a databases which does not exist and expect a 404', function (done) {
-      this.timeout(50000);
-      db.database.delete("newDatabase2", function (err, ret, message) {
-        check(done, function () {
-          message.status.should.equal(404);
-        });
-      });
-    })
-  })
 
 })
