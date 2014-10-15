@@ -22,11 +22,11 @@ component:
 dependencies: node_modules components
 
 node_modules:
-	@echo "Installing v$(PKG_VER) node dependencies"
+	@echo "Installing node dependencies"
 	@npm i -d
 
 components:
-	@echo "Installing v$(COM_VER) component dependencies"
+	@echo "Installing web-component dependencies"
 	$(COMPONENT) install
 
 

@@ -28,6 +28,7 @@
     "karma":"*",
     "karma-mocha":"*",
     "karma-chai":"*",
+    "karma-spec-reporter":"*",
     "karma-firefox-launcher":"*",
     "js-beautify":"*",
     "uglify-js":"*"
