@@ -3,7 +3,7 @@ node_js:
   - 0.10.22
 
 addons:
-  firefox: "17.0"
+  firefox: "32.0"
 
 before_install:
   - export DISPLAY=:99.0
