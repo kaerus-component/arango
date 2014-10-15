@@ -8,6 +8,28 @@ NOTE: This repo is now officially maintained by the developers of ArangoDB @ htt
 
 Meanwhile I'll keep exploring new designs for my own personal pleasure.
 
+One major upcomming change will be the removal of callbacks in api methods in favour of only promises.
+Allowing two call styles has been errorprone when writing the api methods.
+
+However, a ```callback``` utility has been added that you may use instead.
+
+Previous style when using a callback
+```
+db.database.create("newdb",function(err,ret){
+  if(!err) console.log("successfully created database:", ret);
+  else console.log("failed to create database:", err);
+});
+```
+
+New callback method used with promises
+```
+db.database.create("newdb")
+  .callback(function(err,ret){
+    ... same as above ...  
+  });
+```
+
+
 
 Introduction
 ============
@@ -144,7 +166,7 @@ The following API:s are (more or less) supported, check out the ArangoDB [docume
   * [user](http://www.arangodb.org/manuals/current/HttpUser.html)
 
 
-The API methods return a [promise](https://github.com/kaerus-component/uP) but you may also pass a callback function as last argument which then gets called with the result.
+The API methods return a [promise](https://github.com/kaerus-component/uP). If you like nodejs callbacks you can use the callback utility provided by the micropromise framework.
 
 Example using a promise:
 ```javascript
@@ -155,12 +177,13 @@ db.document.get(docid).then(function(res){
 });
 ```
 
-Example using a callback:
+Example when using a callback:
 ```javascript
-db.document.get(docid,function(err,res){
-  if(err) console.log("err: %j", res);
-  else console.log("res: %j", res);
-});
+db.document.get(docid)
+  .callback(function(err,res){
+    if(err) console.log("err: %j", res);
+    else console.log("res: %j", res);
+  });
 ```
 
  
@@ -283,14 +306,14 @@ mydb.collection.create('mycoll',{
 
 Delete collection (using callback)
 ```js
-mydb.collection.delete('mycoll',function(err,ret){
+mydb.collection.delete('mycoll').callback(function(err,ret){
   console.log("error(%s): %j", err, ret);
 });
 ```
 
-Create a 'test2' collection using callback instead of promise
+Create a 'test2' collection (using callback)
 ```js
-mydb.collection.create('test2',function(err,ret){
+mydb.collection.create('test2').callback(function(err,ret){
   console.log("error(%s): %j", err, ret);
 });
 ```
@@ -339,25 +362,6 @@ db.document.create("newcollection",{b:"test"})
 });
 ```
 
-Try & catch
------------
-If no collection named 'files' is found then.
-```js
-try {
-  db.collection.list().then(function(res){
-    for(var n in res.collections){
-      if(res.collections[n].name === 'files') 
-        return db.document.list(res.collections[n].name);
-    }
-    throw new Error("files not found");
-  }).done(function(files){
-    console.log("list of files: %j", files);
-  });
-} catch(err){
-  console.log("Error: ", err);
-}
-```
-
 Joining
 --------
 ```js
@@ -386,7 +390,7 @@ Queries
 -------
 ```javascript
 /* simple query string */
-db.query.exec("FOR u in test RETURN u",function(err,ret){
+db.query.exec("FOR u in test RETURN u").callback(function(err,ret){
   console.log("err(%s):", err, ret);
 });
 
@@ -394,7 +398,7 @@ db.query.exec("FOR u in test RETURN u",function(err,ret){
 db.query.string = "FOR u IN @@collection RETURN u";
 ...
 /* execute the query and pass the collection variable */
-db.query.exec({'@collection':"test"},function(err,ret){
+db.query.exec({'@collection':"test"}).callback(function(err,ret){
   console.log("err(%s):",util.inspect(ret));
 });
 ```
@@ -422,7 +426,7 @@ query = db.query.for('u').in('users')
 console.log("Arango query:", query.string);
                 
 /* test run the query */
-query.test(function(err,ret){
+query.test().callback(function(err,ret){
   console.log("err(%s):",err,ret);
 });
 
@@ -433,7 +437,7 @@ query.exec({state: "CA"})
 
 
 /* detailed query explanation */
-query.explain({state:"CA"},function(err,ret){
+query.explain({state:"CA"}).callback(function(err,ret){
   console.log("err(%s):",err,ret);
 });
 
@@ -484,7 +488,7 @@ var data = {test:"data"}
 db.action.submit("someAction",data);
 
 /* submit using a callback */
-db.action.submit("someAction",data,function(err,ret){
+db.action.submit("someAction",data).callback(function(err,ret){
   console.log("err(%s):", err, ret); 
 }); 
 
@@ -496,7 +500,9 @@ db.action.define({name:"hello",url:"/hello"},function(req,res){
   res.statusCode = 200;
   res.contentType = "text/html";
   res.body = "Hello World!";
-},true); 
+},true).done(function(ret){
+  console.log("Action %s defined",ret);
+}); 
 
 db.action.submit("hello").then(function(res){
   console.log("Server says:", res);
@@ -511,8 +517,7 @@ Transactions
 Transactions are sent to arangodb using ```transaction.submit(collections,action,params,options,callback)```.
 `collections` defines read/write access to collections used within the transaction.
 `action` is a serverside handler for the transaction.
-`params` can be used for passing optinal arguments to the transaction handler.
-`options` can be used for altering http request headers if required.
+`options` can be used for adding parameters etc
 
 ```javascript
   
@@ -545,10 +550,12 @@ Transactions are sent to arangodb using ```transaction.submit(collections,action
         return true; 
       },
       {
-        /* parameters passed to the transaction handler */
-        user1: "fred",
-        user2: "john", 
-        amount: 10
+        /* options passed to the transaction handler */
+        params: {
+          user1: "fred",
+          user2: "john", 
+          amount: 10
+	 }
       }];
       /* submit the transaction */
   }).spread(db.transaction.submit).then(function(ret){
@@ -603,13 +610,13 @@ Individual job results can be fetched as usual.
   });
 
   // using callback
-  db.admin.log('info',function(err,ret){
+  db.admin.log('info').callback(function(err,ret){
     if(!err){
       console.log("Log:", JSON.stringify(ret,null,2));
     } 
   });
   
-  db.admin.time(function(err,ret){
+  db.admin.time().callback(function(err,ret){
     if(!err) console.log("Time:", new Date(Math.floor(ret.time*1000)));
   });
 
@@ -629,28 +636,26 @@ var Arango = require('arango');
 
 function StubAPI(db) {
     return {
-      "get": function(callback){
-          /* The undefined argument can be used for passing htmlOptions */
-          /* example: options = {headers:{'content-type':'image/jpeg'}} */
-          return db.get('/path',undefined,callback);
+      "get": function(headers){
+          return db.get('/path',headers);
       },
-      "post": function(data,callback){
-          return db.post('/path',data,undefined,callback);
+      "post": function(data,headers){
+          return db.post('/path',data,headers);
       },
-      "put": function(data,callback){
-          return db.put('/path',data,undefined,callback);
+      "put": function(data,headers){
+          return db.put('/path',data,headers);
       },
-      "delete": function(callback){
-          return db.delete('/path',undefined,callback);
+      "delete": function(headers){
+          return db.delete('/path',headers);
       },
-      "head": function(callback){
-          return db.head('/path',undefined,callback);
+      "head": function(headers){
+          return db.head('/path',headers);
       },
-      "patch": function(data,callback){
-          return db.path('/path',data,undefined,callback);
+      "patch": function(data,headers){
+          return db.path('/path',data,headers);
       },
-      "options": function(callback){
-          return db.options('/path',undefined,callback);
+      "options": function(headers){
+          return db.options('/path',headers);
       }
     };
 }
