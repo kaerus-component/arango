@@ -62,10 +62,9 @@ describe("action", function () {
 	    name: 'someAction',
 	    url: 'http://127.0.0.1:8529/test',
 	    method: 'post'
-	});
-	
-	db.action.getActions().should.have.property('someAction');
-	done();
+	}).then(function(ret){
+	    db.action.getActions().should.have.property('someAction');
+	}).callback(done);
     })
 
 
@@ -81,9 +80,10 @@ describe("action", function () {
 
     it('delete this action', function (done) {
 	
-	db.action.undefine("someAction");
-	db.action.getActions().should.not.have.property('someAction');
-	done();
+	db.action.undefine("someAction")
+	    .then(function(ret){
+		db.action.getActions().should.not.have.property('someAction');
+	    }).callback(done);
     })
 
     // what is the expected behaviour ?
@@ -93,10 +93,9 @@ describe("action", function () {
 	    name: 'someAction',
 	    url: 'http://127.0.0.1:8529/alreadyExistingRoute',
 	    method: 'POST'
-	});
-	
-	db.action.getActions().should.have.property('someAction');
-	done();
+	}).then(function(ret){
+	    db.action.getActions().should.have.property('someAction');    
+	}).callback(done);
 
     })
     
@@ -123,10 +122,11 @@ describe("action", function () {
 
     it('delete the action "hello".....', function (done) {
 	
-	db.action.undefine("hello");
-	db.action.getActions().should.not.have.property('hello');
-	Object.keys(db.action.getActions()).length.should.eql(1);
-	done();
+	db.action.undefine("hello")
+	    .then(function(ret){
+		db.action.getActions().should.not.have.property('hello');
+		Object.keys(db.action.getActions()).length.should.eql(1);
+	    }).callback(done);
     })
 
     it('...and check that route has been deleted to', function (done) {

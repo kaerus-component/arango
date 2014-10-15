@@ -48,17 +48,17 @@ describe("transaction", function () {
 	    lockTimeout: 0,
 	    replicate: false
 	};
+	
 	options.params = {
 	    param: ["hans", "herbert", "harald"]
 	};
 
-	db.transaction.submit(collection, action, options, function (err, ret, message) {
-	    check(done, function () {
+	db.transaction.submit(collection, action, options)
+	    .then(function (ret, message) {
 		ret.error.should.equal(false);
 		ret.result.should.equal(3);
 		message.status.should.equal(200);
-	    });
-	});
+	    }).callback(done);
     })
 
     it('submit transaction with malformed action', function (done) {
@@ -73,16 +73,16 @@ describe("transaction", function () {
 	    lockTimeout: 0,
 	    replicate: false
 	};
+	
 	options.params = {
 	    param: ["hans", "herbert", "harald"]
 	};
 
-	db.transaction.submit(collection, action, options, function (err, ret, message) {
-	    check(done, function () {
-		ret.error.should.equal(true);
-		message.status.should.equal(400);
+	db.transaction.submit(collection, action, options)
+	    .catch(function (err) {
+		err.code.should.equal(400);
+		done();
 	    });
-	});
     })
 
     it('submit transaction with unknown collection', function (done) {
@@ -97,16 +97,16 @@ describe("transaction", function () {
 	    lockTimeout: 0,
 	    replicate: false
 	};
+	
 	options.params = {
 	    param: ["hans", "herbert", "harald"]
 	};
 
-	db.transaction.submit(collection, action, options, function (err, ret, message) {
-	    check(done, function () {
-		ret.error.should.equal(true);
-		message.status.should.equal(404);
+	db.transaction.submit(collection, action, options)
+	    .catch(function (err) {
+		err.code.should.equal(404);
+		done();
 	    });
-	});
     })
 
 })
