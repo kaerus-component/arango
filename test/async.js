@@ -41,8 +41,7 @@ describe("async", function () {
     it('lets create a collection in async fire and forget mode ....we only expect a header without a job id', function (done) {
 
 	db.setAsyncMode(true, true).collection.create("newCollection3")
-	    .then(function (ret, message) {
-		ret.should.equal("");
+	    .then(function (ret,message) {
 		var keys = Object.keys(message.headers);
 		var e = keys.indexOf("x-arango-async-id");
 		e.should.equal(-1);
@@ -54,7 +53,6 @@ describe("async", function () {
 
 	db.collection.create("newCollection")
 	    .then(function (ret, message) {
-		ret.should.equal("");
 		var keys = Object.keys(message.headers);
 		var e = keys.indexOf("x-arango-async-id");
 		e.should.equal(-1);
@@ -86,7 +84,6 @@ describe("async", function () {
 
 	db.setAsyncMode(true).collection.create("newCollection10")
 	    .then(function (ret, message) {
-		ret.should.equal("");
 		var keys = Object.keys(message.headers);
 		var e = keys.indexOf("x-arango-async-id");
 		e.should.not.equal(-1);
@@ -101,7 +98,6 @@ describe("async", function () {
 	    "key2": "val2",
 	    "key3": null
 	}).then( function (ret, message) {
-	    ret.should.equal("");
 	    var keys = Object.keys(message.headers);
 	    var e = keys.indexOf("x-arango-async-id");
 	    e.should.not.equal(-1);
@@ -116,7 +112,6 @@ describe("async", function () {
 	    "key2": "val2",
 	    "key3": null
 	}).then( function (ret, message) {
-	    ret.should.equal("");
 	    var keys = Object.keys(message.headers);
 	    var e = keys.indexOf("x-arango-async-id");
 	    e.should.not.equal(-1);
@@ -131,7 +126,6 @@ describe("async", function () {
 	    "key2": "val2",
 	    "key3": null
 	}).then( function (ret, message) {
-	    ret.should.equal("");
 	    var keys = Object.keys(message.headers);
 	    var e = keys.indexOf("x-arango-async-id");
 	    e.should.not.equal(-1);
@@ -146,7 +140,6 @@ describe("async", function () {
 	    "key2": "val2",
 	    "key3": null
 	}).then( function (ret, message) {
-	    ret.should.equal("");
 	    var keys = Object.keys(message.headers);
 	    var e = keys.indexOf("x-arango-async-id");
 	    e.should.not.equal(-1);
@@ -185,7 +178,6 @@ describe("async", function () {
 	db.setAsyncMode(true).collection.create("newCollection10")
 	    .then(function (ret, message) {
 		storedJobs[message.headers["x-arango-async-id"]] = 409;
-		ret.should.equal("");
 		var keys = Object.keys(message.headers);
 		var e = keys.indexOf("x-arango-async-id");
 		e.should.not.equal(-1);
@@ -201,7 +193,6 @@ describe("async", function () {
 	    "key3": null
 	}).then( function (ret, message) {
 	    storedJobs[message.headers["x-arango-async-id"]] = 404;
-	    ret.should.equal("");
 	    var keys = Object.keys(message.headers);
 	    var e = keys.indexOf("x-arango-async-id");
 	    e.should.not.equal(-1);
@@ -216,7 +207,6 @@ describe("async", function () {
 	    "key2": "val2",
 	    "key3": null
 	}).then(function (ret, message) {
-	    ret.should.equal("");
 	    storedJobs[message.headers["x-arango-async-id"]] = 202;
 	    var keys = Object.keys(message.headers);
 	    var e = keys.indexOf("x-arango-async-id");
@@ -232,7 +222,6 @@ describe("async", function () {
 	    "key2": "val2",
 	    "key3": null
 	}).then( function (ret, message) {
-	    ret.should.equal("");
 	    storedJobs[message.headers["x-arango-async-id"]] = 404;
 	    var keys = Object.keys(message.headers);
 	    var e = keys.indexOf("x-arango-async-id");
@@ -268,20 +257,21 @@ describe("async", function () {
      var results = [], job;
 
      
-     Object.keys(storedJobs).forEach(function (key) {
-     job = db.job.put(key).then( function (ret) {
-     ret._key.should.equal(storedJobs[key]);
-     }, function(error){
-     console.log("error",error);
-     });
-     
-     results.push(job);
-     });
-     
-     db.Promise().fulfill("when all jobs done").join(results).callback(done);
-
+	 Object.keys(storedJobs).forEach(function (key) {
+	     job = db.job.put(key).then( function (ret) {
+		 console.log("key",key);
+		 console.log("storedJobs",storedJobs[key]);
+		 ret._key.should.equal(storedJobs[key]);
+	     }, function(error){
+		 console.log("error",error);
+	     });
+	     
+	     results.push(job);
+	 });
+	 
+	 db.Promise().fulfill("when all jobs done").join(results).callback(done);
+	 
      })
-     */
-
+  */
 
 })
