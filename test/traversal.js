@@ -1,4 +1,4 @@
-var arango, db;
+var arango;
 
 try {
     arango = require('arango')
@@ -6,93 +6,77 @@ try {
     arango = require('..')
 }
 
-function check(done, f) {
-    try {
-	f()
-	done()
-    } catch (e) {
-	console.log(e);
-	done(e)
-    }
-}
-
-
 describe("traversal", function () {
 
+    var db;
+    
     before(function (done) {
 	
 	db = arango.Connection("/_system");
-	db.database.delete("newDatabase", function (err, ret) {
-	    db.database.create("newDatabase", function (err, ret) {
+	db.database.delete("newDatabase").end( function () {
+	    db.database.create("newDatabase").then(function () {
 		db = db.use('/newDatabase');
-		db.graph.create("graph1", "verticescollection", "edgecollection", true, function (err, ret, message) {
-		    db.document.create("verticescollection", {
-			"_key": "Anton",
-			"value1": 25,
-			"value2": "test",
-			"allowed": true
-		    }, function (err, ret, message) {
-			db.document.create("verticescollection", {
-			    "_key": "Bert",
-			    "value1": "baz"
-			}, function (err, ret, message) {
-			    db.document.create("verticescollection", {
-				"_key": "Cindy",
-				"value1": "baaaz"
-			    }, function (err, ret, message) {
-				db.document.create("verticescollection", {
-				    "_key": "Emil",
-				    "value1": "batz"
-				}, function (err, ret, message) {
-				    db.edge.create("edgecollection",
-						   "verticescollection/Anton",
-						   "verticescollection/Bert", {}
-						   , function (err, ret, message) {
-						       db.edge.create("edgecollection",
-								      "verticescollection/Bert",
-								      "verticescollection/Cindy", {}
-								      , function (err, ret, message) {
-									  db.edge.create("edgecollection",
-											 "verticescollection/Cindy",
-											 "verticescollection/Emil", {}
-											 , function (err, ret, message) {
-											     db.edge.create("edgecollection",
-													    "verticescollection/Anton",
-													    "verticescollection/Emil", {
-														"name": "other name"
-													    }, function (err, ret, message) {
-														done();
-													    })
-											 });
-								      });
-						   });
-				});
-			    });
-			});
-		    });
+
+		db.batch.start();
+		
+		db.graph.create("graph1", "verticescollection", "edgecollection", true);
+
+		db.document.create("verticescollection", {
+		    "_key": "Anton",
+		    "value1": 25,
+		    "value2": "test",
+		    "allowed": true
 		});
-	    });
+		db.document.create("verticescollection", {
+		    "_key": "Bert",
+		    "value1": "baz"
+		});
+		db.document.create("verticescollection", {
+		    "_key": "Cindy",
+		    "value1": "baaaz"
+		});
+		db.document.create("verticescollection", {
+		    "_key": "Emil",
+		    "value1": "batz"
+		});
+		db.edge.create("edgecollection",
+			       "verticescollection/Anton",
+			       "verticescollection/Bert", {});
+		
+		db.edge.create("edgecollection",
+			       "verticescollection/Bert",
+			       "verticescollection/Cindy", {});
+		
+		db.edge.create("edgecollection",
+			       "verticescollection/Cindy",
+			       "verticescollection/Emil", {});
+		
+		db.edge.create("edgecollection",
+			       "verticescollection/Anton",
+			       "verticescollection/Emil", {
+				   "name": "other name"});
+		return db.batch.exec();
+	    }).callback(done);
 	});
     });
 
 
     it('lets get the list of all documents of verticescollection', function (done) {
 	
-	db.document.list("verticescollection", function (err, ret, message) {
-	    check(done, function () {
+	db.document.list("verticescollection")
+	    .then(function (ret) {
 		ret.documents.length.should.equal(4);
-		message.status.should.equal(200);
-	    });
-	});
+		ret.code.should.equal(200);
+	    }).callback(done);
     })
+    
     it('lets get the list of all documents of edgecollection', function (done) {
 	
-	db.document.list("edgecollection", function (err, ret, message) {
-	    check(done, function () {
+	db.document.list("edgecollection")
+	    .then(function (ret) {
 		ret.documents.length.should.equal(4);
-		message.status.should.equal(200);
-	    });
-	});
+		ret.code.should.equal(200);
+	    }).callback(done);
     })
 
     it('startTraversal in plain form', function (done) {
@@ -100,14 +84,14 @@ describe("traversal", function () {
 	var options = {};
 	options.direction = "outbound";
 
-	db.traversal.startTraversal("verticescollection/Anton", "edgecollection", options, function (err, ret, message) {
-	    check(done, function () {
+	db.traversal.startTraversal("verticescollection/Anton", "edgecollection", options)
+	    .then(function (ret) {
 		ret.error.should.equal(false);
 		ret.result.visited.vertices.length.should.equal(5);
-		message.status.should.equal(200);
-	    });
-	});
+		ret.code.should.equal(200);
+	    }).callback(done);
     })
+    
     it('startTraversal in with min depth and filter Bert by an attribute', function (done) {
 	
 	var options = {};
@@ -116,13 +100,12 @@ describe("traversal", function () {
 
 	options.direction = "outbound";
 
-	db.traversal.startTraversal("verticescollection/Anton", "edgecollection", options, function (err, ret, message) {
-	    check(done, function () {
+	db.traversal.startTraversal("verticescollection/Anton", "edgecollection", options)
+	    .then(function (ret) {
 		ret.error.should.equal(false);
 		ret.result.visited.vertices.length.should.equal(3);
-		message.status.should.equal(200);
-	    });
-	});
+		ret.code.should.equal(200);
+	    }).callback(done);
     })
 
     it('startTraversal in with max depth, order  and strategy', function (done) {
@@ -134,13 +117,12 @@ describe("traversal", function () {
 
 	options.direction = "outbound";
 
-	db.traversal.startTraversal("verticescollection/Anton", "edgecollection", options, function (err, ret, message) {
-	    check(done, function () {
+	db.traversal.startTraversal("verticescollection/Anton", "edgecollection", options)
+	    .then(function (ret) {
 		ret.error.should.equal(false);
 		ret.result.visited.vertices.length.should.equal(4);
-		message.status.should.equal(200);
-	    });
-	});
+		ret.code.should.equal(200);
+	    }).callback(done);
     })
 
     it('startTraversal with visitor, init, itemOrder  and expander (only use outbound except for Emil)', function (done) {
@@ -171,16 +153,15 @@ describe("traversal", function () {
 	    'connections.push({ vertex: require("internal").db._document(e.to), edge: e});' +
 	    '})' +
 	    '}' +
-	    'return connections;'
+	    'return connections;';
 
-	db.traversal.startTraversal("verticescollection/Anton", "edgecollection", options, function (err, ret, message) {
-	    check(done, function () {
+	db.traversal.startTraversal("verticescollection/Anton", "edgecollection", options)
+	    .then(function (ret) {
 		ret.error.should.equal(false);
 		ret.result.visited.should.equal(5);
 		ret.result.should.have.property('myVertices');
-		message.status.should.equal(200);
-	    });
-	});
+		ret.code.should.equal(200);
+	    }).callback(done);
     })
 
 })
