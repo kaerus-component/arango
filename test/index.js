@@ -51,7 +51,7 @@ describe("index", function () {
 		"byteSize": 1000000
 	    }).then( function (ret, message) {
 		ret.error.should.equal(false);
-		message.status.should.equal(201);
+		ret.code.should.equal(201);
 	    }).callback(done);
 	})
 	
@@ -60,124 +60,139 @@ describe("index", function () {
 	    db.index.createCapIndex("collection1", {
 		"size": 100,
 		"byteSize": 1000000
-	    }).then(function (ret, message) {
+	    }).then(function(ret) {
 		ret.error.should.equal(false);
-		message.status.should.equal(200);
+		ret.code.should.equal(200);
 	    }).callback(done);
 	})
 
 	it('create a geo spatial index', function (done) {
 
-	    db.index.createGeoSpatialIndex("collection1", ["latitude", "longitude"], {
-		"constraint": true,
-		"ignoreNull": true
-	    }).then(function (ret, message) {
+	    db.index.createGeoSpatialIndex("collection1", {
+		fields:["latitude", "longitude"],
+		constraint: true,
+		ignoreNull: true
+	    }).then(function(ret) {
 		ret.error.should.equal(false);
-		message.status.should.equal(201);
+		ret.code.should.equal(201);
 	    }).callback(done);
 	})
 	
 	it('create same geo spatial index again and expect a 200', function (done) {
 
-	    db.index.createGeoSpatialIndex("collection1", ["latitude", "longitude"], {
-		"constraint": true,
-		"ignoreNull": true
-	    }).then(function (ret, message) {
-		    ret.error.should.equal(false);
-		    message.status.should.equal(200);
+	    db.index.createGeoSpatialIndex("collection1", {
+		fields:["latitude", "longitude"],
+		constraint: true,
+		ignoreNull: true
+	    }).then(function(ret) {
+		ret.error.should.equal(false);
+		ret.code.should.equal(200);
 	    }).callback(done);
 	})
 	
 	it('create a location based geo spatial index', function (done) {
 
-	    db.index.createGeoSpatialIndex("collection1", ["location"], {
-		"geoJson": true
-	    }).then(function (ret, message) {
+	    db.index.createGeoSpatialIndex("collection1", {
+		fields:["location"], 
+		geoJson: true
+	    }).then(function(ret) {
 		ret.error.should.equal(false);
-		message.status.should.equal(201);
+		ret.code.should.equal(201);
 	    }).callback(done);
 	})
 
 	it('create a hash index', function (done) {
 
-	    db.index.createHashIndex("collection1", ["value1"], false)
-	    .then(function (ret, message) {
+	    db.index.createHashIndex("collection1", {
+		fields:["value1"],
+		unique:false
+	    }).then(function(ret) {
 		ret.error.should.equal(false);
-		message.status.should.equal(201);
+		ret.code.should.equal(201);
 	    }).callback(done);
 	})
 	
 	it('create same hash again and expect a 200', function (done) {
 
-	    db.index.createHashIndex("collection1", ["value1"])
-	    .then(function (ret, message) {
+	    db.index.createHashIndex("collection1", {
+		fields:["value1"]
+	    }).then(function(ret) {
 		ret.error.should.equal(false);
-		message.status.should.equal(200);
+		ret.code.should.equal(200);
 	    }).callback(done);
 	})
 
 	it('create a skiplist index', function (done) {
 
-	    db.index.createSkipListIndex("collection1", ["value1"], false)
-		.then(function (ret, message) {
-		    ret.error.should.equal(false);
-		    message.status.should.equal(201);
-		}).callback(done);
+	    db.index.createSkipListIndex("collection1", {
+		fields:["value1"],
+		unique:false
+	    }).then(function(ret) {
+		ret.error.should.equal(false);
+		ret.code.should.equal(201);
+	    }).callback(done);
 	})
 	
 	it('create same skiplist again and expect a 200', function (done) {
 
-	    db.index.createSkipListIndex("collection1", ["value1"])
-		.then(function (ret, message) {
-		    ret.error.should.equal(false);
-		    message.status.should.equal(200);
-		}).callback(done);
+	    db.index.createSkipListIndex("collection1", {
+		fields:["value1"]
+	    }).then(function(ret) {
+		ret.error.should.equal(false);
+		ret.code.should.equal(200);
+	    }).callback(done);
 	})
 
 	it('create a fulltext index', function (done) {
 
-	    db.index.createFulltextIndex("collection1", ["value1"], 3)
-		.then(function (ret, message) {
-		    ret.error.should.equal(false);
-		    message.status.should.equal(201);
-		}).callback(done);
+	    db.index.createFulltextIndex("collection1", {
+		fields:["value1"],
+		minLength:3
+	    }).then(function(ret) {
+		ret.error.should.equal(false);
+		ret.code.should.equal(201);
+	    }).callback(done);
 	})
 	
 	it('create same fulltext again and expect a 200', function (done) {
 
-	    db.index.createFulltextIndex("collection1", ["value1"], 3)
-	    .then(function (ret, message) {
+	    db.index.createFulltextIndex("collection1", {
+		fields:["value1"],
+		minLength:3
+	    }).then(function(ret) {
 		ret.error.should.equal(false);
-		message.status.should.equal(200);
+		ret.code.should.equal(200);
 	    }).callback(done);
 	})
 
 	it('create a bitarray index', function (done) {
 
-	    db.index.createBitarrayIndex("collection1", ["x", [0, 1, []], "y", ["a", "b", []]])
-	    .then(function (ret, message) {
+	    db.index.createBitarrayIndex("collection1", {
+		fields:["x", [0, 1, []], "y", ["a", "b", []]]
+	    }).then(function(ret) {
 		ret.error.should.equal(false);
-		message.status.should.equal(201);
+		ret.code.should.equal(201);
 	    }).callback(done);
 	})
 	
 	it('create same bitarray again and expect a 200', function (done) {
 
-	    db.index.createBitarrayIndex("collection1", ["x", [0, 1, []], "y", ["a", "b", []]])
-	    .then(function (ret, message) {
+	    db.index.createBitarrayIndex("collection1", {
+		fields:["x", [0, 1, []], "y", ["a", "b", []]]
+	    }).then(function(ret) {
 		ret.error.should.equal(false);
-		message.status.should.equal(200);
+		ret.code.should.equal(200);
 	    }).callback(done);
 	})
 
 	it('list all we created so far', function (done) {
 
 	    db.index.list("collection1")
-		.then(function (ret, message) {
+		.then(function(ret) {
 		    indices = ret.indexes;
 		    ret.error.should.equal(false);
 		    ret.indexes.length.should.equal(8);
-		    message.status.should.equal(200);
+		    ret.code.should.equal(200);
 		}).callback(done);
 	})
 	
@@ -199,12 +214,12 @@ describe("index", function () {
 	it('list all we created so far', function (done) {
 
 	    db.index.list("collection1")
-	    .then(function (ret, message) {
+		.then(function(ret) {
 		    indices = ret.indexes;
 		    ret.error.should.equal(false);
 		    ret.indexes.length.should.equal(7);
-		    message.status.should.equal(200);
-	    }).callback(done);
+		    ret.code.should.equal(200);
+		}).callback(done);
 	})
 
     })
