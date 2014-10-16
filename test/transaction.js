@@ -6,16 +6,6 @@ try {
     arango = require('..')
 }
 
-function check(done, f) {
-    try {
-	f()
-	done()
-    } catch (e) {
-	console.log(e);
-	done(e)
-    }
-}
-
 
 describe("transaction", function () {
 
@@ -23,17 +13,18 @@ describe("transaction", function () {
     before(function (done) {
 	
 	db = arango.Connection("/_system");
-	db.database.delete("newDatabase", function (err, ret) {
-	    db.database.create("newDatabase", function (err, ret) {
+	db.database.delete("newDatabase").end( function () {
+	    db.database.create("newDatabase").then( function () {
 		db = db.use('/newDatabase');
-		db.collection.create("collection", function (err, ret) {
-		    db.collection.create("collection2", function (err, ret) {
-			done();
-		    });
-		});
-	    });
-	});
 
+		db.batch.start();
+
+		db.collection.create("collection");
+		db.collection.create("collection2");
+
+		return db.batch.exec();
+	    }).callback(done);
+	});	
     });
     
     it('submit transaction', function (done) {
@@ -54,10 +45,10 @@ describe("transaction", function () {
 	};
 
 	db.transaction.submit(collection, action, options)
-	    .then(function (ret, message) {
+	    .then(function (ret) {
 		ret.error.should.equal(false);
 		ret.result.should.equal(3);
-		message.status.should.equal(200);
+		ret.code.should.equal(200);
 	    }).callback(done);
     })
 
@@ -108,5 +99,5 @@ describe("transaction", function () {
 		done();
 	    });
     })
-
+    
 })
