@@ -71,7 +71,7 @@ describe("admin", function () {
     })
     it('should be able to get an echo from the arango db', function (done) {
 
-	db.admin.echo('GET', null, null, null).then( function (ret) {
+	db.admin.echo('GET', null, null).then( function (ret) {
 	    ret.should.have.property('user');
 	    ret.should.have.property('database');
 	    ret.should.have.property('protocol');
