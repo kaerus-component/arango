@@ -1,20 +1,11 @@
 var arango, db, indices = {};
-var port;
+
 try {
-    arango = require('arango')
+    arango = require('arango');
 } catch (e) {
-    arango = require('..')
+    arango = require('..');
 }
 
-function check(done, f) {
-    try {
-	f()
-	done()
-    } catch (e) {
-	console.log(e);
-	done(e)
-    }
-}
 
 function getIndexByType(collection, type) {
     var result;
@@ -22,7 +13,8 @@ function getIndexByType(collection, type) {
 	if (index.type === type) {
 	    result = index.id;
 	}
-    })
+    });
+    
     return result;
 }
 
@@ -32,136 +24,122 @@ describe("simple", function () {
 
     before(function (done) {
 	
-	
 	db = arango.Connection("/_system");
-	db.database.delete("newDatabase", function (err, ret) {
-	    db.database.create("newDatabase", function (err, ret) {
+	
+	db.database.delete("newDatabase").end( function () {
+	    db.database.create("newDatabase").then( function() {
 		db = db.use('/newDatabase');
-		db.collection.create("GeoCollection", function (err, ret, message) {
-		    db.document.create("GeoCollection", {
-			"_key": "Ort1",
-			"longitude": 20.00,
-			latitude: 22.00,
-			location: [20.00, 12.00]
-		    }, function (err, ret, message) {
-			db.document.create("GeoCollection", {
-			    "_key": "Ort2",
-			    "longitude": 21.00,
-			    latitude: 19.00,
-			    location: [28.00, 12.00]
-			}, function (err, ret, message) {
-			    db.document.create("GeoCollection", {
-				"_key": "Ort3",
-				"longitude": 22.00,
-				latitude: 15.00,
-				location: [16.00, 18.00]
-			    }, function (err, ret, message) {
-				db.document.create("GeoCollection", {
-				    "_key": "Ort4",
-				    "longitude": 23.00,
-				    latitude: 24.00,
-				    location: [21.00, 19.00]
-				}, function (err, ret, message) {
-				    db.index.createGeoSpatialIndex("GeoCollection", ["latitude", "longitude"], {
-					"constraint": true,
-					"ignoreNull": true
-				    }, function (err, ret, message) {
-					db.index.createGeoSpatialIndex("GeoCollection", ["location"], {
-					    "geoJson": true
-					},
-								       function (err, ret, message) {
-									   db.collection.create("SkiptListcollection", function (err, ret, message) {
-									       db.document.create("SkiptListcollection", {
-										   "_key": "Anton",
-										   "age": 23,
-										   "income": 2000,
-										   "birthplace": "munich"
-									       }, function (err, ret, message) {
-										   db.document.create("SkiptListcollection", {
-										       "_key": "Bert",
-										       "age": 22,
-										       "income": 2100,
-										       "birthplace": "munich-passing"
-										   }, function (err, ret, message) {
-										       db.document.create("SkiptListcollection", {
-											   "_key": "Bernd",
-											   "age": 24,
-											   "income": 2100,
-											   "birthplace": "berlin"
-										       }, function (err, ret, message) {
-											   db.document.create("SkiptListcollection", {
-											       "_key": "Cindy",
-											       "age": 31,
-											       "income": 2000,
-											       "birthplace": "cologne"
-											   }, function (err, ret, message) {
-											       db.document.create("SkiptListcollection", {
-												   "_key": "Cinderella",
-												   "age": 30,
-												   "income": 2000,
-												   "birthplace": "munich"
-											       }, function (err, ret, message) {
-												   db.document.create("SkiptListcollection", {
-												       "_key": "Emil",
-												       "age": 29,
-												       "income": 2100,
-												       "birthplace": "munich"
-												   }, function (err, ret, message) {
-												       db.document.create("SkiptListcollection", {
-													   "_key": "Kurt",
-													   "age": 29,
-													   "income": 2900,
-													   "birthplace": "cologne"
-												       }, function (err, ret, message) {
-													   db.index.createSkipListIndex("SkiptListcollection", ["age"], false, function (err, ret, message) {
-													       db.index.createFulltextIndex("SkiptListcollection", ["birthplace"], function (err, ret, message) {
-														   done();
-													       });
-													   });
-												       })
-												   })
-											       })
-											   })
-										       })
-										   })
-									       })
-									   })
-								       });
-				    })
 
-				});
-
-			    });
-			});
-		    });
-
+		db.batch.start();
+		
+		db.collection.create("GeoCollection");		
+		
+		db.document.create("GeoCollection", {
+		    "_key": "Ort1",
+		    "longitude": 20.00,
+		    latitude: 22.00,
+		    location: [20.00, 12.00]
+		});    
+		db.document.create("GeoCollection", {
+		    "_key": "Ort2",
+		    "longitude": 21.00,
+		    latitude: 19.00,
+		    location: [28.00, 12.00]
 		});
-	    });
-
+		db.document.create("GeoCollection", {
+		    "_key": "Ort3",
+		    "longitude": 22.00,
+		    latitude: 15.00,
+		    location: [16.00, 18.00]
+		});
+		db.document.create("GeoCollection", {
+		    "_key": "Ort4",
+		    "longitude": 23.00,
+		    latitude: 24.00,
+		    location: [21.00, 19.00]
+		});
+		db.index.createGeoSpatialIndex("GeoCollection", {
+		    fields:["latitude", "longitude"], 
+		    constraint: true,
+		    ignoreNull: true
+		});
+		db.index.createGeoSpatialIndex("GeoCollection", {
+		    fields:["location"], 
+		    geoJson: true
+		});
+		
+		db.collection.create("SkiptListcollection");
+		
+		db.document.create("SkiptListcollection", {
+		    "_key": "Anton",
+		    "age": 23,
+		    "income": 2000,
+		    "birthplace": "munich"
+		});
+		db.document.create("SkiptListcollection", {
+		    "_key": "Bert",
+		    "age": 22,
+		    "income": 2100,
+		    "birthplace": "munich-passing"
+		});
+		db.document.create("SkiptListcollection", {
+		    "_key": "Bernd",
+		    "age": 24,
+		    "income": 2100,
+		    "birthplace": "berlin"
+		});
+		db.document.create("SkiptListcollection", {
+		    "_key": "Cindy",
+		    "age": 31,
+		    "income": 2000,
+		    "birthplace": "cologne"
+		});
+		db.document.create("SkiptListcollection", {
+		    "_key": "Cinderella",
+		    "age": 30,
+		    "income": 2000,
+		    "birthplace": "munich"
+		});
+		db.document.create("SkiptListcollection", {
+		    "_key": "Emil",
+		    "age": 29,
+		    "income": 2100,
+		    "birthplace": "munich"
+		});
+		db.document.create("SkiptListcollection", {
+		    "_key": "Kurt",
+		    "age": 29,
+		    "income": 2900,
+		    "birthplace": "cologne"
+		});
+		db.index.createSkipListIndex("SkiptListcollection", {fields:["age"], unique:false});
+		db.index.createFulltextIndex("SkiptListcollection", {fields:["birthplace"]});
+		
+		return db.batch.exec();
+	    }).callback(done);
 	});
-    });
+    })
 
     describe("simple Queries", function () {
 
 	it('list all documents', function (done) {
 	    
-	    db.simple.skip(1).limit(2).list("SkiptListcollection", function (err, ret, message) {
-		check(done, function () {
+	    db.simple.skip(1).limit(2).list("SkiptListcollection")
+		.then(function (ret) {
 		    ret.error.should.equal(false);
 		    ret.result.length.should.equal(2);
-		    message.status.should.equal(201);
-		});
-	    });
+		    ret.code.should.equal(201);
+		}).callback(done);
 	})
+	
 	it('get random document', function (done) {
 	    
-	    db.simple.any("SkiptListcollection", function (err, ret, message) {
-		check(done, function () {
+	    db.simple.any("SkiptListcollection")
+		.then(function (ret) {
 		    ret.should.have.property("document");
 		    ret.error.should.equal(false);
-		    message.status.should.equal(200);
-		});
-	    });
+		    ret.code.should.equal(200);
+		}).callback(done);
 	})
 
 	it('list all documents matching an example, we tests that passing skip and limit in the function beats the global setting', function (done) {
@@ -172,14 +150,13 @@ describe("simple", function () {
 	    }
 	    db.simple.skip(1).limit(2).example("SkiptListcollection", {
 		"income": 2100
-	    }, opt, function (err, ret, message) {
-		check(done, function () {
-		    ret.error.should.equal(false);
-		    ret.result.length.should.equal(3);
-		    message.status.should.equal(201);
-		});
-	    });
+	    }, opt).then( function (ret) {
+		ret.error.should.equal(false);
+		ret.result.length.should.equal(3);
+		ret.code.should.equal(201);
+	    }).callback(done);
 	})
+	
 	it('remove all documents matching an example.', function (done) {
 	    
 	    var opt = {
@@ -188,14 +165,13 @@ describe("simple", function () {
 	    }
 	    db.simple.removeByExample("SkiptListcollection", {
 		"income": 2900
-	    }, opt, function (err, ret, message) {
-		check(done, function () {
-		    ret.error.should.equal(false);
-		    ret.deleted.should.equal(1);
-		    message.status.should.equal(200);
-		});
-	    });
+	    }, opt).then(function (ret) {
+		ret.error.should.equal(false);
+		ret.deleted.should.equal(1);
+		ret.code.should.equal(200);
+	    }).callback(done);
 	})
+	
 	it('replace all documents matching an example.', function (done) {
 	    
 	    var opt = {
@@ -207,14 +183,13 @@ describe("simple", function () {
 	    }, {
 		"age": 31,
 		"married": true
-	    }, opt, function (err, ret, message) {
-		check(done, function () {
-		    ret.error.should.equal(false);
-		    ret.replaced.should.equal(1);
-		    message.status.should.equal(200);
-		});
-	    });
+	    }, opt).then(function (ret) {
+		ret.error.should.equal(false);
+		ret.replaced.should.equal(1);
+		ret.code.should.equal(200);
+	    }).callback(done);
 	})
+	
 	it('update all documents matching an example.', function (done) {
 	    
 	    var opt = {
@@ -224,13 +199,11 @@ describe("simple", function () {
 		"age": 31
 	    }, {
 		"married": false
-	    }, opt, function (err, ret, message) {
-		check(done, function () {
-		    ret.error.should.equal(false);
-		    ret.updated.should.equal(2);
-		    message.status.should.equal(200);
-		});
-	    });
+	    }, opt).then( function (ret) {
+		ret.error.should.equal(false);
+		ret.updated.should.equal(2);
+		ret.code.should.equal(200);
+	    }).callback(done);
 	})
 
 	it('return the first documents matching a given example.', function (done) {
@@ -241,133 +214,124 @@ describe("simple", function () {
 	    }
 	    db.simple.firstByExample("SkiptListcollection", {
 		"income": 2100
-	    }, opt, function (err, ret, message) {
-		check(done, function () {
-		    ret.error.should.equal(false);
-		    ret.should.have.property("document");
-		    message.status.should.equal(200);
-		});
-	    });
+	    }, opt).then(function (ret) {
+		ret.error.should.equal(false);
+		ret.should.have.property("document");
+		ret.code.should.equal(200);
+	    }).callback(done);
 	})
 
 	it('return the first documents from the collection', function (done) {
 	    
-	    db.simple.first("SkiptListcollection", 3, function (err, ret, message) {
-		check(done, function () {
+	    db.simple.first("SkiptListcollection", 3)
+		.then(function (ret) {
 		    ret.error.should.equal(false);
 		    ret.result.length.should.equal(3);
-		    message.status.should.equal(200);
-		});
-	    });
+		    ret.code.should.equal(200);
+		}).callback(done);
 	})
+	
 	it('return the last documents from the collection', function (done) {
 	    
-	    db.simple.last("SkiptListcollection", 3, function (err, ret, message) {
-		check(done, function () {
+	    db.simple.last("SkiptListcollection", 3)
+		.then(function (ret) {
 		    ret.error.should.equal(false);
 		    ret.result.length.should.equal(3);
-		    message.status.should.equal(200);
-		});
-	    });
+		    ret.code.should.equal(200);
+		}).callback(done);
 	})
 
 	it('use the skip list index for a range query', function (done) {
 	    
 	    db.simple.range("SkiptListcollection", "age", 23, 29, {
 		closed: true
-	    }, function (err, ret, message) {
-		check(done, function () {
-		    ret.error.should.equal(false);
-		    ret.result.length.should.equal(2);
-		    message.status.should.equal(201);
-		});
-	    });
+	    }).then( function (ret) {
+		ret.error.should.equal(false);
+		ret.result.length.should.equal(2);
+		ret.code.should.equal(201);
+	    }).callback(done);
 	})
+	
 	it('use the skip list index for an open range query', function (done) {
 	    
-	    db.simple.range("SkiptListcollection", "age", 23, 29, function (err, ret, message) {
-		check(done, function () {
+	    db.simple.range("SkiptListcollection", "age", 23, 29)
+		.then(function (ret) {
 		    ret.error.should.equal(false);
 		    ret.result.length.should.equal(1);
-		    message.status.should.equal(201);
-		});
-	    });
+		    ret.code.should.equal(201);
+		}).callback(done);
 	})
+	
 	it('list all we created so far', function (done) {
 	    
-	    db.index.list("GeoCollection", function (err, ret, message) {
-		check(done, function () {
+	    db.index.list("GeoCollection")
+		.then(function (ret) {
 		    indices.GeoCollection = ret.indexes;
 		    ret.error.should.equal(false);
-		    message.status.should.equal(200);
-		});
-	    });
+		    ret.code.should.equal(200);
+		}).callback(done);
 	})
+	
 	it('list all we created so far', function (done) {
 	    
-	    db.index.list("SkiptListcollection", function (err, ret, message) {
-		check(done, function () {
+	    db.index.list("SkiptListcollection")
+		.then(function (ret) {
 		    indices.SkiptListcollection = ret.indexes;
 		    ret.error.should.equal(false);
-		    message.status.should.equal(200);
-		});
-	    });
+		    ret.code.should.equal(200);
+		}).callback(done);
 	})
+	
 	it('use the geo index for a near query on location', function (done) {
 	    
 	    var index = getIndexByType("GeoCollection", "geo1");
 	    db.simple.skip(undefined).limit(undefined).near("GeoCollection", 15, 15, {
 		geo: index,
 		distance: "distance"
-	    }, function (err, ret, message) {
-		check(done, function () {
-		    ret.error.should.equal(false);
-		    ret.result.length.should.equal(4);
-		    message.status.should.equal(201);
-		});
-	    });
+	    }).then( function (ret) {
+		ret.error.should.equal(false);
+		ret.result.length.should.equal(4);
+		ret.code.should.equal(201);
+	    }).callback(done);
 	})
+	
 	it('use the geo index for a near query on longitude and latitude', function (done) {
 	    
 	    var index = getIndexByType("GeoCollection", "geo2");
 	    db.simple.skip(undefined).limit(undefined).near("GeoCollection", 15, 15, {
 		geo: index,
 		distance: "distance"
-	    }, function (err, ret, message) {
-		check(done, function () {
-		    ret.error.should.equal(false);
-		    ret.result.length.should.equal(4);
-		    message.status.should.equal(201);
-		});
-	    });
+	    }).then( function (ret) {
+		ret.error.should.equal(false);
+		ret.result.length.should.equal(4);
+		ret.code.should.equal(201);
+	    }).callback(done);
 	})
+	
 	it('use the geo index for a within query on location', function (done) {
 	    
 	    var index = getIndexByType("GeoCollection", "geo1");
 	    db.simple.within("GeoCollection", 15, 15, 787593, {
 		geo: index,
 		distance: "distance"
-	    }, function (err, ret, message) {
-		check(done, function () {
-		    ret.error.should.equal(false);
-		    ret.result.length.should.equal(3);
-		    message.status.should.equal(201);
-		});
-	    });
+	    }).then( function (ret) {
+		ret.error.should.equal(false);
+		ret.result.length.should.equal(3);
+		ret.code.should.equal(201);
+	    }).callback(done);
 	})
+	
 	it('use the geo index for a within query on longitude and latitude', function (done) {
 	    
 	    var index = getIndexByType("GeoCollection", "geo2");
 	    db.simple.within("GeoCollection", 15, 15, 787593, {
 		geo: index,
 		distance: "distance"
-	    }, function (err, ret, message) {
-		check(done, function () {
-		    ret.error.should.equal(false);
-		    ret.result.length.should.equal(2);
-		    message.status.should.equal(201);
-		});
-	    });
+	    }).then( function (ret) {
+		ret.error.should.equal(false);
+		ret.result.length.should.equal(2);
+		ret.code.should.equal(201);
+	    }).callback(done);
 	})
 
 	it('use the geo index for a within query on location', function (done) {
@@ -376,25 +340,22 @@ describe("simple", function () {
 	    db.simple.within("GeoCollection", 15, 15, 787593, {
 		geo: index,
 		distance: "distance"
-	    }, function (err, ret, message) {
-		check(done, function () {
-		    ret.error.should.equal(false);
-		    ret.result.length.should.equal(3);
-		    message.status.should.equal(201);
-		});
-	    });
+	    }).then( function (ret) {
+		ret.error.should.equal(false);
+		ret.result.length.should.equal(3);
+		ret.code.should.equal(201);
+	    }).callback(done);
 	})
 
 	it('use the fulltext index for a fulltext query', function (done) {
 	    
 	    var index = getIndexByType("SkiptListcollection", "fulltext");
-	    db.simple.fulltext("SkiptListcollection", "birthplace", "munich", function (err, ret, message) {
-		check(done, function () {
+	    db.simple.fulltext("SkiptListcollection", "birthplace", "munich")
+		.then(function (ret) {
 		    ret.error.should.equal(false);
 		    ret.result.length.should.equal(3);
-		    message.status.should.equal(201);
-		});
-	    });
+		    ret.code.should.equal(201);
+		}).callback(done);
 	})
     })
 })
