@@ -30,16 +30,15 @@ describe("import", function () {
     describe("importFunctions", function () {
 
 	beforeEach(function (done) {
-	    
-	    db.collection.create("collection", function (err, ret) {
+	    db.collection.create("collection").end(function(){
 		done();
 	    });
 	})
 
 	afterEach(function (done) {
 	    
-	    db.collection.delete("collection", function (err, ret) {
-		db.collection.delete("newCollection", function (err, ret) {
+	    db.collection.delete("collection").end( function () {
+		db.collection.delete("newCollection").end(function () {
 		    done();
 		});
 	    })
