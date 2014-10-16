@@ -147,7 +147,7 @@ describe("document", function () {
 	    options.match = true;
 	    options.rev = doc._rev + 1;
 	    db.document.get(doc._id, options)
-		.catch(function(err){
+		.catch(function(err, message){
 		    err.code.should.equal(412);
 		    done();
 		});
@@ -156,10 +156,9 @@ describe("document", function () {
 	it('lets get a non existing documents head"', function (done) {
 	    
 	    db.document.head(doc._id + 200)
-		.catch(function(err){
-		    //err.code.should.equal(404);
-		    done();
-		});
+		.then(undefined,function(err,message){
+		    message.status.should.equal(404);
+		}).callback(done);
 	})
 	
 	it('lets get a documents head with "match" header == false and correct revision"', function (done) {
@@ -167,7 +166,10 @@ describe("document", function () {
 	    var options = {};
 	    options.match = false;
 	    options.rev = doc._rev;
-	    db.document.head(doc._id, options).callback(done);
+	    db.document.head(doc._id, options)
+		.then(function(ret, message){
+		    message.status.should.equal(304);
+		}).callback(done);
 	})
 	
 	it('lets get a documents head with "match" header == false and wrong revision"', function (done) {
@@ -186,7 +188,10 @@ describe("document", function () {
 	    var options = {};
 	    options.match = true;
 	    options.rev = doc._rev;
-	    db.document.head(doc._id, options).callback(done);
+	    db.document.head(doc._id, options)
+		.then(function(ret,message){
+		    message.status.should.equal(200);
+		}).callback(done);
 	})
 	
 	it('lets get a documents head with "match" header and wrong revision', function (done) {
@@ -317,7 +322,7 @@ describe("document", function () {
 	    db.document.put(doc._id, data, options).callback(done);
 	})
 
-	/* always fails!
+
 	it('lets put a document with "match" header and correct revision and the waitForSync param"', function (done) {
 	    
 	    var data = {
@@ -329,7 +334,6 @@ describe("document", function () {
 	    options.rev = doc._rev;
 	    db.document.put(doc._id, data, options).callback(done);
 	})
-	 */
 	
 	it('lets put a document with "match" header and wrong revision', function (done) {
 	    
