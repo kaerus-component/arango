@@ -8,11 +8,26 @@ try {
 
 describe("action", function () {
     var db, actions;
+
+    var route = {
+	action: {
+	    "callback": "function (req,res){\n \n res.status = 200;\n; res.contentType" +
+		" = \"text/html\";\n var data = JSON.parse(req.requestBody);\n res.body = data.firstname + ' ' + data.lastname;\n }"
+	}
+    }
+    
+    route.url = {
+	"match": "/alreadyExistingRoute",
+	"methods": ["POST"]
+    };
+
     
     before(function (done) {
 	
 	db = arango.Connection(":_routing");
 
+	db.batch.start();
+	
 	db.simple.removeByExample({
 	    "url": {
 		"match": "/alreadyExistingRoute",
@@ -27,32 +42,23 @@ describe("action", function () {
 	    }
 	});
 	
-	// write a new route directly into arango
-	var route = {
-	    action: {
-		"callback": "function (req,res){\n \n res.status = 200;\n; res.contentType" +
-		    " = \"text/html\";\n var data = JSON.parse(req.requestBody);\n res.body = data.firstname + ' ' + data.lastname;\n }"
-	    }
-	}
-	route.url = {
-	    "match": "/alreadyExistingRoute",
-	    "methods": ["POST"]
-	};
-	
-	db.document.create(route, {
-	    waitForSync: true
-	}).then(db.admin.routesReload)
-	.then(function (r) {
-	    return db.action.define({
-		name: "hello",
-		url: "/hello"
-	    }, function (req, res) {
-		/* Note: this code runs in the ArangoDB */
-		res.status = 200;
-		res.contentType = "text/html";
-		res.body = "Hello World!";
-	    }, true);
-	}).callback(done);
+	db.batch.exec().end(function(){
+	    // write a new route directly into arango
+	    db.document.create(route, {
+		waitForSync: true
+	    }).then(db.admin.routesReload)
+		.then(function (r) {
+		    return db.action.define({
+			name: "hello",
+			url: "/hello"
+		    }, function (req, res) {
+			/* Note: this code runs in the ArangoDB */
+			res.status = 200;
+			res.contentType = "text/html";
+			res.body = "Hello World!";
+		    }, true);
+		}).callback(done);
+	});
     });
 
 
@@ -86,7 +92,7 @@ describe("action", function () {
 	    }).callback(done);
     })
 
-    // what is the expected behaviour ?
+    // Expected result ?
     it('define an action for which a route exists', function (done) {
 	
 	db.action.define({
@@ -98,7 +104,7 @@ describe("action", function () {
 	}).callback(done);
 
     })
-    
+
     it('call this action and expect the route to be found', function (done) {
 	
 	db.action.submit("someAction", {
