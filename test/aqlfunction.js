@@ -28,7 +28,7 @@ describe("aqlfunction", function () {
     it('should be able to create an aql function', function (done) {
 	
 	db.aqlfunction.create("javascripttest::temperature::celsiustofahrenheit",
-			      "function (celsius) { return celsius * 1.8 + 32; }")
+			      function (celsius) { return celsius * 1.8 + 32; })
 	    .callback(done);
     })
     
@@ -42,7 +42,7 @@ describe("aqlfunction", function () {
     it('should be able to create another aql function, different namespace', function (done) {
 	
 	db.aqlfunction.create("javascripttest2::temperature::celsiustofahrenheit2",
-			      "function (celsius) { return celsius * 2.8 + 32; }")
+			      function (celsius) { return celsius * 2.8 + 32; }, true)
 	    .callback(done);
     })
     
