@@ -84,7 +84,7 @@ describe("traversal", function () {
 	var options = {};
 	options.direction = "outbound";
 
-	db.traversal.startTraversal("verticescollection/Anton", "edgecollection", options)
+	db.traversal.start("verticescollection/Anton", "edgecollection", options)
 	    .then(function (ret) {
 		ret.error.should.equal(false);
 		ret.result.visited.vertices.length.should.equal(5);
@@ -100,7 +100,7 @@ describe("traversal", function () {
 
 	options.direction = "outbound";
 
-	db.traversal.startTraversal("verticescollection/Anton", "edgecollection", options)
+	db.traversal.start("verticescollection/Anton", "edgecollection", options)
 	    .then(function (ret) {
 		ret.error.should.equal(false);
 		ret.result.visited.vertices.length.should.equal(3);
@@ -117,7 +117,7 @@ describe("traversal", function () {
 
 	options.direction = "outbound";
 
-	db.traversal.startTraversal("verticescollection/Anton", "edgecollection", options)
+	db.traversal.start("verticescollection/Anton", "edgecollection", options)
 	    .then(function (ret) {
 		ret.error.should.equal(false);
 		ret.result.visited.vertices.length.should.equal(4);
@@ -129,8 +129,8 @@ describe("traversal", function () {
 	
 	var options = {};
 	options.itemOrder = "backward";
-	options.visitor = "result.visited++; result.myVertices.push(vertex);"
-	options.init = 'result.visited = 0; result.myVertices = [ ];'
+	options.visitor = "result.visited++; result.myVertices.push(vertex);";
+	options.init = 'result.visited = 0; result.myVertices = [ ];';
 
 	options.expander = 'var connections = [ ];' +
 	    'if (vertex._key.indexOf("Anton") !== -1) {' +
@@ -155,7 +155,7 @@ describe("traversal", function () {
 	    '}' +
 	    'return connections;';
 
-	db.traversal.startTraversal("verticescollection/Anton", "edgecollection", options)
+	db.traversal.start("verticescollection/Anton", "edgecollection", options)
 	    .then(function (ret) {
 		ret.error.should.equal(false);
 		ret.result.visited.should.equal(5);
