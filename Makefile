@@ -1,6 +1,8 @@
 NAME = arango
 PKG_VER = `cat package.json | grep version | grep -o '[0-9]\.[0-9]\.[0-9]\+'`
 COM_VER = `cat component.json | grep version | grep -o '[0-9]\.[0-9]\.[0-9]\+'`
+PKG_INFO = `cat package.json | grep -e '"version"' -e '"description"' -e '"logo"'`
+YUIDOC_THEME = node_modules/yuidoc-bootstrap-theme
 COMPONENT = @./node_modules/.bin/component
 BEAUTIFY = @./node_modules/.bin/js-beautify --config ./code.json
 UGLIFYJS = @./node_modules/.bin/uglifyjs
@@ -12,6 +14,7 @@ TEST=$(wildcard test/*.js)
 ARANGOPORT=8529
 
 build: dependencies component
+	@echo "ArangoDB for nodejs v${PKG_VER} web-component v${COM_VER}"
 
 component: 
 	@echo "Building web component"
@@ -43,12 +46,17 @@ test-browser: components component
 	@echo "Running tests for browser"
 	$(KARMA) start ./test/karma/karma.conf.js  --single-run --no-auto-watch --browsers=Firefox
 
-docs: components component
+docs: components component yuidoc.json
 	@echo "Generating docs"
-	@yuidoc -o ./documentation lib/ -t yuidoctheme
-	@cp -a yuidoctheme/layouts documentation
-	@cp -a yuidoctheme/layouts documentation/classes
-	@cp -a yuidoctheme/layouts documentation/modules
+	@yuidoc -c yuidoc.json
+
+.PHONY: yuidoc.json
+yuidoc.json:
+	@echo "{\n\"name\":\"$(NAME)\",\n${PKG_INFO},\n" \
+	"\"options\":{\n  \"paths\":\"lib/\",\n" \
+	"  \"outdir\":\"documentation\",\n" \
+	"  \"themedir\":\"$(YUIDOC_THEME)\",\n" \
+	"  \"helpers\":[\"$(YUIDOC_THEME)/helpers/helpers.js\"]\n  }\n}" > yuidoc.json
 
 distclean:
 	@echo "Cleaning up build files"
