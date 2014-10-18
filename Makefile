@@ -13,47 +13,42 @@ API=$(wildcard lib/api/*.js)
 TEST=$(wildcard test/*.js)
 ARANGOPORT=8529
 
-build: dependencies component
+build: node_modules component
 	@echo "ArangoDB for nodejs v${PKG_VER} web-component v${COM_VER}"
-
-component: 
-	@echo "Building web component"
-	$(COMPONENT) build 
-	@echo "Building standalone web component"
-	$(COMPONENT) build -n $(NAME) -s $(NAME)
-
-dependencies: node_modules components
 
 node_modules:
 	@echo "Installing node dependencies"
 	@npm i -d
+
+component: components
+	@echo "Building web component"
+	$(COMPONENT) build 
+	@echo "Building standalone web component"
+	$(COMPONENT) build -n $(NAME) -s $(NAME)
 
 components:
 	@echo "Installing web-component dependencies"
 	$(COMPONENT) install
 
 
-.PHONY: test
 test: test-nodejs test-browser
 
-.PHONY: test-nodejs
 test-nodejs: node_modules
 	@echo "Running tests for nodejs"
 	$(MOCHA) --require should --reporter spec
 
-.PHONY: test-browser
 test-browser: components component
 	@echo "Running tests for browser"
-	$(KARMA) start ./test/karma/karma.conf.js  --single-run --no-auto-watch --browsers=Firefox
+	$(KARMA) start ./test/karma/karma.conf.js
 
 docs: components component yuidoc.json
 	@echo "Generating docs"
 	@yuidoc -c yuidoc.json
+	@rm yuidoc.json
 
-.PHONY: yuidoc.json
 yuidoc.json:
 	@echo "{\n\"name\":\"$(NAME)\",\n${PKG_INFO},\n" \
-	"\"options\":{\n  \"paths\":\"lib/\",\n" \
+	"\"options\":{\n  \"paths\":\"lib\",\n" \
 	"  \"outdir\":\"documentation\",\n" \
 	"  \"themedir\":\"$(YUIDOC_THEME)\",\n" \
 	"  \"helpers\":[\"$(YUIDOC_THEME)/helpers/helpers.js\"]\n  }\n}" > yuidoc.json
