@@ -2,16 +2,18 @@ NAME = arango
 PKG_VER = `cat package.json | grep version | grep -o '[0-9]\.[0-9]\.[0-9]\+'`
 COM_VER = `cat component.json | grep version | grep -o '[0-9]\.[0-9]\.[0-9]\+'`
 PKG_INFO = `cat package.json | grep -e '"version"' -e '"description"' -e '"logo"'`
+LICENSE = `cat LICENSE`
+
 YUIDOC_THEME = node_modules/yuidoc-bootstrap-theme
 COMPONENT = @./node_modules/.bin/component
 BEAUTIFY = @./node_modules/.bin/js-beautify --config ./code.json
 UGLIFYJS = @./node_modules/.bin/uglifyjs
 KARMA = @./node_modules/karma/bin/karma
 MOCHA = @./node_modules/mocha/bin/mocha
+
 LIB=$(wildcard lib/*.js)
 API=$(wildcard lib/api/*.js)
 TEST=$(wildcard test/*.js)
-ARANGOPORT=8529
 
 build: node_modules component
 	@echo "ArangoDB for nodejs v${PKG_VER} web-component v${COM_VER}"
@@ -63,11 +65,21 @@ distclean:
 beautify: $(TEST) $(API) $(LIB)
 	$(BEAUTIFY) -r $^ 
 
-uglify: component
-	$(UGLIFYJS) ./build/$(NAME).js > $(NAME)-$(COM_VER)-min.js
+dist: component
+	@echo "Beautify -> dist/$(NAME)-$(COM_VER).js"
+	$(UGLIFYJS) build/build.js --beautify --preamble "${LICENSE}" -o dist/$(NAME)-$(COM_VER).js
+	@echo "Uglify -> dist/build-$(COM_VER)-min.js"
+	$(UGLIFYJS) dist/$(NAME)-$(COM_VER).js --preamble "${LICENSE}" --source-map dist/$(NAME)-$(COM_VER)-min.map.js -o dist/$(NAME)-$(COM_VER)-min.js
+	@echo "Compress -> dist/$(NAME)-$(COM_VER)-min.js.gz"
+	@gzip -9 -f dist/$(NAME)-$(COM_VER)-min.js
+	@echo "Beautify -> dist/sa-$(NAME)-$(COM_VER).js"
+	$(UGLIFYJS) build/$(NAME).js --preamble "${LICENSE}" --beautify -o dist/sa-$(NAME)-$(COM_VER).js
+	@echo "Uglify -> build/$(NAME)-$(COM_VER)-min.js"
+	$(UGLIFYJS) dist/sa-$(NAME)-$(COM_VER).js --preamble "${LICENSE}" --source-map dist/sa-$(NAME)-$(COM_VER)-min.map.js -o dist/sa-$(NAME)-$(COM_VER)-min.js
+	@echo "Compress -> dist/sa-$(NAME)-$(COM_VER)-min.js.gz"
+	@gzip -9 -f dist/sa-$(NAME)-$(COM_VER)-min.js
 
-release: component uglify
-	@cp ./build/$(NAME).js $(NAME)-$(COM_VER).js
+Release: dist
 	@git tag -a $(PKG_VER) -m "v$(PKG_VER)" -f
 	@echo "You may now push this release with: git push --tags"
 

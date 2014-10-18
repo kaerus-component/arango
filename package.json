@@ -1,6 +1,6 @@
 {
   "name": "arango",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "ArangoDB javascript client",
   "keywords": [
     "arangodb",
@@ -32,7 +32,7 @@
     "karma-spec-reporter":"*",
     "karma-firefox-launcher":"*",
     "js-beautify":"*",
-    "uglify-js":"*",
+    "uglify-js":"~2.4",
     "yuidoc-bootstrap-theme":"*"
   },
   "engine": "node >= 0.10.0",
