@@ -71,13 +71,13 @@ dist: component
 	@echo "Uglify -> dist/build-$(COM_VER)-min.js"
 	$(UGLIFYJS) dist/$(NAME)-$(COM_VER).js --preamble "${LICENSE}" --source-map dist/$(NAME)-$(COM_VER)-min.map.js -o dist/$(NAME)-$(COM_VER)-min.js
 	@echo "Compress -> dist/$(NAME)-$(COM_VER)-min.js.gz"
-	@gzip -9 -f dist/$(NAME)-$(COM_VER)-min.js
+	@gzip -9 -kf dist/$(NAME)-$(COM_VER)-min.js
 	@echo "Beautify -> dist/sa-$(NAME)-$(COM_VER).js"
 	$(UGLIFYJS) build/$(NAME).js --preamble "${LICENSE}" --beautify -o dist/sa-$(NAME)-$(COM_VER).js
 	@echo "Uglify -> build/$(NAME)-$(COM_VER)-min.js"
 	$(UGLIFYJS) dist/sa-$(NAME)-$(COM_VER).js --preamble "${LICENSE}" --source-map dist/sa-$(NAME)-$(COM_VER)-min.map.js -o dist/sa-$(NAME)-$(COM_VER)-min.js
 	@echo "Compress -> dist/sa-$(NAME)-$(COM_VER)-min.js.gz"
-	@gzip -9 -f dist/sa-$(NAME)-$(COM_VER)-min.js
+	@gzip -9 -kf dist/sa-$(NAME)-$(COM_VER)-min.js
 
 Release: dist
 	@git tag -a $(PKG_VER) -m "v$(PKG_VER)" -f
