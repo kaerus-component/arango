@@ -1,20 +1,9 @@
 var arango;
 
-
 try {
     arango = require('arango')
 } catch (e) {
     arango = require('..')
-}
-
-function check(done, f) {
-    try {
-	f()
-	done()
-    } catch (e) {
-	console.log(e);
-	done(e)
-    }
 }
 
 describe("graph", function () {
@@ -449,10 +438,8 @@ describe("graph", function () {
 	    options.keepNull = "false";
 	    db.graph.vertex.patch("graph1", vertices[1]._id, data, options)
 		.then(function (ret) {
-		    check(done, function () {
-			ret.code.should.equal(200);
-		    }).callback(done);
-		})
+		    ret.code.should.equal(200);
+		}).callback(done);
 	})
 
 	it('lets patch a vertex and not keep null values with keepNUll and wailForSync functions', function (done) {

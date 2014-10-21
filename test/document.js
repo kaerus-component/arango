@@ -34,10 +34,10 @@ describe("document", function () {
 		"key1": "val1",
 		"key2": "val2",
 		"key3": null
-	    }).then( function (ret, message) {
+	    }).then( function(ret) {
 		ret.error.should.equal(false);
 		doc = ret;
-		message.status.should.equal(202);
+		ret.code.should.equal(202);
 	    }).callback(done);
 	})
 	
@@ -46,15 +46,15 @@ describe("document", function () {
 	    db.document.create(collection.id, {
 		"key1": "val1",
 		"key3": "val3"
-	    }).then( function (ret, message) {
+	    }).then( function(ret) {
 		ret.error.should.equal(false);
-		message.status.should.equal(202);
+		ret.code.should.equal(202);
 	    }).callback(done);
 	})
 
 	// should be refactored inside a description block
 	db.admin.role()
-	    .then(function (ret, message) {
+	    .then(function (ret) {
 		role = ret.role;
 		if (role === "UNDEFINED") {
 		    
@@ -69,7 +69,7 @@ describe("document", function () {
 			}, options)
 			    .then(function (ret, message) {
 				ret.error.should.equal(false);
-				message.status.should.equal(201);
+				ret.code.should.equal(201);
 			    }).callback(done);
 		    })
 
@@ -86,13 +86,13 @@ describe("document", function () {
 			
 			// First flush the WAL otherwise rotation has no effect
 			db.admin.walFlush(false, true)
-			    .then(function(ret, message) {
+			    .then(function(ret) {
 				db.collection.rotate(collection.id)
-				    .then(function (r, m) {
-					message.status.should.equal(200);
+				    .then(function (ret2) {
+					ret.code.should.equal(200);
 					ret.error.should.equal(false);
-					r.error.should.equal(false);
-					m.status.should.equal(200);
+					ret2.error.should.equal(false);
+					ret2.code.should.equal(200);
 				    }).callback(done);
 			    });
 		    });
@@ -114,8 +114,8 @@ describe("document", function () {
 	    options.match = false;
 	    options.rev = doc._rev;
 	    db.document.get(doc._id, options)
-		.then(function (ret, message) {
-		    message.status.should.equal(304);
+		.then(function (ret) {
+		    ret.code.should.equal(304);
 		}).callback(done);
 	})
 	
@@ -125,8 +125,8 @@ describe("document", function () {
 	    options.match = false;
 	    options.rev = doc._rev + 1;
 	    db.document.get(doc._id, options)
-		.then(function (ret, message) {
-		    message.status.should.equal(200);
+		.then(function (ret) {
+		    ret.code.should.equal(200);
 		}).callback(done);
 	})
 	
@@ -136,8 +136,8 @@ describe("document", function () {
 	    options.match = true;
 	    options.rev = doc._rev;
 	    db.document.get(doc._id, options)
-		.then(function (ret, message) {
-		    message.status.should.equal(200);
+		.then(function (ret) {
+		    ret.code.should.equal(200);
 		}).callback(done);
 	})
 	
@@ -147,7 +147,7 @@ describe("document", function () {
 	    options.match = true;
 	    options.rev = doc._rev + 1;
 	    db.document.get(doc._id, options)
-		.catch(function(err, message){
+		.catch(function(err){
 		    err.code.should.equal(412);
 		    done();
 		});
@@ -156,8 +156,8 @@ describe("document", function () {
 	it('lets get a non existing documents head"', function (done) {
 	    
 	    db.document.head(doc._id + 200)
-		.then(undefined,function(err,message){
-		    message.status.should.equal(404);
+		.then(undefined,function(err){
+		    err.code.should.equal(404);
 		}).callback(done);
 	})
 	
@@ -167,8 +167,8 @@ describe("document", function () {
 	    options.match = false;
 	    options.rev = doc._rev;
 	    db.document.head(doc._id, options)
-		.then(function(ret, message){
-		    message.status.should.equal(304);
+		.then(function(ret){
+		    ret.code.should.equal(304);
 		}).callback(done);
 	})
 	
@@ -178,8 +178,8 @@ describe("document", function () {
 	    options.match = false;
 	    options.rev = doc._rev + 1;
 	    db.document.head(doc._id, options)
-		.then(function (ret, message) {
-		    message.status.should.equal(200);
+		.then(function (ret) {
+		    ret.code.should.equal(200);
 		}).callback(done);
 	})
 	
@@ -189,8 +189,8 @@ describe("document", function () {
 	    options.match = true;
 	    options.rev = doc._rev;
 	    db.document.head(doc._id, options)
-		.then(function(ret,message){
-		    message.status.should.equal(200);
+		.then(function(ret){
+		    ret.code.should.equal(200);
 		}).callback(done);
 	})
 	
@@ -208,9 +208,9 @@ describe("document", function () {
 	it('lets get the list of all documents of collection', function (done) {
 	    
 	    db.document.list(collection.id)
-		.then(function (ret, message) {
+		.then(function (ret) {
 		    ret.documents.length.should.equal(2);
-		    message.status.should.equal(200);
+		    ret.code.should.equal(200);
 		}).callback(done);
 	})
 	
@@ -234,13 +234,13 @@ describe("document", function () {
 	    options.match = false;
 	    options.rev = doc._rev + 1;
 	    db.document.patch(doc._id, data, options)
-		.then(function (ret, message) {
+		.then(function (ret) {
 		    doc._rev = ret._rev;
-		    message.status.should.equal(202);
+		    ret.code.should.equal(202);
 		}).callback(done);
 	})
 	
-	it('lets patch a document with "match" header and correct revision and the waitForSync param"', function (done) {
+	it('lets patch a document with "match" header and correct revision using waitForSync param', function (done) {
 	    
 	    var data = {
 		"newKey": "newValue"
@@ -250,9 +250,9 @@ describe("document", function () {
 	    options.waitForSync = true;
 	    options.rev = doc._rev;
 	    db.document.patch(doc._id, data, options)
-		.then(function (ret, message) {
+		.then(function (ret) {
 		    doc._rev = ret._rev;
-		    message.status.should.equal(201);
+		    ret.code.should.equal(201);
 		}).callback(done);
 	})
 	
@@ -285,15 +285,15 @@ describe("document", function () {
 	    options.waitForSync = true;
 	    options.keepNull = "false";
 	    db.document.patch(doc._id, data, options)
-		.then(function (ret, message) {
-		    message.status.should.equal(201);
+		.then(function (ret) {
+		    ret.code.should.equal(201);
 		}).callback(done);
 	})
 	
 	it('lets verify the last patch', function (done) {
 	    
 	    db.document.get(doc._id)
-		.then(function (ret, message) {
+		.then(function (ret) {
 		    ret.should.not.have.property("key3");
 		    ret.should.have.property("newKey");
 		}).callback(done);
@@ -323,7 +323,7 @@ describe("document", function () {
 	})
 
 
-	it('lets put a document with "match" header and correct revision and the waitForSync param"', function (done) {
+	it('lets put a document with "match" header and correct revision and the waitForSync param', function (done) {
 	    
 	    var data = {
 		"newKey": "newValue"
@@ -359,15 +359,15 @@ describe("document", function () {
 	    options.rev = doc._rev + 1;
 	    options.forceUpdate = true;
 	    db.document.put(doc._id, data, options)
-		.then(function (ret, message) {
-		    message.status.should.equal(202);
+		.then(function (ret) {
+		    ret.code.should.equal(202);
 		}).callback(done);
 	})
 	
 	it('lets verify the last put', function (done) {
 	    
 	    db.document.get(doc._id)
-		.then(function (ret, message) {
+		.then(function (ret) {
 		    ret.should.not.have.property("key3");
 		    ret.should.not.have.property("key2");
 		    ret.should.not.have.property("key1");
@@ -402,9 +402,9 @@ describe("document", function () {
 	    options.match = false;
 	    options.rev = doc._rev + 1;
 	    db.document.delete(doc._id, options)
-		.then(function (ret, message) {
+		.then(function (ret) {
 		    doc._rev = ret._rev;
-		    message.status.should.equal(202);
+		    ret.code.should.equal(202);
 		}).callback(done);
 	})
 	
@@ -414,23 +414,23 @@ describe("document", function () {
 		"key1": "val1",
 		"key2": "val2",
 		"key3": null
-	    }).then(function (ret, message) {
+	    }).then(function (ret) {
 		ret.error.should.equal(false);
 		doc = ret;
-		message.status.should.equal(202);
+		ret.code.should.equal(202);
 	    }).callback(done);
 	})
 	
-	it('lets delete a document with "match" header and correct revision and the waitForSync param"', function (done) {
+	it('lets delete a document with "match" header and correct revision and setting the waitForSync param', function (done) {
 	    
 	    var options = {};
 	    options.match = true;
 	    options.waitForSync = true;
 	    options.rev = doc._rev;
 	    db.document.delete(doc._id, options)
-		.then(function (ret, message) {
+		.then(function (ret) {
 		    doc._rev = ret._rev;
-		    message.status.should.equal(200);
+		    ret.code.should.equal(200);
 		}).callback(done);
 	})
 
