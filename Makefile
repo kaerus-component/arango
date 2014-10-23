@@ -33,7 +33,7 @@ components:
 	$(COMPONENT) install
 
 
-test: test-nodejs test-browser
+test: test-nodejs
 
 test-nodejs: node_modules
 	@echo "Running tests for nodejs"
