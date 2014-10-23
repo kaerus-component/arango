@@ -3,7 +3,7 @@
 
 module.exports = function (karma) {
 
-    karma.set({
+    var config = {
 
 	// base path, that will be used to resolve files and exclude
 	basePath: '../../',
@@ -79,14 +79,27 @@ module.exports = function (karma) {
 	// - Safari (only Mac)
 	// - PhantomJS
 	// - IE (only Windows)
-	browsers: [ "Firefox" ],
+	browsers: [ "Chrome" ],
+	customLaunchers: {
+	    Chrome_travis: {
+		base: 'Chrome',
+		flags: ['--no-sandbox']
+	    }
+	},
 
 	// If browser does not capture in given timeout [ms], kill it
 	captureTimeout: 60000,
 
-
 	// Continuous Integration mode
 	// if true, it capture browsers, run tests and exit
 	singleRun: true
-    });
+    };
+
+    // set travis specific browser configuration
+    if(process.env.TRAVIS){
+	config.browsers = ["Chrome_travis"];
+    }
+    
+    karma.set(config);
+
 };

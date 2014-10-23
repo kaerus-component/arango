@@ -1,13 +1,11 @@
 language: node_js
 node_js:
-  - 0.10.22
-
-addons:
-  firefox: "32.0"
+  - 0.10
 
 before_install:
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
+  - export CHROME_BIN=chromium-browser
   
 before_script:
   - chmod 777 ./test/travis/setup_arangodb.sh
