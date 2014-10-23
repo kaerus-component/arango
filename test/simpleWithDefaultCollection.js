@@ -324,7 +324,7 @@ describe("simpleWithDefaultCollection", function () {
 	})
 	it('return the first documents from the collection, without count', function (done) {
 	    
-	    db.simple.first(function (err, ret, message) {
+	    db.simple.first().then(function (ret) {
 		
 		ret.error.should.equal(false);
 		ret.code.should.equal(200);
@@ -333,7 +333,7 @@ describe("simpleWithDefaultCollection", function () {
 	})
 	it('return the last documents from the collection, without count', function (done) {
 	    
-	    db.simple.last(function (err, ret, message) {
+	    db.simple.last().then(function (ret) {
 		
 		ret.error.should.equal(false);
 		ret.code.should.equal(200);

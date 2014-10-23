@@ -1085,7 +1085,7 @@ describe("graph", function () {
 		    
 		    db.graph.vertexCollections.delete(graphName, from1)
 			.catch(function(err) {
-			    err.code.should.equal(404);
+			    err.code.should.equal(400);
 			    done();
 			});
 		});

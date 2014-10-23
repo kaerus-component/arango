@@ -28,14 +28,14 @@ describe("aqlfunction", function () {
     it('should be able to create an aql function', function (done) {
 	
 	db.aqlfunction.create("javascripttest::temperature::celsiustofahrenheit",
-			      function (celsius) { return celsius * 1.8 + 32; })
+			      function (celsius) { return celsius * 1.8 + 32; },false)
 	    .callback(done);
     })
     
     it('should be able to create another aql function', function (done) {
 	
 	db.aqlfunction.create("javascripttest::temperature::celsiustofahrenheit2",
-			      "function (celsius) { return celsius * 2.8 + 32; }")
+			      "function (celsius) { return celsius * 2.8 + 32; }",false)
 	    .callback(done);
     })
     

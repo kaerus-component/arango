@@ -63,7 +63,7 @@ describe("admin", function () {
     });
     it('should be able to get the arango dbs time', function (done) {
 
-	db.admin.time(function (ret) {
+	db.admin.time().then(function (ret) {
 	    ret.should.have.property('time');
 	    ret.error.should.equal(false);
 	    ret.code.should.equal(200);

@@ -133,118 +133,117 @@ describe("indexWithDefaultCollection", function () {
 	    }).then(function(ret){
 		
 		ret.error.should.equal(false);
-		ret.code.should.equal(200);
+		ret.code.should.equal(201);
 	    }).callback(done);
 	});
-    })
-    it('create same skiplist again and expect a 200', function (done) {
-	
-	db.index.createSkipListIndex({
-	    fields:["value1"]
-	}).then(function(ret){
+	it('create same skiplist again and expect a 200', function (done) {
 	    
-	    ret.error.should.equal(false);
-	    ret.code.should.equal(200);
-	}).callback(done);
+	    db.index.createSkipListIndex({
+		fields:["value1"]
+	    }).then(function(ret,msg){
+		ret.error.should.equal(false);
+		ret.code.should.equal(200);
+	    }).callback(done);
 
-    })
+	})
 
-    it('create a fulltext index', function (done) {
-	
-	db.index.createFulltextIndex({
-	    fields:["value1"]
-	}).then(function(ret){
+	it('create a fulltext index', function (done) {
 	    
-	    ret.error.should.equal(false);
-	    ret.code.should.equal(201);
+	    db.index.createFulltextIndex({
+		fields:["value1"]
+	    }).then(function(ret){
+		
+		ret.error.should.equal(false);
+		ret.code.should.equal(201);
 
-	}).callback(done);
-    })
-    it('create same fulltext again and expect a 200', function (done) {
-	
-	db.index.createFulltextIndex({
-	    fields:["value1"]
-	}).then(function(ret){
+	    }).callback(done);
+	})
+	it('create same fulltext again and expect a 200', function (done) {
 	    
-	    ret.error.should.equal(false);
-	    ret.code.should.equal(200);
-	}).callback(done);
+	    db.index.createFulltextIndex({
+		fields:["value1"]
+	    }).then(function(ret){
+		
+		ret.error.should.equal(false);
+		ret.code.should.equal(200);
+	    }).callback(done);
 
-    })
+	})
 
-    it('create a bitarray index', function (done) {
-	
-	db.index.createBitarrayIndex({
-	    fields:["x", [0, 1, []], "y", ["a", "b", []]]
-	}).then(function(ret){
+	it('create a bitarray index', function (done) {
 	    
-	    ret.error.should.equal(false);
-	    ret.code.should.equal(201);
+	    db.index.createBitarrayIndex({
+		fields:["x", [0, 1, []], "y", ["a", "b", []]]
+	    }).then(function(ret){
+		
+		ret.error.should.equal(false);
+		ret.code.should.equal(201);
 
-	}).callback(done);
-    })
-    it('create same bitarray again and expect a 200', function (done) {
-	
-	db.index.createBitarrayIndex({
-	    fields:["x", [0, 1, []], "y", ["a", "b", []]]
-	}).then(function(ret){
+	    }).callback(done);
+	})
+	it('create same bitarray again and expect a 200', function (done) {
 	    
-	    ret.error.should.equal(false);
-	    ret.code.should.equal(200);
+	    db.index.createBitarrayIndex({
+		fields:["x", [0, 1, []], "y", ["a", "b", []]]
+	    }).then(function(ret){
+		
+		ret.error.should.equal(false);
+		ret.code.should.equal(200);
 
-	}).callback(done);
-    })
+	    }).callback(done);
+	})
 
-    it('list all we created so far', function (done) {
-	
-	db.index.list()
-	.then(function(ret) {
-	    indices = ret.indexes;
-	    ret.error.should.equal(false);
-	    ret.indexes.length.should.equal(8);
-	    ret.code.should.equal(200);
-	}).callback(done);
-
-    })
-    it('get an index ', function (done) {
-	
-	db.index.get(indices[1].id).then(function(ret){
+	it('list all we created so far', function (done) {
 	    
-	    ret.error.should.equal(false);
-	    ret.code.should.equal(200);
-	}).callback(done);
+	    db.index.list()
+		.then(function(ret) {
+		    indices = ret.indexes;
+		    ret.error.should.equal(false);
+		    ret.indexes.length.should.equal(8);
+		    ret.code.should.equal(200);
+		}).callback(done);
 
-    })
-    it('get an index ', function (done) {
-	
-	db.index.get(indices[5].id).then(function(ret){
+	})
+	it('get an index ', function (done) {
 	    
-	    ret.error.should.equal(false);
-	    ret.code.should.equal(200);
-	}).callback(done);
+	    db.index.get(indices[1].id).then(function(ret){
+		
+		ret.error.should.equal(false);
+		ret.code.should.equal(200);
+	    }).callback(done);
 
-    })
-    it('delete an index ', function (done) {
-	
-	db.index.delete(indices[5].id).then(function(ret){
+	})
+	it('get an index ', function (done) {
 	    
-	    ret.error.should.equal(false);
-	    ret.code.should.equal(200);
-	}).callback(done);
+	    db.index.get(indices[5].id).then(function(ret){
+		
+		ret.error.should.equal(false);
+		ret.code.should.equal(200);
+	    }).callback(done);
 
-    })
-    it('list all we created so far', function (done) {
-	
-	db.index.list()
-	.then(function (ret) {
+	})
+	it('delete an index ', function (done) {
 	    
-	    indices = ret.indexes;
-	    ret.error.should.equal(false);
-	    ret.indexes.length.should.equal(7);
-	    ret.code.should.equal(200);
+	    db.index.delete(indices[5].id).then(function(ret){
+		
+		ret.error.should.equal(false);
+		ret.code.should.equal(200);
+	    }).callback(done);
 
-	}).callback(done);
+	})
+	it('list all we created so far', function (done) {
+	    
+	    db.index.list()
+		.then(function (ret) {
+		    
+		    indices = ret.indexes;
+		    ret.error.should.equal(false);
+		    ret.indexes.length.should.equal(7);
+		    ret.code.should.equal(200);
+
+		}).callback(done);
+	})
+
     })
-
 })
 
