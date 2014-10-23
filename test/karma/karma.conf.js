@@ -79,7 +79,7 @@ module.exports = function (karma) {
 	// - Safari (only Mac)
 	// - PhantomJS
 	// - IE (only Windows)
-	browsers: [ "Chrome" ],
+	browsers: [ "Firefox" ],
 	customLaunchers: {
 	    Chrome_travis: {
 		base: 'Chrome',
@@ -95,8 +95,8 @@ module.exports = function (karma) {
 	singleRun: true
     };
 
-    // set travis specific browser configuration
-    if(process.env.TRAVIS){
+    // set travis specific browser configuration for Chrome
+    if(config.browsers[0] === "Chrome" && process.env.TRAVIS){
 	config.browsers = ["Chrome_travis"];
     }
     
