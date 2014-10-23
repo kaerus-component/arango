@@ -8,27 +8,27 @@ NOTE: This repo is now officially maintained by the developers of ArangoDB @ htt
 
 Meanwhile I'll keep exploring new designs for my own personal pleasure.
 
-One major upcomming change will be the removal of callbacks in api methods in favour of only promises.
-Allowing two call styles has been errorprone when writing the api methods.
+### Latest changes
 
-However, a ```callback``` utility has been added that you may use instead.
-
-Previous style when using a callback
+A ```callback``` method has been added that can be used instead of a callback passed as argument.
 ```
-db.database.create("newdb",function(err,ret){
-  if(!err) console.log("successfully created database:", ret);
-  else console.log("failed to create database:", err);
-});
-```
-
-New callback method used with promises
-```
-db.database.create("newdb")
+x = db.database.create("newdb")
   .callback(function(err,ret){
     ... same as above ...  
   });
+
+// x => Promise
+
 ```
 
+You may however still pass a callback to the API methods in which case promises are bypassed so you achieve a little less overhead in your db.api calls.
+```
+var x = db.collection.list(function(err,ret){
+  console.log("err(%s):",err,ret);
+});
+
+// x => undefined 
+```
 
 
 Introduction
