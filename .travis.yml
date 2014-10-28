@@ -1,9 +1,10 @@
+branches:
+  only:
+    - master
+    
 language: node_js
 node_js:
   - 0.10
-
-addons:
-  firefox: "32.0"
 
 before_install:
   - export DISPLAY=:99.0
