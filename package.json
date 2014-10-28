@@ -1,13 +1,13 @@
 {
   "name": "arango",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "ArangoDB javascript client",
   "keywords": [
     "arangodb",
     "client",
     "nosql"
   ],
-  "author": { 
+  "author": {
     "name": "Anders Elo",
     "email": "anders@kaerus.com",
     "logo": "http://kaerus.com/images/kaerus_logo.png"
@@ -16,8 +16,8 @@
     "anders elo <anders@kaerus.com>",
     "florian bartels <f.bartels@triagens.de>"
   ],
-  "dependencies":{
-    "micropromise": "~0.4.3",
+  "dependencies": {
+    "micropromise": "~0.4.6",
     "base64": "git://github.com/kaerus-component/base64.git#0.1.0",
     "urlparser": "git://github.com/kaerus-component/urlparser.git#0.3.9"
   },
@@ -25,23 +25,23 @@
     "mocha": "*",
     "chai": "*",
     "should": "*",
-    "component":"~0.9.0",
-    "karma":"*",
-    "karma-mocha":"*",
-    "karma-chai":"*",
-    "js-beautify":"*",
-    "uglify-js":"~2.4",
-    "karma-spec-reporter":"*",
-    "karma-firefox-launcher":"*",
+    "component": "~0.9.0",
+    "karma": "*",
+    "karma-mocha": "*",
+    "karma-chai": "*",
+    "js-beautify": "*",
+    "uglify-js": "~2.4",
+    "karma-spec-reporter": "*",
+    "karma-firefox-launcher": "*",
     "karma-chrome-launcher": "*",
-    "yuidoc-bootstrap-theme":"*"
+    "yuidoc-bootstrap-theme": "*"
   },
   "engine": "node >= 0.10.0",
   "bugs": {
     "url": "https://github.com/triAGENS/ArangoDB-JavaScript/issues"
   },
   "scripts": {
-    "test":"make test"
+    "test": "make test"
   },
   "repository": {
     "type": "git",
