@@ -30,7 +30,6 @@ describe("user", function () {
 		"nachname": "otto"
 	    }
 	}).then( function (ret) {
-	    console.log("create",ret);
 	    ret.error.should.equal(false);
 	    ret.code.should.equal(201);
 	}).callback(done);
