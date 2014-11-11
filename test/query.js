@@ -10,6 +10,69 @@ try {
 
 describe("query", function() {
 
+    before(function(){
+	db = new arango.Connection;
+    })
+    
+    describe("exec", function(){
+
+	it('using query functions', function (done) {
+	    
+	    db.query.for('u').in('@@collection').return('u')
+		.exec({
+		    '@collection': '_users'
+		}).callback(done);
+	    
+	})
+	
+	it('using query functions with bindVars', function (done) {
+	    
+	    db.query.for('u').in('@@collection').return('u')
+		.exec({
+		    '@collection': '_users'
+		}).callback(done);
+	    
+	})
+
+	it('using query module with plain query string', function (done) {
+	    
+	    db.query.exec("for u in _users return u")
+		.callback(done);
+	    
+	})
+
+	it('using query string with bindVars', function (done) {
+	    
+	    db.query.exec("FOR u IN @@collection RETURN u",{
+		'@collection': '_users'
+	    }).callback(done);
+	    
+	})
+    })
+
+    describe('test',function(){
+	it('using query test', function (done) {
+	    
+	    db.query.for('u').in('@@collection').return('u')
+		.test({
+		    '@collection': '_users'
+		}).callback(done);
+	})
+
+    })
+
+    describe('explain',function(){
+	it('using query explain', function (done) {
+	    
+	    db.query
+		.for('u').in('@@collection').return('u')
+		.explain({
+		    '@collection': '_users'
+		}).callback(done);
+	    
+	})
+    })
+	     
     describe("graph queries", function() {
 	
 	var graphName = "routePlanner";

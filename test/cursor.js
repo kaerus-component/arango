@@ -133,10 +133,11 @@ describe("cursor", function () {
     it('creating a valid cursor using limit', function (done) {
 	
 	var cursorData = {};
-	cursorData.query = "FOR p IN newCollection FiLTER LIKE(p.key1 ,@name) LIMIT 1 RETURN p._id"
+	cursorData.query = "FOR p IN newCollection FiLTER LIKE(p.key1 ,@name) LIMIT 1 RETURN p._id";
 	cursorData.count = true;
 	cursorData.options = {
-	    "fullCount": true
+	    "fullCount": true,
+	    "scannedFull": true // adb v2.3'
 	};
 	cursorData.bindVars = {};
 	cursorData.bindVars.name = "%val2%";
@@ -146,9 +147,10 @@ describe("cursor", function () {
 		ret.error.should.equal(false);
 		ret.hasMore.should.equal(false);
 		ret.count.should.equal(1);
-		// note: changed between arangodb versions
+		// note: location changed between arangodb versions
 		if(ret.extra.fullCount) ret.extra.fullCount.should.equal(3); 
-		else ret.extra.scannedFull.should.equal(3); // adb v2.3+
+		else ret.extra.stats.fullCount.should.equal(3); // adb v2.3+
+		
 		message.status.should.equal(201);
 	    }).callback(done);
     })
@@ -210,55 +212,5 @@ describe("cursor", function () {
 		    done();
 		});
 	})
-
-	it('using query string', function (done) {
-	    
-	    var query = db.query.string("FOR u IN @@collection RETURN u");
-	    query.exec({
-		'@collection': 'newCollection'
-	    }).callback(done);
-	    
-	})
-
-	it('using query module', function (done) {
-	    
-	    var query = db.query.
-		    for('u').in('@@collection').
-		    return('u');
-	    query.exec({
-		'@collection': 'newCollection'
-	    }).callback(done);
-
-	})
-
-	it('using query module with plain query', function (done) {
-	    
-	    db.query.exec("for u in newCollection return u")
-		.callback(done);
-
-	})
-
-	it('using query module explain', function (done) {
-	    
-	    var query = db.query.
-		    for('u').in('@@collection').
-		    return('u');
-	    query.explain({
-		'@collection': 'newCollection'
-	    }).callback(done);
-	    
-	})
-
-	it('using query module test', function (done) {
-	    
-	    var query = db.query.
-		    for('u').in('@@collection').
-		    return('u');
-	    query.test({
-		'@collection': 'newCollection'
-	    }).callback(done);
-
-	})
-
     })
 })
