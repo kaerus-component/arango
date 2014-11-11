@@ -15,5 +15,5 @@ before_script:
   - chmod 777 ./test/travis/setup_arangodb.sh
   - ./test/travis/setup_arangodb.sh
 
-script: make test
+script: make test && make test-browser
 
