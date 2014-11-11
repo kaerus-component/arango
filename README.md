@@ -4,11 +4,21 @@ ArangoDB client
 ===============
 A client for the ArangoDB nosql database for nodejs and browsers.
 
-NOTE: This repo is now officially maintained by the developers of ArangoDB @ https://github.com/triAGENS/ArangoDB-JavaScript
-
-Meanwhile I'll keep exploring new designs for my own personal pleasure.
+NOTE: This repo is now officially maintained by the developers of ArangoDB @ https://github.com/triAGENS/ArangoDB-JavaScript. 
 
 ### Latest changes
+The Query API returns result from Aql cursors unfiltered.
+Before you only got the result Array missing some 'extra' information.
+```
+db.query
+  .for('u').in('_users').return('u')
+  .exec()
+  .then(function(ret){
+    console.log("ret.result", ret.result); // array with results
+    console.log("ret.extra", ret.extra); // extra information
+  });
+```
+
 
 A ```callback``` method has been added that can be used instead of a callback passed as argument.
 ```
@@ -389,18 +399,18 @@ Methods supported are: get(), put(), post(), delete(), options(), head(), patch(
 Queries
 -------
 ```javascript
-/* simple query string */
+/* using a query string */
 db.query.exec("FOR u in test RETURN u").callback(function(err,ret){
   console.log("err(%s):", err, ret);
 });
 
-/* A bindvar for the collection name */
-db.query.string = "FOR u IN @@collection RETURN u";
 ...
-/* execute the query and pass the collection variable */
-db.query.exec({'@collection':"test"}).callback(function(err,ret){
-  console.log("err(%s):",util.inspect(ret));
+/* query string with a bindVar */
+db.query.exec("FOR u in @@collection return u",{'@collection':"_users"})
+  .callback(function(err,ret){
+    console.log("err(%s):",util.inspect(ret));
 });
+
 ```
 Note: ArangoDB expects @@ in front of collection names when using a bindvar.
 The bindvar attribute in this case needs to be prefixed with a single @. 
@@ -414,32 +424,32 @@ Query builder
 Result batch size can be set using the ```query.count(<number>)``` method.
 In case of partial results the next batch can be retrieved with res.next().
 ```javascript
-/* using the query builder */
-query = db.query.for('u').in('users')
-          .filter('u.contact.address.state == @state')
-          .collect('region = u.contact.region').into('group')
-          .sort('LENGTH(group) DESC').limit('0, 5')
-          .return('{"region": region, "count": LENGTH(group)}');
+/* using the query builder and a bindVar */
+db.query.for('u').in('users')
+  .filter('u.contact.address.state == @state')
+  .collect('region = u.contact.region').into('group')
+  .sort('LENGTH(group) DESC').limit('0, 5')
+  .return('{"region": region, "count": LENGTH(group)}')
+  .exec({state:"CA"})
+  .done(function(res){
+     console.log("res",res)
+  });
 
-
-/* show the composed query string */
-console.log("Arango query:", query.string);
-                
-/* test run the query */
-query.test().callback(function(err,ret){
-  console.log("err(%s):",err,ret);
-});
-
-/* execute the query and set the variable 'state' */
-query.exec({state: "CA"})
-  .then(function(res){ console.log("res",res) },
-    function(err){ console.log("err",err) });
+             
+/* test run a query */
+db.query
+  .for('u').in('_users').return('u')
+  .exec()
+  .callback(function(err,ret){
+     console.log("err(%s):",err,ret);
+  });
 
 
 /* detailed query explanation */
-query.explain({state:"CA"}).callback(function(err,ret){
-  console.log("err(%s):",err,ret);
-});
+db.query.explain("for u in _users return u")
+  .callback(function(err,ret){
+     console.log("err(%s):",err,ret);
+  });
 
 /* nested queries embedded as functions(){} */
 query = db.query.for('likes').in(function() {
@@ -453,16 +463,21 @@ query = db.query.for('likes').in(function() {
   }).collect('what = likes').into('group')
   .sort('LENGTH(group) DESC')
   .limit('0, 5')
-  .return('{"what": what, "count": LENGTH(group)}');
-
-query.exec({gender:"female",likes:"running"}).then(function(res){
-  console.log("result:",res);
-},function(err){
-  console.llg("error:", err);
-});
+  .return('{"what": what, "count": LENGTH(group)}')
+  .exec({gender:"female",likes:"running"})
+  .callback(function(err,ret){
+     console.log("err(%s):",err,ret);
+  });
 
 /* limit the result set to 1 item each iteration */
-query.count(1).exec({gender:"female",likes:"running"}).then(do_something);
+query.count(1).exec({gender:"female",likes:"running"})
+  .then(function(ret){
+    /* do something */
+    /* fetch next item */
+    return query.next();
+  }).then(function(ret){
+    /* do something */
+  });
 
 
 ```
@@ -632,38 +647,45 @@ api
 ----
 An API can be implemented like this.
 ```javascript
-var Arango = require('arango');
 
 function StubAPI(db) {
     return {
-      "get": function(headers){
-          return db.get('/path',headers);
+      "get": function(){
+          return db.get('/path' /*,headers */);
       },
-      "post": function(data,headers){
-          return db.post('/path',data,headers);
+      "post": function(data){
+          return db.post('/path',data /*,headers*/);
       },
-      "put": function(data,headers){
-          return db.put('/path',data,headers);
+      "put": function(data){
+          return db.put('/path',data /*,headers*/);
       },
-      "delete": function(headers){
-          return db.delete('/path',headers);
+      "delete": function(){
+          return db.delete('/path' /*,headers*/);
       },
-      "head": function(headers){
-          return db.head('/path',headers);
+      "head": function(){
+          return db.head('/path' /*,headers*/);
       },
-      "patch": function(data,headers){
-          return db.path('/path',data,headers);
+      "patch": function(data){
+          return db.path('/path',data /*,headers*/);
       },
-      "options": function(headers){
-          return db.options('/path',headers);
+      "options": function(){
+          return db.options('/path' /*,headers*/);
       }
     };
 }
 
 /* Attach the API into 'stub' namespace */
-module.exports = Arango.api('stub',StubAPI);
+exports.stub = StubAPI;
 ```
 
+To attach your API into the db instances you use the ```Arango.api``` class method.
+```
+/* attach to db instances */
+Arango.api(require('myAPI'));
+var db = new Arrango.Connection;
+/* call API method */
+db.stub.get();
+```
 
 License
 =======
