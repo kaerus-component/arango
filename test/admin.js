@@ -1,4 +1,10 @@
-var arango = Arango || require('..');
+var arango;
+
+try {
+    arango = Arango
+} catch (e) {
+    arango = require('..')
+}
 
 describe("admin", function () {
     var db;

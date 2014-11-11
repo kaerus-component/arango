@@ -1,11 +1,9 @@
-/*jslint */
-/*global describe, before, after, it, describe, window*/
 var arango, db, indices = {};
 
 try {
-    arango = require('arango');
+    arango = Arango
 } catch (e) {
-    arango = require('..');
+    arango = require('..')
 }
 
 describe("query", function() {
