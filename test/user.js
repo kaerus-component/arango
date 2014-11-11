@@ -10,7 +10,7 @@ describe("user", function () {
 
     before(function (done) {
 	
-	db = arango.Connection("/_system");
+	db = new arango.Connection;
 	
 	db.database.delete("newDatabase").end( function () {
 	    db.database.create("newDatabase").then( function() {
@@ -27,7 +27,7 @@ describe("user", function () {
 	    changePassword: true,
 	    extra:{
 		"vorname": "hans",
-		"nachname": "otto"
+		"nachname": "grimm"
 	    }
 	}).then( function (ret) {
 	    ret.error.should.equal(false);
@@ -37,12 +37,12 @@ describe("user", function () {
 
     it('create a user', function (done) {
 	
-	db.user.create("hans2", {
-	    passwd:"passwordHans2",
+	db.user.create("greta", {
+	    passwd:"passwordGreta",
 	    changePassword: true,
 	    extra:{
-		"vorname": "hans2",
-		"nachname": "otto2"
+		"vorname": "greta",
+		"nachname": "grimm"
 	    }
 	}).then( function (ret) {
 	    ret.error.should.equal(false);
@@ -74,9 +74,10 @@ describe("user", function () {
 		ret.code.should.equal(200);
 	    }).callback(done);
     })
+    
     it('get non existing user', function (done) {
 	
-	db.user.get("hansGibtsNicht")
+	db.user.get("achtung")
 	    .catch(function (err) {
 		err.error.should.equal(true);
 		err.code.should.equal(404);
@@ -86,7 +87,7 @@ describe("user", function () {
 
     it('delete user', function (done) {
 	
-	db.user.delete("hans2")
+	db.user.delete("greta")
 	    .then(function (ret) {
 		
 		ret.error.should.equal(false);
@@ -95,7 +96,7 @@ describe("user", function () {
     })
     it('delete non existing user', function (done) {
 	
-	db.user.delete("hansGibtsNicht")
+	db.user.delete("achtung")
 	    .catch(function (err) {
 		err.error.should.equal(true);
 		err.code.should.equal(404);
@@ -105,7 +106,7 @@ describe("user", function () {
 
     it('patch non existing user', function (done) {
 	
-	db.user.patch("hans2", {passwd:"newPassword"})
+	db.user.patch("greta", {passwd:"newPassword"})
 	    .catch(function (err) {
 		err.error.should.equal(true);
 		err.code.should.equal(404);
@@ -117,11 +118,11 @@ describe("user", function () {
 	
 	db.user.patch("hans",{
 	    passwd: "newpassword",
+	    changePassword: false,
 	    extra:{
 		"nachname": "otto-müller",
 		"married": true
-	    },
-	    changePassword: false
+	    }
 	}).then( function (ret) {
 	    ret.error.should.equal(false);
 	    ret.code.should.equal(200);
@@ -142,7 +143,7 @@ describe("user", function () {
 
     it('put non existing user', function (done) {
 	
-	db.user.put("hans2", {passwd:"newpassword"})
+	db.user.put("greta", {passwd:"newpassword"})
 	    .catch(function (err) {
 		err.error.should.equal(true);
 		err.code.should.equal(404);
@@ -151,18 +152,19 @@ describe("user", function () {
     })
     
     it('put user', function (done) {
+	var extra = {
+	    "married": false,
+	    "sad": true
+	};
 	
 	db.user.put("hans", {
 	    passwd:"newPassword",
 	    changePassword:false,
-	    extra: {
-		"married": false,
-		"sad": true
-	    }
+	    extra: extra 
 	}).then( function (ret) {
 	    ret.error.should.equal(false);
 	    ret.code.should.equal(200);
-	    ret.extra.should.eql({married:false,sad:true});
+	    ret.extra.should.eql(extra);
 	}).callback(done);
     })
     
@@ -175,4 +177,6 @@ describe("user", function () {
 		ret.extra.should.eql({married:false, sad:true});
 	    }).callback(done);
     })
+
+    
 })

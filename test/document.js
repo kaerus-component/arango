@@ -52,53 +52,54 @@ describe("document", function () {
 	    }).callback(done);
 	})
 
-	// should be refactored inside a description block
-	db.admin.role()
-	    .then(function (ret) {
-		role = ret.role;
-		if (role === "UNDEFINED") {
-		    
-		    it('create another document and the collection along with it', function (done) {
+	describe('',function(){
+	    db.admin.role()
+		.then(function (ret) {
+		    role = ret.role;
+		    if (role === "UNDEFINED") {
 			
-			var options = {};
-			options.createCollection = true;
-			options.waitForSync = true;
-			db.document.create("anotherCollection", {
-			    "key1": "val1",
-			    "key2": "val2"
-			}, options)
-			    .then(function (ret, message) {
-				ret.error.should.equal(false);
-				ret.code.should.equal(201);
-			    }).callback(done);
-		    })
+			it('create another document and the collection along with it', function (done) {
+			    
+			    var options = {};
+			    options.createCollection = true;
+			    options.waitForSync = true;
+			    db.document.create("anotherCollection", {
+				"key1": "val1",
+				"key2": "val2"
+			    }, options)
+				.then(function (ret, message) {
+				    ret.error.should.equal(false);
+				    ret.code.should.equal(201);
+				}).callback(done);
+			})
 
-		    it('lets check that rotation of WAL content is not possible', function (done) {
-			
-			db.collection.rotate(collection.id)
-			    .catch(function (err) {
-				err.code.should.equal(400);
-				done();
-			    });
-		    })
+			it('lets check that rotation of WAL content is not possible', function (done) {
+			    
+			    db.collection.rotate(collection.id)
+				.catch(function (err) {
+				    err.code.should.equal(400);
+				    done();
+				});
+			})
 
-		    it('lets rotate the journal of "newCollection"', function (done) {
-			
-			// First flush the WAL otherwise rotation has no effect
-			db.admin.walFlush(false, true)
-			    .then(function(ret) {
-				db.collection.rotate(collection.id)
-				    .then(function (ret2) {
-					ret.code.should.equal(200);
-					ret.error.should.equal(false);
-					ret2.error.should.equal(false);
-					ret2.code.should.equal(200);
-				    }).callback(done);
-			    });
-		    });
-		}
-	    });
-
+			it('lets rotate the journal of "newCollection"', function (done) {
+			    
+			    // First flush the WAL otherwise rotation has no effect
+			    db.admin.walFlush(false, true)
+				.then(function(ret) {
+				    db.collection.rotate(collection.id)
+					.then(function (ret2) {
+					    ret.code.should.equal(200);
+					    ret.error.should.equal(false);
+					    ret2.error.should.equal(false);
+					    ret2.code.should.equal(200);
+					}).callback(done);
+				});
+			});
+		    }
+		});
+	});
+	
 	it('lets get a non existing document"', function (done) {
 	    
 	    db.document.get(doc._id + 200)
@@ -323,17 +324,17 @@ describe("document", function () {
 	})
 
 	/* AE: Always fails, need to check if bug in db
-	it('lets put a document with "match" header and correct revision and the waitForSync param', function (done) {
-	    
-	    var data = {
-		"newKey": "newValue"
-	    };
-	    var options = {};
-	    options.match = true;
-	    options.waitForSync = true;
-	    options.rev = doc._rev;
-	    db.document.put(doc._id, data, options).callback(done);
-	})
+	 it('lets put a document with "match" header and correct revision and the waitForSync param', function (done) {
+	 
+	 var data = {
+	 "newKey": "newValue"
+	 };
+	 var options = {};
+	 options.match = true;
+	 options.waitForSync = true;
+	 options.rev = doc._rev;
+	 db.document.put(doc._id, data, options).callback(done);
+	 })
 	 */
 	
 	it('lets put a document with "match" header and wrong revision', function (done) {
