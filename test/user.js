@@ -1,7 +1,7 @@
 var arango, db;
 
 try {
-    arango = require('arango')
+    arango = Arango
 } catch (e) {
     arango = require('..')
 }
@@ -22,10 +22,15 @@ describe("user", function () {
 
     it('create a user', function (done) {
 	
-	db.user.create("hans", "passwordHans", true, {
-	    "vorname": "hans",
-	    "nachname": "otto"
+	db.user.create("hans",{
+	    passwd:"passwordHans",
+	    changePassword: true,
+	    extra:{
+		"vorname": "hans",
+		"nachname": "otto"
+	    }
 	}).then( function (ret) {
+	    console.log("create",ret);
 	    ret.error.should.equal(false);
 	    ret.code.should.equal(201);
 	}).callback(done);
@@ -33,9 +38,13 @@ describe("user", function () {
 
     it('create a user', function (done) {
 	
-	db.user.create("hans2", "passwordHans2", true, {
-	    "vorname": "hans2",
-	    "nachname": "otto2"
+	db.user.create("hans2", {
+	    passwd:"passwordHans2",
+	    changePassword: true,
+	    extra:{
+		"vorname": "hans2",
+		"nachname": "otto2"
+	    }
 	}).then( function (ret) {
 	    ret.error.should.equal(false);
 	    ret.code.should.equal(201);
@@ -44,9 +53,13 @@ describe("user", function () {
 
     it('create an already existing user', function (done) {
 	
-	db.user.create("hans", "passwordHans", true, {
-	    "vorname": "hans",
-	    "nachname": "otto"
+	db.user.create("hans", {
+	    passwd: "passwordHans",
+	    changePassword: true,
+	    extra: {
+		vorname: "hans",
+		nachname: "otto"
+	    }
 	}).catch( function (err) {
 	    err.error.should.equal(true);
 	    err.code.should.equal(400);
@@ -93,7 +106,7 @@ describe("user", function () {
 
     it('patch non existing user', function (done) {
 	
-	db.user.patch("hans2", "newPassword")
+	db.user.patch("hans2", {passwd:"newPassword"})
 	    .catch(function (err) {
 		err.error.should.equal(true);
 		err.code.should.equal(404);
@@ -103,9 +116,13 @@ describe("user", function () {
     
     it('patch user', function (done) {
 	
-	db.user.patch("hans", "newPassword", false, {
-	    "nachname": "otto-müller",
-	    "married": true
+	db.user.patch("hans",{
+	    passwd: "newpassword",
+	    extra:{
+		"nachname": "otto-müller",
+		"married": true
+	    },
+	    changePassword: false
 	}).then( function (ret) {
 	    ret.error.should.equal(false);
 	    ret.code.should.equal(200);
@@ -116,18 +133,17 @@ describe("user", function () {
 	
 	db.user.get("hans")
 	    .then(function (ret) {
-
 		ret.error.should.equal(false);
-		ret.extra.should.have.property("nachname");
-		ret.extra.should.have.property("married");
-		ret.extra.should.have.property("vorname");
 		ret.code.should.equal(200);
+		ret.extra.vorname.should.equal("hans");
+		ret.extra.nachname.should.equal("otto-müller");
+		ret.extra.married.should.equal(true);
 	    }).callback(done);
     })
 
     it('put non existing user', function (done) {
 	
-	db.user.put("hans2", "newPassword")
+	db.user.put("hans2", {passwd:"newpassword"})
 	    .catch(function (err) {
 		err.error.should.equal(true);
 		err.code.should.equal(404);
@@ -137,12 +153,17 @@ describe("user", function () {
     
     it('put user', function (done) {
 	
-	db.user.put("hans", "newPassword", false, {
-	    "married": false,
-	    "sad": true
+	db.user.put("hans", {
+	    passwd:"newPassword",
+	    changePassword:false,
+	    extra: {
+		"married": false,
+		"sad": true
+	    }
 	}).then( function (ret) {
 	    ret.error.should.equal(false);
 	    ret.code.should.equal(200);
+	    ret.extra.should.eql({married:false,sad:true});
 	}).callback(done);
     })
     
@@ -150,13 +171,9 @@ describe("user", function () {
 	
 	db.user.get("hans")
 	    .then(function (ret) {
-		
-		ret.extra.should.not.have.property("nachname");
-		ret.extra.should.have.property("married");
-		ret.extra.should.have.property("sad");
-		ret.extra.should.not.have.property("vorname");
 		ret.error.should.equal(false);
 		ret.code.should.equal(200);
+		ret.extra.should.eql({married:false, sad:true});
 	    }).callback(done);
     })
 })
