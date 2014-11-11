@@ -1,10 +1,4 @@
-var arango;
-
-try {
-    arango = require('arango')
-} catch (e) {
-    arango = require('..')
-}
+var arango = Arango || require('..');
 
 describe("admin", function () {
     var db;
@@ -54,13 +48,6 @@ describe("admin", function () {
 	    ret.code.should.equal(200);
 	}).callback(done);
     })
-    it('should be able to flush the arango dbs modules', function (done) {
-
-	db.admin.modulesFlush().then(function (ret) {
-	    ret.error.should.equal(false);
-	    ret.code.should.equal(200);
-	}).callback(done);
-    });
     it('should be able to get the arango dbs time', function (done) {
 
 	db.admin.time().then(function (ret) {
