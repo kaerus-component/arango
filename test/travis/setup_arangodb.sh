@@ -3,13 +3,13 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
 
-VERSION=2.2.5
+VERSION=2.2.6
 NAME=ArangoDB-$VERSION
 
 if [ ! -d "$DIR/$NAME" ]; then
   # download ArangoDB
   echo "wget http://www.arangodb.org/repositories/travisCI/$NAME.tar.gz"
-  wget http://www.arangodb.org/repositories/travisCI/$NAME.tar.gz
+  wget --no-check-certificate http://www.arangodb.org/repositories/travisCI/$NAME.tar.gz
   echo "tar zxf $NAME.tar.gz"
   tar zvxf $NAME.tar.gz
 fi
