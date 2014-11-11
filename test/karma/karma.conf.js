@@ -15,7 +15,7 @@ module.exports = function (karma) {
 
 	// list of files / patterns to load in the browser
 	files: [
-	    'build/build.js',
+	    'build/test.js',
 	    'test/action.js',
 	    'test/admin.js',
 	    'test/aqlfunction.js',
@@ -51,7 +51,11 @@ module.exports = function (karma) {
 	// web server port
 	port: 9876,
 
-
+	// proxy to arangodb
+	proxies: {
+	    '/':'http://0.0.0.0:8529'
+	},
+	
 	// cli runner port
 	runnerPort: 9100,
 
@@ -61,7 +65,7 @@ module.exports = function (karma) {
 
 	// level of logging
 	// possible values: karma.LOG_DISABLE || karma.LOG_ERROR || karma.LOG_WARN || karma.LOG_INFO || karma.LOG_DEBUG
-	logLevel: karma.LOG_ERROR,
+	logLevel: karma.LOG_DEBUG,
 
 
 	// enable / disable watching file and executing tests whenever any file changes
@@ -79,7 +83,7 @@ module.exports = function (karma) {
 	// - Safari (only Mac)
 	// - PhantomJS
 	// - IE (only Windows)
-	browsers: [ "Firefox" ],
+	browsers: [ "Chrome" ],
 	customLaunchers: {
 	    Chrome_travis: {
 		base: 'Chrome',
