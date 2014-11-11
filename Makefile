@@ -24,10 +24,12 @@ node_modules:
 
 component: index.js
 	@echo "Building web component"
+	@mkdir -p build
 	$(DUO) $< > build/build.js 
 
 test-component: index.js
 	@echo "Building test component"
+	@mkdir -p build
 	$(DUO) $< -g Arango --copy > build/test.js
 
 test: test-nodejs
