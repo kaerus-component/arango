@@ -1,7 +1,7 @@
 var arango, db, indices;
 
 try {
-    arango = require('arango')
+    arango = Arango
 } catch (e) {
     arango = require('..')
 }
@@ -170,36 +170,13 @@ describe("indexWithDefaultCollection", function () {
 
 	})
 
-	it('create a bitarray index', function (done) {
-	    
-	    db.index.createBitarrayIndex({
-		fields:["x", [0, 1, []], "y", ["a", "b", []]]
-	    }).then(function(ret){
-		
-		ret.error.should.equal(false);
-		ret.code.should.equal(201);
-
-	    }).callback(done);
-	})
-	it('create same bitarray again and expect a 200', function (done) {
-	    
-	    db.index.createBitarrayIndex({
-		fields:["x", [0, 1, []], "y", ["a", "b", []]]
-	    }).then(function(ret){
-		
-		ret.error.should.equal(false);
-		ret.code.should.equal(200);
-
-	    }).callback(done);
-	})
-
 	it('list all we created so far', function (done) {
 	    
 	    db.index.list()
 		.then(function(ret) {
 		    indices = ret.indexes;
 		    ret.error.should.equal(false);
-		    ret.indexes.length.should.equal(8);
+		    ret.indexes.length.should.equal(7);
 		    ret.code.should.equal(200);
 		}).callback(done);
 
@@ -238,7 +215,7 @@ describe("indexWithDefaultCollection", function () {
 		    
 		    indices = ret.indexes;
 		    ret.error.should.equal(false);
-		    ret.indexes.length.should.equal(7);
+		    ret.indexes.length.should.equal(6);
 		    ret.code.should.equal(200);
 
 		}).callback(done);

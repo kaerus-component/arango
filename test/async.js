@@ -2,7 +2,7 @@ var arango, db, jobs = [],
     storedJobs = {};
 
 try {
-    arango = require('arango')
+    arango = Arango
 } catch (e) {
     arango = require('..')
 }

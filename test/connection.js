@@ -1,7 +1,7 @@
 var arango;
 
 try {
-    arango = require('arango')
+    arango = Arango
 } catch (e) {
     arango = require('..')
 }

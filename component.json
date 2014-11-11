@@ -1,6 +1,6 @@
 {
   "name": "arango",
-  "version": "1.2.2",
+  "version": "1.3.0",
   "description": "ArangoDB Javascript client",
   "repo": "kaerus-component/arango",
   "dependencies": {
@@ -17,29 +17,7 @@
   ],
   "scripts": [
     "index.js",
-    "lib/arango.js",
-    "lib/utils.js",
-    "lib/xhr.js",
-    "lib/url.js",
-    "lib/api/transaction.js",
-    "lib/api/collection.js",
-    "lib/api/database.js",
-    "lib/api/document.js",
-    "lib/api/action.js",
-    "lib/api/cursor.js",
-    "lib/api/simple.js",
-    "lib/api/index.js",
-    "lib/api/admin.js",
-    "lib/api/aqlfunction.js",
-    "lib/api/traversal.js",
-    "lib/api/endpoint.js",
-    "lib/api/import.js",
-    "lib/api/query.js",
-    "lib/api/graph.js",
-    "lib/api/batch.js",
-    "lib/api/edge.js",
-    "lib/api/user.js",
-    "lib/api/job.js"
+    "lib/*"
   ],
   "license": "Apache2_0"
 }

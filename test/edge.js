@@ -1,9 +1,7 @@
 var arango;
 
-// FUBAR, does not run at all
-
 try {
-    arango = require('arango')
+    arango = Arango
 } catch (e) {
     arango = require('..')
 }

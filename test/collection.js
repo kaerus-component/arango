@@ -1,9 +1,9 @@
 var arango, db, checksum, role;
 
 try {
-    arango = require('arango');
+    arango = Arango
 } catch (e) {
-    arango = require('..');
+    arango = require('..')
 }
 
 describe("collections", function () {

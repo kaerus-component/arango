@@ -1,15 +1,76 @@
-/*jslint */
-/*global describe, before, after, it, describe, window*/
 var arango, db, indices = {};
 
 try {
-    arango = require('arango');
+    arango = Arango
 } catch (e) {
-    arango = require('..');
+    arango = require('..')
 }
 
 describe("query", function() {
 
+    before(function(){
+	db = new arango.Connection;
+    })
+    
+    describe("exec", function(){
+
+	it('using query functions', function (done) {
+	    
+	    db.query.for('u').in('@@collection').return('u')
+		.exec({
+		    '@collection': '_users'
+		}).callback(done);
+	    
+	})
+	
+	it('using query functions with bindVars', function (done) {
+	    
+	    db.query.for('u').in('@@collection').return('u')
+		.exec({
+		    '@collection': '_users'
+		}).callback(done);
+	    
+	})
+
+	it('using query module with plain query string', function (done) {
+	    
+	    db.query.exec("for u in _users return u")
+		.callback(done);
+	    
+	})
+
+	it('using query string with bindVars', function (done) {
+	    
+	    db.query.exec("FOR u IN @@collection RETURN u",{
+		'@collection': '_users'
+	    }).callback(done);
+	    
+	})
+    })
+
+    describe('test',function(){
+	it('using query test', function (done) {
+	    
+	    db.query.for('u').in('@@collection').return('u')
+		.test({
+		    '@collection': '_users'
+		}).callback(done);
+	})
+
+    })
+
+    describe('explain',function(){
+	it('using query explain', function (done) {
+	    
+	    db.query
+		.for('u').in('@@collection').return('u')
+		.explain({
+		    '@collection': '_users'
+		}).callback(done);
+	    
+	})
+    })
+	     
     describe("graph queries", function() {
 	
 	var graphName = "routePlanner";
@@ -41,20 +102,15 @@ describe("query", function() {
 	    
 	    expected = expected.sort();
 	    
-	    if (Array.isArray(result)) {
-		result = result.map(function(r) {
-		    return r._key;
-		}).sort();
-		
-		result.length.should.equal(expected.length);
+	    result = result.map(function(r) {
+		return r._key;
+	    }).sort();
+	    
+	    result.length.should.equal(expected.length);
 
-		result.forEach(function(res,i){
-		    res.should.equal(expected[i]);
-		});
-		
-	    } else {
-		true.should.equal(false); // ?
- 	    }
+	    result.forEach(function(res,i){
+		res.should.equal(expected[i]);
+	    });
 	};
 	
 	before(function (done) {
@@ -140,8 +196,8 @@ describe("query", function() {
 	    ];
 	    db.query.for("x").in.graph_vertices(graphName, {}).return("x")
 		.exec()
-		.then(function(result) {
-		    checkResultIds(result, expected);
+		.then(function(ret) {
+		    checkResultIds(ret.result, expected);
 		}).callback(done);
 	});
 
@@ -154,8 +210,8 @@ describe("query", function() {
 	    ];
 	    db.query.for("x").in.graph_vertices(graphName, {isCapital: false}).return("x")
 		.exec()
-		.then(function(result) {
-		    checkResultIds(result, expected);
+		.then(function(ret) {
+		    checkResultIds(ret.result, expected);
 		}).callback(done);
 	});
 
@@ -175,8 +231,8 @@ describe("query", function() {
 	    ];
 	    db.query.for("x").in.graph_edges(graphName, {}).return("x")
 		.exec()
-		.then(function(result) {
-		    checkResultIds(result, expected);
+		.then(function(ret) {
+		    checkResultIds(ret.result, expected);
 		}).callback(done);
 	});
 
@@ -190,8 +246,8 @@ describe("query", function() {
 	    ];
 	    db.query.for("x").in.graph_edges(graphName, {_key: "Cologne"}).return("x")
 		.exec()
-		.then(function(result) {
-		    checkResultIds(result, expected);
+		.then(function(ret) {
+		    checkResultIds(ret.result, expected);
 		}).callback(done);
 	});
 
@@ -203,17 +259,17 @@ describe("query", function() {
 	    var expSecondVertices = [V.lyon._key, V.cologne._key];
 	    db.query.for("x").in.graph_neighbors(graphName, {}, {edgeExamples : [{distance: 600}, {distance: 700}]}).return("x")
 		.exec()
-		.then(function(result) {
+		.then(function(ret) {
 		    
-		    result.length.should.equal(2);
+		    ret.result.length.should.equal(2);
 		    
-		    var first = result[0];
+		    var first = ret.result[0];
 		    var second;
 		    if (first.startVertex !== V.cologne._id) {
-			first = result[1];
-			second = result[0];
+			first = ret.result[1];
+			second = ret.result[0];
 		    } else {
-			second = result[1];
+			second = ret.result[1];
 		    }
 		    checkResultIds(first.path.edges, expFirstEdges);
 		    checkResultIds(first.path.vertices, expFirstVertices);
@@ -227,15 +283,15 @@ describe("query", function() {
 	    var expected = [V.cologne._key, V.hamburg._key, V.lyon._key];
 	    db.query.for("x").in.graph_common_neighbors(graphName, {isCapital : true}, {isCapital : true}).return("x")
 		.exec()
-		.then(function(result) {
-		    result.length.should.equal(2);
-		    var first = result[0];
+		.then(function(ret) {
+		    ret.result.length.should.equal(2);
+		    var first = ret.result[0];
 		    var second;
 		    if (first[V.berlin._id]) {
-			second = result[1];
+			second = ret.result[1];
 		    } else {
-			first = result[1];
-			second = result[0];
+			first = ret.result[1];
+			second = ret.result[0];
 		    }
 		    checkResultIds(first[V.berlin._id][V.paris._id], expected);
 		    checkResultIds(second[V.paris._id][V.berlin._id], expected);
@@ -246,10 +302,10 @@ describe("query", function() {
 
 	    db.query.for("x").in.graph_common_properties(graphName, V.berlin._id, {}).return("x")
 		.exec()
-		.then(function(result) {
-		    result.length.should.equal(1);
+		.then(function(ret) {
+		    ret.result.length.should.equal(1);
 		    
-		    var resBerlin = result[0][V.berlin._id];
+		    var resBerlin = ret.result[0][V.berlin._id];
 		    resBerlin.length.should.equal(1);
 		    resBerlin[0]._id.should.equal(V.paris._id);
 		    resBerlin[0].isCapital.should.equal(true);
@@ -264,16 +320,16 @@ describe("query", function() {
 	    db.query.for("x").in
 		.graph_shortest_path(graphName, [{_id: V.cologne._id},{_id: V.berlin._id}], V.lyon._id,{weight: "distance"}).return("{start: x.startVertex, end: x.vertex._id, dist: x.distance, hops: LENGTH(x.paths)}")
 		.exec()
-		.then(function(result) {
-		    result.length.should.equal(2);
-		    var first = result[0];
+		.then(function(ret) {
+		    ret.result.length.should.equal(2);
+		    var first = ret.result[0];
 		    var second;
 		    
 		    if (first.start !== V.cologne._id) {
-			first = result[1];
-			second = result[0];
+			first = ret.result[1];
+			second = ret.result[0];
 		    } else {
-			second = result[1];
+			second = ret.result[1];
 		    }
 		    first.start.should.equal(V.cologne._id);
 		    first.end.should.equal(V.lyon._id);
@@ -296,10 +352,10 @@ describe("query", function() {
 	    ];
 	    db.query.for("x").in.graph_traversal(graphName, V.hamburg._id, "outbound", {minDepth: 1, maxDepth: 1}).return("x")
 		.exec()
-		.then(function(result) {
-		    result.length.should.equal(1);
+		.then(function(ret) {
+		    ret.result.length.should.equal(1);
 		    
-		    checkResultIds(result[0].map(function(v) {
+		    checkResultIds(ret.result[0].map(function(v) {
 			return v.vertex;
 		    }), expected);
 		}).callback(done);
@@ -314,8 +370,8 @@ describe("query", function() {
 	    ];
 	    db.query.for("x").in.graph_traversal_tree(graphName, V.hamburg._id, "outbound", "connection", {maxDepth: 1}).return("x")
 		.exec()
-		.then(function(result) {
-
+		.then(function(ret) {
+		    var result = ret.result;
 		    result.length.should.equal(1);
 		    result = result[0];
 		    result.length.should.equal(1);
@@ -332,15 +388,15 @@ describe("query", function() {
 
 	    db.query.for("x").in.graph_distance_to(graphName, [{_id: V.cologne._id}, {_id: V.berlin._id}], V.lyon._id, {weight: "distance"}).return("{start: x.startVertex, end: x.vertex._id, dist: x.distance}")
 		.exec()
-		.then(function(result) {
-		    result.length.should.equal(2);
-		    var first = result[0];
+		.then(function(ret) {
+		    ret.result.length.should.equal(2);
+		    var first = ret.result[0];
 		    var second;
 		    if (first.start !== V.cologne._id) {
-			first = result[1];
-			second = result[0];
+			first = ret.result[1];
+			second = ret.result[0];
 		    } else {
-			second = result[1];
+			second = ret.result[1];
 		    }
 		    first.start.should.equal(V.cologne._id);
 		    first.end.should.equal(V.lyon._id);
@@ -359,7 +415,8 @@ describe("query", function() {
 
 	    db.query.return.graph_absolute_eccentricity(graphName, {}, {weight: "distance"})
 		.exec()
-		.then(function(result) {
+		.then(function(ret) {
+		    var result = ret.result;
 		    //result.length.should.equal(1);
 		    result = result[0];
 		    result[V.hamburg._id].should.equal(1200);
@@ -374,7 +431,8 @@ describe("query", function() {
 
 	    db.query.return.graph_eccentricity(graphName, {weight: "distance"})
 		.exec()
-		.then(function(result) {
+		.then(function(ret) {
+		    var result = ret.result;
 		    //result.length.should.equal(1);
 		    result = result[0];
 		    result[V.hamburg._id].should.equal(0.7083333333333335);
@@ -390,7 +448,8 @@ describe("query", function() {
 
 	    db.query.return.graph_absolute_closeness(graphName, {}, {weight: "distance"})
 		.exec()
-		.then(function(result) {
+		.then(function(ret) {
+		    var result = ret.result;
 		    //result.length.should.equal(1);
 		    result = result[0];
 		    result[V.hamburg._id].should.equal(3000);
@@ -406,7 +465,8 @@ describe("query", function() {
 
 	    db.query.return.graph_closeness(graphName, {weight: "distance"})
 		.exec()
-		.then(function(result) {
+		.then(function(ret) {
+		    var result = ret.result;
 		    //result.length.should.equal(1);
 		    result = result[0];
 		    result[V.hamburg._id].should.equal(0.8666666666666666);
@@ -421,7 +481,8 @@ describe("query", function() {
 
 	    db.query.return.graph_absolute_betweenness(graphName, {weight: "distance"})
 		.exec()
-		.then(function(result) {
+		.then(function(ret) {
+		    var result = ret.result;
 		    //result.length.should.equal(1);
 		    result = result[0];
 		    result[V.hamburg._id].should.equal(0);
@@ -437,7 +498,8 @@ describe("query", function() {
 
 	    db.query.return.graph_betweenness(graphName, {weight: "distance"})
 		.exec()
-		.then(function(result) {
+		.then(function(ret) {
+		    var result = ret.result;
 		    //result.length.should.equal(1);
 		    result = result[0];
 		    result[V.hamburg._id].should.equal(0);
@@ -453,7 +515,8 @@ describe("query", function() {
 
 	    db.query.return.graph_radius(graphName, {weight: "distance"})
 		.exec()
-		.then(function(result) {
+		.then(function(ret) {
+		    var result = ret.result;
 		    //result.length.should.equal(1);
 		    result[0].should.equal(850);
 		}).callback(done);
@@ -463,7 +526,8 @@ describe("query", function() {
 
 	    db.query.return.graph_diameter(graphName, {weight: "distance"})
 		.exec()
-		.then(function(result) {
+		.then(function(ret) {
+		    var result = ret.result;
 		    //result.length.should.equal(1);
 		    result[0].should.equal(1200);
 		}).callback(done);

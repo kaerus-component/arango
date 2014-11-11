@@ -5,11 +5,11 @@ PKG_INFO = `cat package.json | grep -e '"version"' -e '"description"' -e '"logo"
 LICENSE = `cat LICENSE`
 
 YUIDOC_THEME = node_modules/yuidoc-bootstrap-theme
-COMPONENT = @./node_modules/.bin/component
 BEAUTIFY = @./node_modules/.bin/js-beautify --config ./code.json
 UGLIFYJS = @./node_modules/.bin/uglifyjs
 KARMA = @./node_modules/karma/bin/karma
 MOCHA = @./node_modules/mocha/bin/mocha
+DUO = @./node_modules/.bin/duo
 
 LIB=$(wildcard lib/*.js)
 API=$(wildcard lib/api/*.js)
@@ -22,16 +22,13 @@ node_modules:
 	@echo "Installing node dependencies"
 	@npm i -d
 
-component: components
+component: index.js
 	@echo "Building web component"
-	$(COMPONENT) build 
-	@echo "Building standalone web component"
-	$(COMPONENT) build -n $(NAME) -s $(NAME)
+	$(DUO) $< > build/build.js 
 
-components:
-	@echo "Installing web-component dependencies"
-	$(COMPONENT) install
-
+test-component: index.js
+	@echo "Building test component"
+	$(DUO) $< -g Arango --copy > build/test.js
 
 test: test-nodejs
 
@@ -39,11 +36,11 @@ test-nodejs: node_modules
 	@echo "Running tests for nodejs"
 	$(MOCHA) --require should --reporter spec
 
-test-browser: components component
+test-browser: test-component
 	@echo "Running tests for browser"
 	$(KARMA) start ./test/karma/karma.conf.js
 
-docs: components component yuidoc.json
+docs: yuidoc.json
 	@echo "Generating docs"
 	@yuidoc -c yuidoc.json
 	@rm yuidoc.json
