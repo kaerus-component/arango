@@ -26,9 +26,9 @@ component: index.js
 	@echo "Building web component"
 	$(DUO) $< > build/build.js 
 
-test-component: test.js
+test-component: index.js
 	@echo "Building test component"
-	$(DUO) $< -g db --copy > build/test.js
+	$(DUO) $< -g Arango --copy > build/test.js
 
 test: test-nodejs
 
