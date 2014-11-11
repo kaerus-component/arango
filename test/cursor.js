@@ -146,7 +146,9 @@ describe("cursor", function () {
 		ret.error.should.equal(false);
 		ret.hasMore.should.equal(false);
 		ret.count.should.equal(1);
-		ret.extra.fullCount.should.equal(3);
+		// note: changed between arangodb versions
+		if(ret.extra.fullCount) ret.extra.fullCount.should.equal(3); 
+		else ret.extra.scannedFull.should.equal(3); // adb v2.3+
 		message.status.should.equal(201);
 	    }).callback(done);
     })
