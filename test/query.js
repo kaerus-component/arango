@@ -96,7 +96,23 @@ describe("query", function() {
 		to: [fC, gC]
 	    }
 	];
-	var V;
+	var V = {
+	    berlin:{_key: "Berlin", _id: gC + "/Berlin", population : 3000000, isCapital : true},
+	    cologne:{_key: "Cologne", _id: gC + "/Cologne", population : 1000000, isCapital : false},
+	    hamburg:{_key: "Hamburg",  _id: gC + "/Hamburg", population : 1000000, isCapital : false},
+	    lyon:{_key: "Lyon",  _id: fC + "/Lyon", population : 80000, isCapital : false},
+	    paris:{_key: "Paris",  _id: fC + "/Paris", population : 4000000, isCapital : true},
+	    btoc:{_key: "btoc", distance: 850},
+	    btoh:{_key: "btoh", distance: 400},
+	    htoc:{_key: "htoc", distance: 500},
+	    ptol:{_key: "ptol", distance: 550},
+	    btol:{_key: "btol", distance: 1100},
+	    btop:{_key: "btop", distance: 1200},
+	    htop:{_key: "htop", distance: 900},
+	    htol:{_key: "htol", distance: 1300},
+	    ctol:{_key: "ctol", distance: 700},
+	    ctop:{_key: "ctop", distance: 550}
+	};
 
 	function checkResultIds(result, expected) {
 	    
@@ -117,32 +133,13 @@ describe("query", function() {
 
 	    edgeDefinition = [];
 	    
-	    db = arango.Connection('/_system');
+	    db = arango.Connection();
 	    
 	    db.database.delete("UnitTestDatabase").end(function() {
 		db.database.create("UnitTestDatabase").then(function(){
-
-		    V = {
-			berlin:{_key: "Berlin", _id: gC + "/Berlin", population : 3000000, isCapital : true},
-			cologne:{_key: "Cologne", _id: gC + "/Cologne", population : 1000000, isCapital : false},
-			hamburg:{_key: "Hamburg",  _id: gC + "/Hamburg", population : 1000000, isCapital : false},
-			lyon:{_key: "Lyon",  _id: fC + "/Lyon", population : 80000, isCapital : false},
-			paris:{_key: "Paris",  _id: fC + "/Paris", population : 4000000, isCapital : true},
-			btoc:{_key: "btoc", distance: 850},
-			btoh:{_key: "btoh", distance: 400},
-			htoc:{_key: "htoc", distance: 500},
-			ptol:{_key: "ptol", distance: 550},
-			btol:{_key: "btol", distance: 1100},
-			btop:{_key: "btop", distance: 1200},
-			htop:{_key: "htop", distance: 900},
-			htol:{_key: "htol", distance: 1300},
-			ctol:{_key: "ctol", distance: 700},
-			ctop:{_key: "ctop", distance: 550}
-		    };
 		    
 		    db = db.use('/UnitTestDatabase');
-		    
-		    
+		    	    
 		    return db.graph.create(graphName, edgeDefinition, true);
 		}).then(function(){
 		    db.batch.start();

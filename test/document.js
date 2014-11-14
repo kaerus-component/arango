@@ -320,22 +320,24 @@ describe("document", function () {
 	    var options = {};
 	    options.match = false;
 	    options.rev = doc._rev + 1;
-	    db.document.put(doc._id, data, options).callback(done);
+	    db.document.put(doc._id, data, options).then(function(ret){
+		ret._id.should.equal(doc._id);
+		ret._rev.should.not.equal(doc._rev);
+		doc._rev = ret._rev;
+	    }).callback(done);
 	})
 
-	/* AE: Always fails, need to check if bug in db
-	 it('lets put a document with "match" header and correct revision and the waitForSync param', function (done) {
-	 
-	 var data = {
-	 "newKey": "newValue"
-	 };
-	 var options = {};
-	 options.match = true;
-	 options.waitForSync = true;
-	 options.rev = doc._rev;
-	 db.document.put(doc._id, data, options).callback(done);
-	 })
-	 */
+	it('lets put a document with "match" header and correct revision and the waitForSync param', function (done) {
+	    
+	    var data = {
+		"newKey": "newValue"
+	    };
+	    var options = {};
+	    options.match = true;
+	    options.waitForSync = true;
+	    options.rev = doc._rev;
+	    db.document.put(doc._id, data, options).callback(done);
+	})
 	
 	it('lets put a document with "match" header and wrong revision', function (done) {
 	    
