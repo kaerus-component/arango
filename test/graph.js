@@ -1207,6 +1207,7 @@ describe("graph", function () {
 		});
 
 		// note: generates a runtime error on arangodb < v2.2.6
+		/*
 		it("a vertex pointing to an edgeCollection", function(done) {
 		    
 		    db.graph.vertex.create(graphName, {
@@ -1217,12 +1218,13 @@ describe("graph", function () {
 			done();
 		    });
 		});
+		*/
 
 		it("an orphan", function(done) {
 		    
 		    db.graph.vertex.create(graphName, {
 			"key1": "val1",
-			"key2": "val2"
+			"Key2": "val2"
 		    }, orphan1).then( function (ret) {
 			ret.error.should.equal(false);
 			ret.code.should.equal(202);

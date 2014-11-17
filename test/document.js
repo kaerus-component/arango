@@ -67,7 +67,7 @@ describe("document", function () {
 				"key1": "val1",
 				"key2": "val2"
 			    }, options)
-				.then(function (ret, message) {
+				.then(function (ret) {
 				    ret.error.should.equal(false);
 				    ret.code.should.equal(201);
 				}).callback(done);
@@ -75,7 +75,7 @@ describe("document", function () {
 
 			it('lets check that rotation of WAL content is not possible', function (done) {
 			    
-			    db.collection.rotate(collection.id)
+			    db.collection.rotate(collection._id)
 				.catch(function (err) {
 				    err.code.should.equal(400);
 				    done();
@@ -87,7 +87,7 @@ describe("document", function () {
 			    // First flush the WAL otherwise rotation has no effect
 			    db.admin.walFlush(false, true)
 				.then(function(ret) {
-				    db.collection.rotate(collection.id)
+				    db.collection.rotate(collection._id)
 					.then(function (ret2) {
 					    ret.code.should.equal(200);
 					    ret.error.should.equal(false);
