@@ -51,54 +51,49 @@ describe("document", function () {
 		ret.code.should.equal(202);
 	    }).callback(done);
 	})
-
-	describe('',function(){
-	    db.admin.role()
+	
+	it('create another document and the collection along with it', function (done) {
+	    
+	    var options = {};
+	    options.createCollection = true;
+	    options.waitForSync = true;
+	    db.document.create("anotherCollection", {
+		"key1": "val1",
+		"key2": "val2"
+	    }, options)
 		.then(function (ret) {
-		    role = ret.role;
-		    if (role === "UNDEFINED") {
-			
-			it('create another document and the collection along with it', function (done) {
-			    
-			    var options = {};
-			    options.createCollection = true;
-			    options.waitForSync = true;
-			    db.document.create("anotherCollection", {
-				"key1": "val1",
-				"key2": "val2"
-			    }, options)
-				.then(function (ret) {
-				    ret.error.should.equal(false);
-				    ret.code.should.equal(201);
-				}).callback(done);
-			})
+		    ret.error.should.equal(false);
+		    ret.code.should.equal(201);
+		}).callback(done);
+	})
 
-			it('lets check that rotation of WAL content is not possible', function (done) {
-			    
-			    db.collection.rotate(collection._id)
-				.catch(function (err) {
-				    err.code.should.equal(400);
-				    done();
-				});
-			})
+	/* should be in collection module
+	it('lets check that rotation of WAL content is not possible', function (done) {
+	    
+	    db.collection.rotate(collection.id)
+		.catch(function (err) {
+		    err.code.should.equal(400);
+		    done();
+		});
+	})
+	 */
 
-			it('lets rotate the journal of "newCollection"', function (done) {
-			    
-			    // First flush the WAL otherwise rotation has no effect
-			    db.admin.walFlush(false, true)
-				.then(function(ret) {
-				    db.collection.rotate(collection._id)
-					.then(function (ret2) {
-					    ret.code.should.equal(200);
-					    ret.error.should.equal(false);
-					    ret2.error.should.equal(false);
-					    ret2.code.should.equal(200);
-					}).callback(done);
-				});
-			});
-		    }
+	/* Should be in admin test module
+	it('lets rotate the journal of "newCollection"', function (done) {
+	    
+	    // First flush the WAL otherwise rotation has no effect
+	    db.admin.walFlush(false, true)
+		.then(function(ret) {
+		    db.collection.rotate(collection.id)
+			.then(function (ret2) {
+			    ret.code.should.equal(200);
+			    ret.error.should.equal(false);
+			    ret2.error.should.equal(false);
+			    ret2.code.should.equal(200);
+			}).callback(done);
 		});
 	});
+	 */
 	
 	it('lets get a non existing document"', function (done) {
 	    
