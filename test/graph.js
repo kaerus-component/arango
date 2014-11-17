@@ -618,16 +618,6 @@ describe("graph", function () {
 		}).callback(done);
 	})
 
-	// note this crashes aragodb <= 2.2.6
-	it("create a vertex assigned to an edge collection",function(done){
-            db.graph.vertex.create("testGraph", {
-		_key:"hello"
-            },edgecollection.name).catch(function(err){
-		err.code.should.equal(404);
-		done();
-            })
-        })
-	
 	it('create a edge', function (done) {
 	    
 	    db.graph.edge.create("graph1", {
@@ -1130,7 +1120,6 @@ describe("graph", function () {
 			}).callback(done);
 		});
 
-		// AE: Fails with 404, need to check if bug in db
 		it("should add a new edge definition using only one collection array", function(done) {
 		    
 		    var edge = "UnitTestAddEdge";
@@ -1215,6 +1204,18 @@ describe("graph", function () {
 			//ret.vertex.key2.should.equal("val2");
 			toVertex = ret.vertex._id;
 		    }).callback(done);
+		});
+
+		// note: generates a runtime error on arangodb < v2.2.6
+		it("a vertex pointing to an edgeCollection", function(done) {
+		    
+		    db.graph.vertex.create(graphName, {
+			"key1": "val1",
+			"key2": "val2"
+		    }, e1).catch( function (err) {
+			err.code.should.equal(404);
+			done();
+		    });
 		});
 
 		it("an orphan", function(done) {
