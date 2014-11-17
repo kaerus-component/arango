@@ -618,12 +618,11 @@ describe("graph", function () {
 		}).callback(done);
 	})
 
-
 	// note this crashes aragodb <= 2.2.6
 	it("create a vertex assigned to an edge collection",function(done){
             db.graph.vertex.create("testGraph", {
 		_key:"hello"
-            },edgecollection).catch(function(err){
+            },edgecollection.name).catch(function(err){
 		err.code.should.equal(404);
 		done();
             })
