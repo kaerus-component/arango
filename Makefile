@@ -65,12 +65,12 @@ beautify: $(TEST) $(API) $(LIB)
 	$(BEAUTIFY) -r $^ 
 
 dist: component
-	@echo "Beautify -> dist/$(NAME)-$(COM_VER).js"
-	$(UGLIFYJS) build/build.js --beautify --preamble "${LICENSE}" -o dist/$(NAME)-$(COM_VER).js
-	@echo "Uglify -> dist/build-$(COM_VER)-min.js"
-	$(UGLIFYJS) dist/$(NAME)-$(COM_VER).js --preamble "${LICENSE}" --source-map dist/$(NAME)-$(COM_VER)-min.map.js -o dist/$(NAME)-$(COM_VER)-min.js
-	@echo "Compress -> dist/$(NAME)-$(COM_VER)-min.js.gz"
-	@gzip -9 -kf dist/$(NAME)-$(COM_VER)-min.js
+	@echo "Beautify -> dist/$(NAME).js"
+	$(UGLIFYJS) build/build.js --beautify --preamble "${LICENSE}" -o dist/$(NAME).js
+	@echo "Uglify -> dist/$(NAME)-min.js"
+	$(UGLIFYJS) dist/$(NAME).js --preamble "${LICENSE}" --source-map dist/$(NAME)-min.map.js -o dist/$(NAME)-min.js
+	@echo "Compress -> dist/$(NAME)-min.js.gz"
+	@gzip -9 -kf dist/$(NAME)-min.js
 
 Release: dist
 	@git tag -a $(PKG_VER) -m "v$(PKG_VER)" -f
