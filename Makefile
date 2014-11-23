@@ -68,7 +68,7 @@ dist: component
 	@echo "Beautify -> dist/$(NAME).js"
 	$(UGLIFYJS) build/build.js --beautify --preamble "${LICENSE}" -o dist/$(NAME).js
 	@echo "Uglify -> dist/$(NAME)-min.js"
-	$(UGLIFYJS) dist/$(NAME).js --preamble "${LICENSE}" --source-map dist/$(NAME)-min.map.js -o dist/$(NAME)-min.js
+	$(UGLIFYJS) dist/$(NAME).js --preamble "${LICENSE}" --prefix relative --source-map dist/$(NAME)-min.map.js -o dist/$(NAME)-min.js
 	@echo "Compress -> dist/$(NAME)-min.js.gz"
 	@gzip -9 -kf dist/$(NAME)-min.js
 
