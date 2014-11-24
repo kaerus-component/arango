@@ -11,6 +11,38 @@ describe("query", function() {
     before(function(){
 	db = new arango.Connection;
     })
+
+    describe("aql", function(){
+	
+	it('FOR x IN collection RETURN x',function(){
+	    var aql = db.query.new();
+	    
+	    aql.for('x').in('collection')
+		.return('x');
+	    
+	    aql.string.should.equal('FOR x IN collection RETURN x');
+	});
+
+	it('FOR x IN collection FILTER x == "something" RETURN x',function(){
+	    var aql = db.query.new();
+	    
+	    aql.for('x').in('collection')
+		.filter('x == "something"')
+		.return('x');
+	    
+	    aql.string.should.equal('FOR x IN collection FILTER x == "something" RETURN x');
+	});
+
+	it('FOR x IN GRAPH_NEIGHBORS("test","node",{\"direction\":\"outbound\"}) RETURN x',function(){
+	    var aql = db.query.new();
+	    
+	    aql.for('x').in
+		.graph_neighbors("test","node",{direction:"outbound"})
+		.return('x');
+	    
+	    aql.string.should.equal('FOR x IN GRAPH_NEIGHBORS("test","node",{\"direction\":\"outbound\"}) RETURN x');
+	});
+    });
     
     describe("exec", function(){
 
