@@ -6,10 +6,10 @@ LICENSE = `cat LICENSE`
 
 YUIDOC_THEME = node_modules/yuidoc-bootstrap-theme
 BEAUTIFY = @./node_modules/.bin/js-beautify --config ./code.json
-UGLIFYJS = @./node_modules/.bin/uglifyjs
+UGLIFYJS = @./node_modules/uglify-js/bin/uglifyjs
 KARMA = @./node_modules/karma/bin/karma
 MOCHA = @./node_modules/mocha/bin/mocha
-DUO = @./node_modules/.bin/duo
+DUO = @./node_modules/duo/bin/duo
 
 LIB=$(wildcard lib/*.js)
 API=$(wildcard lib/api/*.js)
