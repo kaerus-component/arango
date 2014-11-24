@@ -1943,7 +1943,7 @@
             }
         }
         Aql.prototype = {
-            keywords: [ "collect", "filter", "for", "from", "in", "include", "insert", "into", "let", "limit", "not_in", "remove", "replace", "return", "sort", "update", "with" ],
+            keywords: [ "for", "from", "in", "not_in", "collect", "filter", "sort", "include", "insert", "remove", "update", "replace", "with", "into", "let", "limit", "return" ],
             graphFunctions: [ "graph_vertices", "graph_edges", "graph_neighbors", "graph_common_neighbors", "graph_common_properties", "graph_paths", "graph_shortest_path", "graph_traversal", "graph_traversal_tree", "graph_distance_to", "graph_absolute_eccentricity", "graph_eccentricity", "graph_absolute_closeness", "graph_closeness", "graph_absolute_betweenness", "graph_betweenness", "graph_radius", "graph_diameter" ],
             bindKeyWord: function(key) {
                 var aql = this;
@@ -2047,7 +2047,7 @@
                 value: function(aql, bindVars) {
                     var q = {};
                     if (aql instanceof Aql) q.query = aql.toString(); else if (typeof aql === "string") q.query = aql; else {
-                        q.query = this.toString();
+                        q.query = query.toString();
                         bindVars = aql;
                     }
                     if (query.options) utils.extend(true, q, query.options);
@@ -2777,5 +2777,5 @@
         })(this);
     }, {} ]
 }, {}, {
-    "1": ""
+    "1": "Arango"
 });
