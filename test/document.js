@@ -26,7 +26,7 @@ describe("document", function () {
     });
 
     describe("documentFunctions", function () {
-	var doc;
+	var doc, doc_ids = [], doc_keys = [];
 	
 	before('create a document', function (done) {
 	    
@@ -37,6 +37,8 @@ describe("document", function () {
 	    }).then( function(ret) {
 		ret.error.should.equal(false);
 		doc = ret;
+		doc_ids.push(ret._id);
+		doc_keys.push(ret._key);
 		ret.code.should.equal(202);
 	    }).callback(done);
 	})
@@ -49,6 +51,8 @@ describe("document", function () {
 	    }).then( function(ret) {
 		ret.error.should.equal(false);
 		ret.code.should.equal(202);
+		doc_ids.push(ret._id);
+		doc_keys.push(ret._key);
 	    }).callback(done);
 	})
 	
@@ -67,33 +71,6 @@ describe("document", function () {
 		}).callback(done);
 	})
 
-	/* should be in collection module
-	it('lets check that rotation of WAL content is not possible', function (done) {
-	    
-	    db.collection.rotate(collection.id)
-		.catch(function (err) {
-		    err.code.should.equal(400);
-		    done();
-		});
-	})
-	 */
-
-	/* Should be in admin test module
-	it('lets rotate the journal of "newCollection"', function (done) {
-	    
-	    // First flush the WAL otherwise rotation has no effect
-	    db.admin.walFlush(false, true)
-		.then(function(ret) {
-		    db.collection.rotate(collection.id)
-			.then(function (ret2) {
-			    ret.code.should.equal(200);
-			    ret.error.should.equal(false);
-			    ret2.error.should.equal(false);
-			    ret2.code.should.equal(200);
-			}).callback(done);
-		});
-	});
-	 */
 	
 	it('lets get a non existing document"', function (done) {
 	    
@@ -207,6 +184,24 @@ describe("document", function () {
 		.then(function (ret) {
 		    ret.documents.length.should.equal(2);
 		    ret.code.should.equal(200);
+		}).callback(done);
+	})
+
+	it('get list of documents and specify return type of id',function (done) {
+
+	    db.document.list(collection.id,{type:'id'})
+		.then(function (ret) {
+		    var ids = ret.documents.sort();
+		    ids.should.eql(doc_ids.sort());
+		}).callback(done);
+	})
+
+	it('get list of documents and specify return type of key',function (done) {
+
+	    db.document.list(collection.id,{type:'key'})
+		.then(function (ret) {
+		    var keys = ret.documents.sort();
+		    keys.should.eql(doc_keys.sort());
 		}).callback(done);
 	})
 	
