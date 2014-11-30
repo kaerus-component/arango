@@ -127,6 +127,15 @@ describe("collections", function () {
 		}).callback(done);
 	})
 
+	it('list all collections excluding system using options', function (done) {
+	    
+	    db.collection.list({excludeSystem: true})
+		.then(function (ret, message) {
+		    ret.collections.length.should.equal(2);
+		    message.status.should.equal(200);
+		}).callback(done);
+	})
+
 	it('get collection', function (done) {
 	    
 	    db.collection.get("newCollection2")
@@ -398,6 +407,18 @@ describe("collections", function () {
 	    });
 	});
     }
+
+    /* (andelo) note: sometimes gets timed out, need to check why that happens
+     it('lets check that rotation of WAL content is not possible', function (done) {
+     
+     db.collection.rotate(collection.id)
+     .catch(function (err) {
+     err.code.should.equal(400);
+     done();
+     });
+     })
+     */
+
     
 });
 
