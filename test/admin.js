@@ -110,4 +110,22 @@ describe("admin", function () {
 	    done();
 	});
     })
+
+    /* times out, needs to be checked why
+     it('lets rotate the journal of "newCollection"', function (done) {
+     
+     // First flush the WAL otherwise rotation has no effect
+     db.admin.walFlush(false, true)
+     .then(function(ret) {
+     db.collection.rotate(collection.id)
+     .then(function (ret2) {
+     ret.code.should.equal(200);
+     ret.error.should.equal(false);
+     ret2.error.should.equal(false);
+     ret2.code.should.equal(200);
+     }).callback(done);
+     });
+     });
+     */
+    
 })
