@@ -461,6 +461,7 @@
                 options.headers["connection"] = "keep-alive";
                 if (!agents[proto] && minVersion > 10) {
                     agents[proto] = new (require(proto).Agent)({
+                        maxSockets: 1,
                         keepAlive: true,
                         keepAliveMsecs: 300 * 1e3
                     });
@@ -956,11 +957,14 @@
                     }
                     return db.head(path + "/" + id + url.options(options), headers);
                 },
-                list: function(collection) {
+                list: function(collection, options) {
                     if (typeof collection !== "string") {
+                        options = collection;
                         collection = db._collection;
                     }
-                    return db.get(path + "?collection=" + collection);
+                    options = options || {};
+                    options.collection = collection;
+                    return db.get(path + url.options(options));
                 }
             };
         }
@@ -1190,10 +1194,12 @@
                 figures: function(id) {
                     return db.get(path + id + "/figures");
                 },
-                list: function(excludeSystem) {
-                    var url = path;
-                    if (excludeSystem !== undefined) url += "?excludeSystem=" + !!excludeSystem;
-                    return db.get(url);
+                list: function(options) {
+                    if (typeof options === "boolean") options = {
+                        excludeSystem: options
+                    };
+                    options = options || {};
+                    return db.get(path + url.options(options));
                 },
                 load: function(id, count) {
                     var param = {};
@@ -1637,9 +1643,15 @@
                         if (to) data._to = to;
                         if (from) data._from = from;
                         if (label) data.$label = label;
+                        if (typeof data._from !== "string" || typeof data._to !== "string") throw new TypeError("edge vertex._id must be a string");
                         if (typeof collection !== "string") {
                             waitForSync = collection;
-                            collection = undefined;
+                            if (data._collection) {
+                                collection = data._collection;
+                                delete data._collection;
+                            } else {
+                                collection = undefined;
+                            }
                         }
                         if (waitForSync !== undefined) {
                             options.waitForSync = !!waitForSync;
@@ -1917,83 +1929,68 @@
         exports.job = JobAPI;
     }, {} ],
     22: [ function(require, module, exports) {
+        "use strict";
         var api = require("../api"), utils = require("../../utils");
         api.use(require("../cursor"));
         function Aql() {
             var aql = this;
+            var graphFunctions = [ "graph_vertices", "graph_edges", "graph_neighbors", "graph_common_neighbors", "graph_common_properties", "graph_paths", "graph_shortest_path", "graph_traversal", "graph_traversal_tree", "graph_distance_to", "graph_absolute_eccentricity", "graph_eccentricity", "graph_absolute_closeness", "graph_closeness", "graph_absolute_betweenness", "graph_betweenness", "graph_radius", "graph_diameter" ];
             aql.struct = {};
-            Object.defineProperty(aql, "string", {
-                enumerable: false,
-                get: function() {
-                    return aql.toString();
-                },
-                set: function(str) {
-                    if (typeof str === "string") aql.struct = {
-                        _string: str
-                    };
-                    return aql._string;
-                }
-            });
-            for (var keyword in aql.keywords) {
-                aql.bindKeyWord(aql.keywords[keyword]);
+            for (var graphFunction in graphFunctions) {
+                bindFunction(graphFunctions[graphFunction], aql.in);
+                bindFunction(graphFunctions[graphFunction], aql.return);
             }
-            for (var graphFunction in aql.graphFunctions) {
-                aql.bindFunction(aql.graphFunctions[graphFunction], aql.in);
-                aql.bindFunction(aql.graphFunctions[graphFunction], aql.return);
+            function bindFunction(name, func) {
+                func[name] = function() {
+                    var aqlString = name.toUpperCase();
+                    var args = [].slice.call(arguments);
+                    aqlString += "(";
+                    aqlString += args.map(function(arg) {
+                        if (typeof arg === "object") {
+                            return JSON.stringify(arg);
+                        }
+                        return '"' + arg + '"';
+                    }).join(",");
+                    aqlString += ")";
+                    func.call(aql, aqlString);
+                    return aql;
+                };
             }
         }
-        Aql.prototype = {
-            keywords: [ "for", "from", "in", "not_in", "collect", "filter", "sort", "include", "insert", "remove", "update", "replace", "with", "into", "let", "limit", "return" ],
-            graphFunctions: [ "graph_vertices", "graph_edges", "graph_neighbors", "graph_common_neighbors", "graph_common_properties", "graph_paths", "graph_shortest_path", "graph_traversal", "graph_traversal_tree", "graph_distance_to", "graph_absolute_eccentricity", "graph_eccentricity", "graph_absolute_closeness", "graph_closeness", "graph_absolute_betweenness", "graph_betweenness", "graph_radius", "graph_diameter" ],
-            bindKeyWord: function(key) {
-                var aql = this;
-                Object.defineProperty(aql, key, {
-                    value: function() {
-                        var args = [].slice.call(arguments);
-                        if (!args.length) return aql.struct[key];
-                        if (typeof args[0] === "function") {
-                            aql.struct[key] = function(func) {
-                                var faql = new Aql();
-                                func.apply(faql);
-                                return faql.struct;
-                            }(args[0]);
-                        } else if (args[0] instanceof Aql) {
-                            aql.struct[key] = args[0].struct;
+        Aql.bindKeyword = function(key) {
+            Object.defineProperty(Aql.prototype, key, {
+                value: function() {
+                    var args = [].slice.call(arguments);
+                    if (!args.length) return this.struct[key];
+                    if (typeof args[0] === "function") {
+                        this.struct[key] = function(func) {
+                            var faql = new Aql();
+                            func.apply(faql);
+                            return faql.struct;
+                        }(args[0]);
+                    } else if (args[0] instanceof Aql) {
+                        this.struct[key] = args[0].struct;
+                    } else {
+                        if (key === "filter" || key === "let") {
+                            if (!this.struct[key]) this.struct[key] = [];
+                            this.struct[key].push(args.join(" "));
                         } else {
-                            if (key === "filter" || key === "let") {
-                                if (!aql.struct[key]) aql.struct[key] = [];
-                                aql.struct[key].push(args.join(" "));
-                            } else aql.struct[key] = args.join(" ");
+                            this.struct[key] = args.join(" ");
                         }
-                        return aql;
                     }
-                });
-                return this;
-            },
-            bindFunction: function(name, func) {
-                var aql = this;
-                Object.defineProperty(func, name, {
-                    value: function() {
-                        var aqlString = name.toUpperCase();
-                        var args = [].slice.call(arguments);
-                        aqlString += "(";
-                        aqlString += args.map(function(arg) {
-                            if (typeof arg === "object") {
-                                return JSON.stringify(arg);
-                            }
-                            return '"' + arg + '"';
-                        }).join(",");
-                        aqlString += ")";
-                        func(aqlString);
-                        return aql;
-                    }
-                });
-                return this;
-            },
-            structToString: function(struct) {
+                    return this;
+                }
+            });
+        };
+        (function() {
+            var keywords = [ "for", "from", "in", "not_in", "collect", "filter", "sort", "include", "insert", "remove", "update", "replace", "with", "into", "let", "limit", "return" ];
+            for (var keyword in keywords) {
+                Aql.bindKeyword(keywords[keyword]);
+            }
+            Aql.prototype.structToString = function(struct) {
                 var aql = this;
                 struct = struct || aql.struct;
-                return struct._string || aql.keywords.concat(aql.graphFunctions, aql.stringFunctions).filter(function(key) {
+                return struct._string || keywords.filter(function(key) {
                     return !!struct[key];
                 }).map(function(q) {
                     var keyword = q.toUpperCase().replace("_", " "), value = struct[q], str;
@@ -2023,14 +2020,26 @@
                     } else str = keyword + " " + value;
                     return str;
                 }).join(" ");
-            },
-            toString: function() {
+            };
+            Aql.prototype.toString = function() {
                 return this.structToString();
-            },
-            clearStruct: function() {
+            };
+            Aql.prototype.clearStruct = function() {
                 this.struct = {};
-            }
-        };
+            };
+            Object.defineProperty(Aql.prototype, "string", {
+                enumerable: false,
+                get: function() {
+                    return this.toString();
+                },
+                set: function(str) {
+                    if (typeof str === "string") this.struct = {
+                        _string: str
+                    };
+                    return this._string;
+                }
+            });
+        })();
         function QueryAPI(db) {
             if (!(this instanceof QueryAPI)) return new QueryAPI(db);
             var query = this;
@@ -2041,23 +2050,19 @@
                 writable: false,
                 value: db
             });
-            Object.defineProperty(this, "toQuery", {
-                enumerable: false,
-                writable: false,
-                value: function(aql, bindVars) {
-                    var q = {};
-                    if (aql instanceof Aql) q.query = aql.toString(); else if (typeof aql === "string") q.query = aql; else {
-                        q.query = query.toString();
-                        bindVars = aql;
-                    }
-                    if (query.options) utils.extend(true, q, query.options);
-                    if (bindVars) q.bindVars = bindVars;
-                    query.clearStruct();
-                    return q;
-                }
-            });
         }
         utils.inherit(QueryAPI, Aql);
+        QueryAPI.prototype.toQuery = function(aql, bindVars) {
+            var q = {};
+            if (aql instanceof Aql) q.query = aql.toString(); else if (typeof aql === "string") q.query = aql; else {
+                q.query = this.toString();
+                bindVars = aql;
+            }
+            if (this.options) utils.extend(true, q, this.options);
+            if (bindVars) q.bindVars = bindVars;
+            this.clearStruct();
+            return q;
+        };
         QueryAPI.prototype.test = function(query, bindVars, options) {
             return this.db.cursor.query(this.toQuery(query, bindVars), options);
         };
