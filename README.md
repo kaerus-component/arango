@@ -385,7 +385,7 @@ Joining
 Calling API methods directly
 ----------------------------
 You may also request any arangodb API method by using ```db[METHOD]()```.
-This is particulary usefull when you create your own REST API in ArangoDB.
+This is particulary useful when you create your own REST API in ArangoDB.
 
 ```js
   db.post("/myapi/object/create",{a:1,b:2}).done(function(res){
@@ -414,7 +414,7 @@ db.query.exec("FOR u in @@collection return u",{'@collection':"_users"})
 ```
 Note: ArangoDB expects @@ in front of collection names when using a bindvar.
 The bindvar attribute in this case needs to be prefixed with a single @. 
-In all other cases the bindvar atttribute can be provided without any prefix 
+In all other cases the bindvar attribute can be provided without any prefix 
 and the variable in the query string is denoted with a single @ . 
 
 
@@ -682,7 +682,7 @@ To attach your API into the db instances you use the ```Arango.api``` class meth
 ```
 /* attach to db instances */
 Arango.api(require('myAPI'));
-var db = new Arrango.Connection;
+var db = new Arango.Connection;
 /* call API method */
 db.stub.get();
 ```
